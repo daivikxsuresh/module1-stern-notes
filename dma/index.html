@@ -1,0 +1,3454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMA · Day 3 · Module 1 Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f7ff;
+  --surface: #f2f0ff;
+  --card: #ffffff;
+  --card-hover: #f5f3ff;
+  --border: #ddd6fe;
+  --border-light: #ede9fe;
+  --accent: #7c3aed;
+  --accent-mid: #8b5cf6;
+  --accent-light: #ede9fe;
+  --accent-soft: rgba(124,58,237,.08);
+  --violet: #6d28d9;
+  --lavender: #a78bfa;
+  --rose: #e11d48;
+  --rose-soft: rgba(225,29,72,.08);
+  --amber: #d97706;
+  --amber-soft: rgba(217,119,6,.08);
+  --teal: #0d9488;
+  --teal-soft: rgba(13,148,136,.08);
+  --text: #1e1b4b;
+  --text-body: #3730a3;
+  --muted: #7c6fb0;
+  --muted-light: #a5b4fc;
+  --sidebar-w: 268px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.75;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* subtle dot grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(124,58,237,.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* purple top glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: -160px; left: 50%;
+  transform: translateX(-50%);
+  width: 900px; height: 320px;
+  background: radial-gradient(ellipse, rgba(124,58,237,.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── SIDEBAR ─────────────────────────────────── */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: rgba(248,247,255,.97);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+  padding: 24px 0 40px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-brand {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.sidebar-brand .course-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.sidebar-brand h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.sidebar-brand .date-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.sidebar-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 20px 4px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  text-decoration: none;
+  font-size: 13px;
+  color: var(--muted);
+  transition: background .15s, color .15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+
+.sidebar-nav a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-left-color: var(--accent-mid);
+}
+
+.sidebar-nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-family: 'Lora', serif;
+  font-weight: 600;
+}
+
+.sidebar-nav .nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--lavender);
+  flex-shrink: 0;
+  width: 18px;
+}
+
+/* ─── MAIN ─────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 48px 52px 80px;
+  max-width: 920px;
+  position: relative;
+  z-index: 1;
+}
+
+.page-header {
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header .course-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 12px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.page-header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.page-header .subtitle {
+  font-size: 15px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.meta-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-chip span { color: var(--accent); }
+
+/* ─── TOPIC GROUP LABEL ─────────────────────── */
+.topic-group {
+  margin-bottom: 8px;
+  margin-top: 32px;
+}
+
+.topic-group:first-of-type { margin-top: 0; }
+
+.group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--lavender);
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+/* ─── SECTION CARDS ──────────────────────────── */
+.section-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: box-shadow .2s, border-color .2s;
+  box-shadow: 0 1px 4px rgba(109,40,217,.04);
+}
+
+.section-card:hover {
+  border-color: var(--accent-mid);
+  box-shadow: 0 4px 16px rgba(124,58,237,.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.card-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  background: var(--accent-light);
+  border: 1px solid var(--border);
+}
+
+.card-title-wrap { flex: 1; min-width: 0; }
+
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16.5px;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.badge-case  { background: rgba(217,119,6,.1);  color: var(--amber); border: 1px solid rgba(217,119,6,.25); }
+.badge-model { background: var(--teal-soft);     color: var(--teal);  border: 1px solid rgba(13,148,136,.25); }
+.badge-key   { background: var(--accent-soft);   color: var(--accent);border: 1px solid rgba(124,58,237,.2); }
+.badge-legal { background: var(--rose-soft);     color: var(--rose);  border: 1px solid rgba(225,29,72,.2); }
+.badge-tech  { background: rgba(167,139,250,.1); color: var(--violet);border: 1px solid rgba(167,139,250,.3); }
+
+.chevron {
+  color: var(--muted);
+  transition: transform .25s ease;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.section-card.open .chevron { transform: rotate(180deg); }
+
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .38s ease, opacity .25s ease;
+  opacity: 0;
+}
+
+.section-card.open .card-body {
+  max-height: 5000px;
+  opacity: 1;
+}
+
+.card-body-inner {
+  padding: 4px 24px 26px 74px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ─── CONTENT ELEMENTS ──────────────────────────── */
+.card-body-inner p { margin-bottom: 12px; color: #3730a3; }
+
+.card-body-inner ul, .card-body-inner ol {
+  padding-left: 18px;
+  margin-bottom: 14px;
+  color: #3730a3;
+}
+
+.card-body-inner li { margin-bottom: 5px; }
+.card-body-inner li::marker { color: var(--accent); }
+
+.card-body-inner ul ul { margin-top: 4px; margin-bottom: 6px; }
+.card-body-inner ul ul li::marker { color: var(--lavender); }
+
+.card-body-inner h4 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--text);
+  margin: 18px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* callouts */
+.callout {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14.5px;
+}
+
+.callout-purple {
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,58,237,.2);
+}
+
+.callout-amber {
+  background: var(--amber-soft);
+  border: 1px solid rgba(217,119,6,.2);
+}
+
+.callout-rose {
+  background: var(--rose-soft);
+  border: 1px solid rgba(225,29,72,.2);
+}
+
+.callout-teal {
+  background: var(--teal-soft);
+  border: 1px solid rgba(13,148,136,.2);
+}
+
+.callout strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.callout-purple strong { color: var(--accent); }
+.callout-amber strong  { color: var(--amber); }
+.callout-rose strong   { color: var(--rose); }
+.callout-teal strong   { color: var(--teal); }
+
+/* formula */
+.formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 16px;
+  margin: 10px 0;
+  color: var(--accent);
+  overflow-x: auto;
+}
+
+/* table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 14px 0;
+}
+
+.data-table th {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: #3730a3;
+  vertical-align: top;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--card-hover); }
+
+/* stack/ladder */
+.stack-list { list-style: none; padding: 0; margin: 10px 0; }
+
+.stack-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  margin-bottom: 4px;
+  border-radius: 7px;
+  font-size: 14px;
+  color: #3730a3;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  position: relative;
+}
+
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--lavender);
+  min-width: 20px;
+}
+
+/* quadrant grid */
+.quad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.quad-cell {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
+.quad-cell.good  { background: var(--teal-soft);  border-color: rgba(13,148,136,.25); }
+.quad-cell.bad   { background: var(--rose-soft);  border-color: rgba(225,29,72,.2); }
+.quad-cell.mid   { background: var(--amber-soft); border-color: rgba(217,119,6,.2); }
+.quad-cell.low   { background: var(--accent-soft);border-color: rgba(124,58,237,.15); }
+
+.quad-cell .qlabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.quad-cell.good .qlabel  { color: var(--teal); }
+.quad-cell.bad .qlabel   { color: var(--rose); }
+.quad-cell.mid .qlabel   { color: var(--amber); }
+.quad-cell.low .qlabel   { color: var(--accent); }
+
+.quad-cell p { font-size: 13px; color: #3730a3; margin: 0; }
+
+/* ─── CONVERSATION SUPPLEMENT ─────────────────── */
+.supplement-banner {
+  background: linear-gradient(135deg, var(--accent-soft), rgba(167,139,250,.06));
+  border: 1px solid rgba(124,58,237,.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 28px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.supplement-banner .sb-icon { font-size: 20px; }
+
+.supplement-banner .sb-text { font-size: 13.5px; color: var(--muted); }
+.supplement-banner .sb-text strong { color: var(--accent); display: block; font-family: 'DM Serif Display', serif; font-size: 15px; margin-bottom: 2px; }
+
+/* ─── PROGRESS BAR ─────────────────────────────── */
+.progress-container {
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(109,40,217,.04);
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-label span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.progress-label strong { color: var(--accent); }
+
+.progress-bar-track {
+  height: 6px;
+  background: var(--accent-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, var(--accent), var(--lavender));
+  border-radius: 3px;
+  animation: fillBar 1s ease forwards;
+}
+
+@keyframes fillBar {
+  from { width: 0; }
+  to   { width: 50%; }
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── TIER STACK DIAGRAM ─────────────────────────── */
+.tier-stack { display: flex; flex-direction: column; gap: 3px; margin: 16px 0; }
+.tier-block {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 18px; border-radius: 8px; color: white;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  position: relative; overflow: hidden;
+}
+.tier-block::after {
+  content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+  width: 40%; background: rgba(255,255,255,.06);
+}
+.tier-label { font-size: 9px; opacity: .7; letter-spacing: .08em; text-transform: uppercase; }
+.tier-name  { font-size: 13px; font-weight: 600; font-family: 'Lora', serif; }
+.tier-num   { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: .6; min-width: 36px; }
+.tier-5 { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+.tier-4 { background: linear-gradient(135deg, #4f46e5, #4338ca); }
+.tier-3 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.tier-2 { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.tier-1 { background: linear-gradient(135deg, #475569, #334155); }
+.tier-0 { background: linear-gradient(135deg, #374151, #1f2937); }
+
+/* ─── INVERTED PYRAMID ───────────────────────────── */
+.pyramid-wrap { display: flex; gap: 16px; margin: 16px 0; align-items: flex-start; }
+.pyramid      { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+.pyramid-level {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; color: white; font-size: 12px; font-weight: 600;
+  text-align: center; padding: 10px 8px; transition: width .3s;
+}
+.p-l1 { width: 100%; background: #93c5fd; color: #1e3a5f; font-size: 11px; }
+.p-l2 { width: 88%; background: #60a5fa; color: #1e3a5f; font-size: 11px; }
+.p-l3 { width: 74%; background: #3b82f6; color: white; font-size: 11px; }
+.p-l4 { width: 58%; background: #1d4ed8; color: white; font-size: 11px; }
+.pyramid-bracket {
+  display: flex; flex-direction: column; justify-content: space-around;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--muted); gap: 2px; padding-top: 4px;
+}
+.bracket-label { text-align: left; letter-spacing: .05em; }
+
+/* ─── AIDA FUNNEL ────────────────────────────────── */
+.aida-wrap  { display: flex; gap: 16px; align-items: center; margin: 16px 0; }
+.aida-funnel { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+.aida-level {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; color: white; font-size: 12px; font-weight: 700;
+  padding: 11px 8px; text-align: center; transition: transform .2s;
+}
+.aida-level:hover { transform: scaleX(1.02); }
+.aida-A1 { width: 100%; background: #d97706; }
+.aida-I  { width:  80%; background: #dc2626; }
+.aida-D  { width:  60%; background: #16a34a; }
+.aida-A2 { width:  42%; background: #2563eb; }
+.aida-labels { display: flex; flex-direction: column; gap: 3px; justify-content: center; }
+.aida-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--muted); letter-spacing: .06em; text-transform: uppercase;
+  padding: 11px 0;
+}
+
+/* ─── DIGITAL AD FUNNEL ──────────────────────────── */
+.ad-funnel { display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 16px 0; }
+.ad-level {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; color: white; font-size: 11.5px; font-weight: 600;
+  padding: 10px 8px; text-align: center;
+}
+.ad-l1 { width: 100%; background: #0f172a; }
+.ad-l2 { width: 88%;  background: #4ade80; color: #14532d; }
+.ad-l3 { width: 76%;  background: #3b82f6; }
+.ad-l4 { width: 62%;  background: #1d4ed8; }
+.ad-l5 { width: 48%;  background: #93c5fd; color: #1e3a5f; }
+.ad-l6 { width: 34%;  background: #0f172a; }
+
+/* ─── IN/OUT COMPARE ─────────────────────────────── */
+.inout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.inout-card { border-radius: 10px; padding: 14px 16px; border: 2px solid; }
+.inout-in  { background: rgba(13,148,136,.07); border-color: rgba(13,148,136,.3); }
+.inout-out { background: rgba(225,29,72,.06); border-color: rgba(225,29,72,.2); }
+.inout-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  display: inline-block; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px;
+}
+.inout-in  .inout-badge { background: rgba(13,148,136,.15); color: var(--teal); }
+.inout-out .inout-badge { background: rgba(225,29,72,.12);  color: var(--rose); }
+.inout-card h5 {
+  font-family: 'DM Serif Display', serif; font-size: 13px;
+  color: var(--text); margin-bottom: 4px;
+}
+.inout-card p { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* ─── MARKET FORMULA ─────────────────────────────── */
+.market-fraction {
+  display: flex; flex-direction: column; align-items: center;
+  margin: 18px auto; max-width: 420px;
+}
+.mf-num, .mf-den {
+  font-family: 'DM Serif Display', serif; font-size: 17px;
+  color: var(--accent); text-align: center; padding: 8px 0; line-height: 1.3;
+}
+.mf-line { width: 100%; height: 2px; background: var(--accent); border-radius: 1px; }
+.mf-caption {
+  font-size: 13px; color: var(--muted); text-align: center; margin-top: 14px;
+  font-style: italic;
+}
+
+/* ─── WHEEL GRID ─────────────────────────────────── */
+.wheel-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0;
+}
+.wheel-item {
+  background: var(--surface); border: 1px solid var(--border-light);
+  border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #3730a3;
+  display: flex; align-items: center; gap: 8px;
+}
+.wheel-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  #main { margin-left: 0; padding: 28px 20px 60px; }
+  .inout-grid, .quad-grid, .wheel-grid, .pyramid-wrap { grid-template-columns: 1fr; }
+}
+
+/* ─── TAB BAR ─────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+  margin-bottom: 36px;
+}
+.tab-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  margin-bottom: -2px;
+  position: relative;
+}
+.tab-btn:hover { background: var(--accent-light); color: var(--accent); }
+.tab-btn.active {
+  background: var(--card);
+  color: var(--accent);
+  border-color: var(--border);
+  border-bottom-color: var(--card);
+  font-weight: 700;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ─── FORMULA BLOCK ─────────────────────────────── */
+.formula-box {
+  background: #1e1b4b;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 16px 0;
+  font-family: 'JetBrains Mono', monospace;
+  color: #e0e7ff;
+  line-height: 2.1;
+  font-size: 13.5px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(124,58,237,.3);
+}
+.formula-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);
+}
+.formula-title {
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(167,139,250,.2);
+  padding-bottom: 8px;
+}
+.formula-var { color: #fbbf24; }
+.formula-coef { color: #34d399; }
+.formula-op { color: #f472b6; }
+.formula-subscript { font-size: 10px; vertical-align: sub; color: #a78bfa; }
+.formula-error { color: #f87171; }
+
+/* ─── CONCAVE CHART ─────────────────────────────── */
+.concave-chart {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 14px 0;
+}
+.concave-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 120px;
+  padding: 0 8px;
+}
+.cbar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.cbar {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--accent-mid), var(--lavender));
+  transition: height .3s;
+}
+.cbar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 6px;
+  text-align: center;
+}
+.cbar-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+/* ─── DECISION TREE ─────────────────────────────── */
+.dtree {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 14px 0;
+}
+.dtree-node {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  position: relative;
+  margin-bottom: 0;
+}
+.dtree-question {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.dtree-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.dtree-branch {
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.dtree-condition {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.dtree-result {
+  font-family: 'DM Serif Display', serif;
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.dtree-desc { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+/* ─── PRICE PREMIUM TABLE ─────────────────────── */
+.premium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0;
+}
+.premium-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  gap: 8px;
+}
+.premium-phrase {
+  font-size: 13px;
+  color: var(--text);
+  font-style: italic;
+}
+.premium-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.premium-pos { color: #059669; }
+.premium-neg { color: #dc2626; }
+
+/* ─── QUIZ ────────────────────────────────────── */
+.quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.quiz-q {
+  padding: 16px 20px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  user-select: none;
+}
+.quiz-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--lavender);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.quiz-a {
+  display: none;
+  padding: 0 20px 16px 44px;
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.7;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+}
+.quiz-card.open .quiz-a { display: block; }
+.quiz-chevron { margin-left: auto; color: var(--muted); font-size: 11px; flex-shrink: 0; margin-top: 4px; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ──────────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="course-tag">DMA · NYU Stern</div>
+    <h2>Digital Marketing<br>Analytics</h2>
+    <div class="date-tag">Day 3 · Wed, 06 May 2026</div>
+  </div>
+
+  <div class="sidebar-section-label">Module 1 — Lecture</div>
+  <nav class="sidebar-nav">
+    <a href="#s1"><span class="nav-num">01</span>AI Economy Value Chain</a>
+    <a href="#s2"><span class="nav-num">02</span>Big Tech Developments</a>
+    <a href="#s3"><span class="nav-num">03</span>Data Advantage & Synthetic Data</a>
+    <a href="#s4"><span class="nav-num">04</span>Google Antitrust Case</a>
+    <a href="#s5"><span class="nav-num">05</span>Marketing Mix Models</a>
+    <a href="#s6"><span class="nav-num">06</span>Accenture Interactive</a>
+    <a href="#s7"><span class="nav-num">07</span>Ad Workflow & Channel Selection</a>
+    <a href="#s8"><span class="nav-num">08</span>SEM Technical Framework</a>
+    <a href="#s9"><span class="nav-num">09</span>Air France Case Study</a>
+  </nav>
+
+  <div class="sidebar-section-label" style="margin-top:12px;">Concepts Reviewed</div>
+  <nav class="sidebar-nav">
+    <a href="#c1"><span class="nav-num">—</span>SEM vs SEO</a>
+    <a href="#c2"><span class="nav-num">—</span>CPC vs CPM</a>
+    <a href="#c3"><span class="nav-num">—</span>How Ad Auctions Work</a>
+  </nav>
+
+  <div class="sidebar-section-label" style="margin-top:12px;">Slides — Session 1A</div>
+  <nav class="sidebar-nav">
+    <a href="#d1"><span class="nav-num">—</span>Course Overview</a>
+    <a href="#d2"><span class="nav-num">—</span>AI Stack Diagrams</a>
+    <a href="#d3"><span class="nav-num">—</span>AI Regulation Predictions</a>
+    <a href="#d4"><span class="nav-num">—</span>Antitrust Context</a>
+    <a href="#d5"><span class="nav-num">—</span>AIDA Purchase Funnel</a>
+    <a href="#d6"><span class="nav-num">—</span>Digital Ad Funnel 2010s</a>
+    <a href="#d7"><span class="nav-num">—</span>DOJ IN/OUT Examples</a>
+    <a href="#d8"><span class="nav-num">—</span>Market Definition Formula</a>
+  </nav>
+
+  <div class="sidebar-section-label" style="margin-top:12px;">Slides — Session 1B</div>
+  <nav class="sidebar-nav">
+    <a href="#e1"><span class="nav-num">—</span>Display Ad Ecosystem Evolution</a>
+    <a href="#e2"><span class="nav-num">—</span>Human vs Machine Ad Buying</a>
+    <a href="#e3"><span class="nav-num">—</span>Programmatic / RTB Flow</a>
+    <a href="#e4"><span class="nav-num">—</span>Display → Search Halo Effect</a>
+    <a href="#e5"><span class="nav-num">—</span>Yahoo! Experiment & Results</a>
+  </nav>
+
+  <div class="sidebar-section-label" style="margin-top:12px;">PM Voice Notes</div>
+  <nav class="sidebar-nav">
+    <a href="#f1"><span class="nav-num">—</span>Attribution Models</a>
+    <a href="#f2"><span class="nav-num">—</span>MMM Extensions</a>
+    <a href="#f3"><span class="nav-num">—</span>Display Commission Stack</a>
+    <a href="#f4"><span class="nav-num">—</span>Behavioral Targeting Types</a>
+    <a href="#f5"><span class="nav-num">—</span>CTR Regression Model</a>
+    <a href="#f6"><span class="nav-num">—</span>Antitrust Market Shares</a>
+  </nav>
+</nav>
+
+<!-- ─── MAIN ─────────────────────────────────────── -->
+<main id="main">
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn" onclick="switchTab('day3')" id="btn-day3">Day 3 · May 6</button>
+    <button class="tab-btn active" onclick="switchTab('day4')" id="btn-day4">Day 4 · May 7</button>
+    <button class="tab-btn" onclick="switchTab('quiz')" id="btn-quiz">Quiz Prep</button>
+  </div>
+
+  <!-- ══════════ TAB: DAY 3 ══════════ -->
+  <div class="tab-panel" id="tab-day3">
+
+  <header class="page-header">
+    <div class="course-pill">Digital Marketing Analytics · Module 1</div>
+    <h1>Day 3 In-Person Notes</h1>
+    <p class="subtitle">AI economy, antitrust, attribution, MMM, display advertising, SEM, and the Air France case</p>
+    <div class="meta-row">
+      <div class="meta-chip"><span>📅</span> Wed, 06 May 2026</div>
+      <div class="meta-chip"><span>🏫</span> NYU Stern MSBAI</div>
+      <div class="meta-chip"><span>✅</span> Full day captured</div>
+    </div>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress-container">
+    <div class="progress-label">
+      <span>Day 3 Progress</span>
+      <span><strong>100%</strong> — Full day captured</span>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" style="width:100%; animation: none;"></div>
+    </div>
+  </div>
+
+  <!-- ── GROUP 1: ECONOMY & STRATEGY ─────────────── -->
+  <div class="topic-group">
+    <div class="group-label">AI Economy & Big Tech Strategy</div>
+
+    <!-- S1 -->
+    <div class="section-card open" id="s1">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">AI Economy Value Chain & Vertical Integration</div>
+          <div class="card-sub">Six-layer stack · Regulatory concerns · TSMC concentration risk</div>
+        </div>
+        <span class="badge badge-key">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>The Six-Layer AI Economy Stack</h4>
+          <ol class="stack-list">
+            <li><span class="stack-num">06</span> <strong>End Consumer Layer</strong> — individuals, apps, interfaces</li>
+            <li><span class="stack-num">05</span> <strong>AI Applications & Software</strong> — products built on top of models</li>
+            <li><span class="stack-num">04</span> <strong>Foundational AI Models (LLMs)</strong> — GPT, Gemini, LLaMA, Claude</li>
+            <li><span class="stack-num">03</span> <strong>Cloud Computing Infrastructure</strong> — AWS, Azure, GCP</li>
+            <li><span class="stack-num">02</span> <strong>Chips / Semiconductors</strong> — enabling data center compute</li>
+            <li><span class="stack-num">01</span> <strong>Energy Infrastructure</strong> — powering everything; highly energy-intensive</li>
+          </ol>
+
+          <div class="callout callout-purple">
+            <strong>Key framing</strong>
+            Most consumers operate in layers 4–5. Enterprises navigating AI must think across all six layers simultaneously.
+          </div>
+
+          <h4>Who Controls What — Vertical Integration Map</h4>
+          <table class="data-table">
+            <thead>
+              <tr><th>Company</th><th>Applications</th><th>Models</th><th>Cloud</th><th>Custom Silicon</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Google</td><td>✓</td><td>✓ (Gemini)</td><td>✓ GCP</td><td>✓ TPUs / CPUs</td></tr>
+              <tr><td>Microsoft</td><td>✓</td><td>✓ (OpenAI)</td><td>✓ Azure</td><td>✓ Custom silicon</td></tr>
+              <tr><td>Amazon</td><td>✓</td><td>✓ (Bedrock)</td><td>✓ AWS</td><td>✓ Inferentia chips</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Chip Concentration Risk</h4>
+          <ul>
+            <li><strong>60% of global chips</strong> fabricated by a single company: TSMC in Taiwan</li>
+            <li>Big tech investing in in-house fabrication to reduce dependency on Nvidia / AMD</li>
+            <li>Geopolitical risk embedded in the entire AI supply chain</li>
+          </ul>
+
+          <h4>Vertical Integration Trade-offs & Regulatory Concerns</h4>
+          <ul>
+            <li><strong>Tying practices:</strong> e.g., Wells Fargo reportedly pressured to use Microsoft's entire stack</li>
+            <li>Increased bargaining power of upstream players as integration deepens</li>
+            <li>Higher end-consumer prices <em>vs.</em> improved product quality — regulator dilemma</li>
+            <li>Regulators struggling to balance innovation benefits against competition concerns</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 -->
+    <div class="section-card" id="s2">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📊</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Big Tech Strategic Developments</div>
+          <div class="card-sub">Meta · Google · Amazon · Microsoft · X · Apple</div>
+        </div>
+        <span class="badge badge-tech">Tech</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Meta</h4>
+          <ul>
+            <li>Won major FTC antitrust case</li>
+            <li>Pivoted away from failed metaverse (Reality Labs discontinued)</li>
+            <li>Deep investment in open-weight <strong>LLaMA models</strong> — contrasting ChatGPT/Gemini's closed approach</li>
+            <li>Cambridge Analytica data leak continues to weigh on brand reputation</li>
+          </ul>
+
+          <h4>Google</h4>
+          <ul>
+            <li>Best revenue quarter on record — insane quarter-over-quarter growth</li>
+            <li>Gemini AI platform achieving widespread adoption</li>
+            <li>Custom silicon (TPUs) now competing directly with Nvidia</li>
+            <li>Agentic AI becoming a focus across all product lines</li>
+          </ul>
+
+          <h4>Amazon</h4>
+          <ul>
+            <li>Became <strong>3rd largest advertising company in the US</strong> in fewer than 10 years</li>
+            <li>Dethroned Verizon and AT&amp;T from their #3/#4 positions</li>
+            <li>Ad business started only 8.5 years ago — historically unprecedented growth rate</li>
+            <li>Strength beyond retail: significant AWS and enterprise revenue growth</li>
+          </ul>
+
+          <h4>Microsoft</h4>
+          <ul>
+            <li><strong>OpenAI partnership no longer exclusive</strong> as of last week</li>
+            <li>Copilot can now run on multiple AI engines — not locked to ChatGPT</li>
+            <li>Strong enterprise AI integration and adoption continues</li>
+          </ul>
+
+          <h4>X / Twitter</h4>
+          <ul>
+            <li>Significant investment in <strong>Grok AI</strong> (competitive with ChatGPT/Gemini)</li>
+            <li>Advertising recovery fragile — brand safety concerns persist</li>
+            <li>User growth challenges undermining advertiser confidence</li>
+          </ul>
+
+          <h4>Apple</h4>
+          <ul>
+            <li><strong>2021 IDFA change:</strong> switched mobile data sharing default from opt-in → opt-out</li>
+            <li>Positioned publicly as privacy-first, but Apple retained its own access to user data</li>
+            <li>Grew ad business from $0 → <strong>$20B in just 3 years</strong> (unprecedented)</li>
+            <li>EU and US antitrust pressure over half-truth privacy claims</li>
+            <li>New investigation: Siri-ChatGPT integration potentially foreclosing competitors</li>
+          </ul>
+
+          <div class="callout callout-amber">
+            <strong>Pattern to notice</strong>
+            Every major platform is racing to own the ad stack top-to-bottom. Privacy pivots (Apple IDFA) often benefit the platform that makes the rule — at the expense of third-party advertisers.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── GROUP 2: DATA ────────────────────────────── -->
+  <div class="topic-group">
+    <div class="group-label">Data Strategy & Legal Battles</div>
+
+    <!-- S3 -->
+    <div class="section-card" id="s3">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🧬</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Data Advantage Evolution & Synthetic Data</div>
+          <div class="card-sub">Diminishing returns · Cold-start solutions · 15% monetization stat</div>
+        </div>
+        <span class="badge badge-key">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Traditional Data Moat — Challenged</h4>
+          <ul>
+            <li>Old assumption: <em>linear</em> relationship between data volume and competitive success</li>
+            <li>Reality: <strong>diminishing returns curve</strong> — flattens well before incumbents assumed</li>
+            <li>Modern AI techniques (transfer learning, RL) accelerate this flattening even earlier</li>
+          </ul>
+
+          <h4>Synthetic Data's Role</h4>
+          <ul>
+            <li>LLMs can generate high-quality synthetic datasets — solving cold-start problems for new entrants</li>
+            <li>Recommended cycle: <strong>synthetic data → product launch → real customer data → model refinement</strong></li>
+            <li>Do NOT rely solely on synthetic data for the entire business process</li>
+            <li>Careful attention to training order and which synthetic data types you use</li>
+          </ul>
+
+          <h4>Market-Level Impact</h4>
+          <ul>
+            <li><strong>84% increase</strong> in app developer submissions to app stores (last quarter)</li>
+            <li><strong>7% increase</strong> in new firm entry across industries</li>
+            <li>Barriers to entry falling rapidly — incumbents' data moats are less defensible</li>
+          </ul>
+
+          <div class="callout callout-teal">
+            <strong>Stat to remember</strong>
+            Only ~15% of available data is currently being monetized — up from 5% a decade ago. Massive upside still untapped.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4 -->
+    <div class="section-card" id="s4">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Google Antitrust Case: Market Definition Battle</div>
+          <div class="card-sub">Sherman Act · Market share math · Denominator manipulation</div>
+        </div>
+        <span class="badge badge-legal">Legal</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <div class="callout callout-rose">
+            <strong>Core legal question</strong>
+            Is Google a monopoly in "open web display" advertising? The entire case hinges on how you define the market — specifically the denominator.
+          </div>
+
+          <h4>Government's Narrowing Strategy</h4>
+          <ul>
+            <li>Excluded mobile app ads — even when same creative runs on desktop websites</li>
+            <li>Separated native ads from banner ads (same advertiser, different format = "different market")</li>
+            <li>Removed social media ads from news website comparisons</li>
+            <li>Excluded video ads on streaming platforms vs. news sites</li>
+          </ul>
+
+          <h4>Real-World Exclusion Examples</h4>
+          <table class="data-table">
+            <thead><tr><th>Ad / Advertiser</th><th>Included ("In")</th><th>Excluded ("Out")</th></tr></thead>
+            <tbody>
+              <tr><td>Fisher Investments</td><td>Website banner version</td><td>Mobile app version</td></tr>
+              <tr><td>Shoe brand</td><td>Banner format</td><td>Native format</td></tr>
+              <tr><td>High-speed internet</td><td>Daily Mail placement</td><td>Instagram placement</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Defense Strategy</h4>
+          <ul>
+            <li>Prove <strong>advertiser budget substitutability</strong> — budgets move fluidly across formats</li>
+            <li>Marketing Mix Models show constant reallocation across channels</li>
+            <li>Average advertiser uses <strong>9 competing channels</strong> simultaneously — not monopolistic behavior</li>
+            <li>Competition spans open web, social, retail media, streaming, gaming</li>
+          </ul>
+
+          <div class="formula">Legal threshold: Sherman Act requires 70%+ market share for monopoly claim
+→ Actual Google share (broadly defined): ~28% — far below threshold</div>
+
+          <div class="callout callout-purple">
+            <strong>Takeaway for marketers</strong>
+            Market definition is everything. The same advertising dollar substituting between Facebook and Google proves competition — exactly the defense Google is using.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── GROUP 3: MARKETING SCIENCE ──────────────── -->
+  <div class="topic-group">
+    <div class="group-label">Marketing Science & Industry Structure</div>
+
+    <!-- S5 -->
+    <div class="section-card" id="s5">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📈</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Marketing Mix Models & Budget Substitutability</div>
+          <div class="card-sub">Adobe example · Cross-channel competition · Expanded ecosystem</div>
+        </div>
+        <span class="badge badge-model">Model</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Core Concept</h4>
+          <p>Advertisers constantly shift budgets between channels based on ROI. This fluidity is evidence of competition — not monopoly. Marketing Mix Models (MMMs) quantify this substitution.</p>
+
+          <h4>Adobe Quarterly Reallocation Example</h4>
+          <table class="data-table">
+            <thead><tr><th>Channel</th><th>Q1 Spend Index</th><th>Q2 Shift</th></tr></thead>
+            <tbody>
+              <tr><td>Facebook</td><td>3.9</td><td>↓ Reduced</td></tr>
+              <tr><td>Instagram</td><td>3.4</td><td>↓ Reduced</td></tr>
+              <tr><td>Google</td><td>Varies</td><td>↑ Increased</td></tr>
+              <tr><td>Amazon</td><td>Varies</td><td>↑ Increased</td></tr>
+              <tr><td>TikTok</td><td>Varies</td><td>Varies</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:13px; color: var(--muted);">Same goals, same target market, different channel allocation quarter to quarter.</p>
+
+          <h4>Expanded Advertising Ecosystem</h4>
+          <ul>
+            <li><strong>Telecom:</strong> Verizon, AT&amp;T — monetizing precise location data</li>
+            <li><strong>News media:</strong> Washington Post, WSJ, NYT — own ad tech infrastructure</li>
+            <li><strong>Retail media:</strong> Walmart, Target following Amazon's model</li>
+            <li><strong>Streaming:</strong> Netflix pivoting to advertising model</li>
+            <li><strong>Mobile apps:</strong> Uber, Instacart, DoorDash operating as ad networks</li>
+          </ul>
+
+          <div class="callout callout-teal">
+            <strong>Career note</strong>
+            Digital marketing expertise is now needed across every industry — not just tech. This is where analytical backgrounds like ours have an edge.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6 -->
+    <div class="section-card" id="s6">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🏢</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Accenture Interactive's Agency Disruption</div>
+          <div class="card-sub">Brian Whipple · Daimler/Mercedes test · Consulting vs creative agencies</div>
+        </div>
+        <span class="badge badge-case">Case</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Traditional Incumbents Disrupted</h4>
+          <p>The "Big 4" media agencies: <strong>WPP, Publicis, Omnicom, IPG</strong> — dominant for decades through creative and relationship-driven work.</p>
+
+          <h4>Brian Whipple's Disruption Playbook</h4>
+          <ul>
+            <li>Leveraged Accenture's <em>existing</em> IT consulting relationships with major brands</li>
+            <li>Approached auto company CEOs after completing IT projects: <em>"Our consultants already know your company, culture, and processes intimately"</em></li>
+            <li>Started with a <strong>$25M test budget from Daimler/Mercedes-Benz</strong></li>
+            <li>Rebuilt campaigns from scratch using quantitative and statistical methodologies</li>
+          </ul>
+
+          <h4>Competitive Advantage Over Legacy Agencies</h4>
+          <ul>
+            <li>Data-driven decision-making vs. gut-feel creative approaches</li>
+            <li>Statistical models and machine learning integrated into campaign management</li>
+            <li>Analytical talent — same profile as MSBAI program participants</li>
+          </ul>
+
+          <h4>Results</h4>
+          <ul>
+            <li>Delivered unprecedented ROI for initial clients</li>
+            <li>Word spread rapidly across automotive and then other industries</li>
+            <li>Successfully dethroned legacy agencies through superior measurable performance</li>
+            <li>Deloitte Digital also entered the space with moderate success</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Why this matters for us</strong>
+            Tech consulting firms outperforming traditional agencies using analytical backgrounds. This is the exact value proposition of the MSBAI skillset in marketing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── GROUP 4: OPERATIONS ──────────────────────── -->
+  <div class="topic-group">
+    <div class="group-label">Advertising Operations & SEM</div>
+
+    <!-- S7 -->
+    <div class="section-card" id="s7">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎯</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Digital Advertising Workflow & Channel Selection</div>
+          <div class="card-sub">Budget setting · Platform selection · Telecom data advantage</div>
+        </div>
+        <span class="badge badge-key">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Brand Budget & Decision Workflow</h4>
+          <ol>
+            <li>Annual budget setting (CMO + CFO collaboration, data-driven adjustments)</li>
+            <li>In-house vs. external agency partnership decision</li>
+            <li>Campaign goals, target audience, and messaging definition</li>
+            <li>Platform selection based on statistical ROI analysis</li>
+            <li>Pricing evaluation and inventory assessment</li>
+          </ol>
+
+          <h4>Channel Selection Criteria</h4>
+          <ul>
+            <li>ROI via <strong>Marketing Mix Models (MMM)</strong></li>
+            <li><strong>Multi-Touch Attribution (MTA)</strong> model analysis</li>
+            <li>Pricing competitiveness across platforms</li>
+            <li>Audience inventory size and quality</li>
+            <li>Unique data advantages (e.g., telecom location data)</li>
+          </ul>
+
+          <h4>Telecom Carrier Data Advantage</h4>
+          <ul>
+            <li>Verizon: knows user location within <strong>1 foot with 97% accuracy</strong></li>
+            <li>AT&amp;T: similar precision location tracking</li>
+            <li>Monetization model pioneered by South Korean carriers (SK Telecom, KT) in <strong>2009</strong> — 15+ year track record</li>
+          </ul>
+
+          <h4>Platform Scale Reference Points</h4>
+          <table class="data-table">
+            <thead><tr><th>Platform</th><th>Global Users</th><th>US Reach</th></tr></thead>
+            <tbody>
+              <tr><td>Google</td><td>6B</td><td>270M / 330M population</td></tr>
+              <tr><td>Verizon</td><td>N/A</td><td>125M subscribers</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S8 -->
+    <div class="section-card" id="s8">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔍</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Search Engine Marketing Technical Framework</div>
+          <div class="card-sub">Campaign hierarchy · Ad rank formula · Quality Score · Key metrics</div>
+        </div>
+        <span class="badge badge-model">Model</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Campaign Hierarchy (Top → Bottom)</h4>
+          <ol class="stack-list">
+            <li><span class="stack-num">1</span><strong>Campaign level</strong> — e.g., Nike shoe campaign</li>
+            <li><span class="stack-num">2</span><strong>Ad Groups</strong> — running shoes / basketball shoes / accessories</li>
+            <li><span class="stack-num">3</span><strong>Keywords</strong> — Air Jordans, running shoes, Nike Air</li>
+            <li><span class="stack-num">4</span><strong>Ad Copy</strong> — specific creative and landing page</li>
+          </ol>
+
+          <h4>Ad Ranking Algorithm</h4>
+          <div class="formula">Final Ad Rank = Bid Price × Quality Score</div>
+
+          <h4>Quality Score — What It Measures</h4>
+          <ul>
+            <li>Phone number inclusion in the ad</li>
+            <li>Star ratings display</li>
+            <li>Hyperlinks for easy navigation</li>
+            <li>Promotional offers and pricing visibility</li>
+          </ul>
+
+          <div class="callout callout-amber">
+            <strong>Investment decision insight</strong>
+            Most companies can't afford to win on both bid price AND Quality Score simultaneously. Quality Score improvements are often more cost-effective than entering bid wars.
+          </div>
+
+          <h4>Key Performance Metrics</h4>
+          <table class="data-table">
+            <thead><tr><th>Metric</th><th>Formula</th><th>What It Signals</th></tr></thead>
+            <tbody>
+              <tr><td>CTR</td><td>Clicks ÷ Impressions</td><td>Ad creative quality / relevance</td></tr>
+              <tr><td>Conversion Rate</td><td>Transactions ÷ Clicks</td><td>Landing page / offer quality</td></tr>
+              <tr><td>CPC</td><td>Cost ÷ Clicks</td><td>Bidding efficiency</td></tr>
+              <tr><td>CPM</td><td>Cost per 1,000 impressions</td><td>Brand reach cost</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Paid + Organic Synergy</h4>
+          <ul>
+            <li>Hockey Monkey appearing in <em>both</em> paid and organic results simultaneously</li>
+            <li><strong>4–6% profitability increase</strong> from dual presence</li>
+            <li>Omnichannel reinforcement: consumer trust rises with multiple exposures</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── GROUP 5: CASE STUDY ──────────────────────── -->
+  <div class="topic-group">
+    <div class="group-label">Case Study</div>
+
+    <!-- S9 -->
+    <div class="section-card" id="s9">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">✈️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Air France Multi-Platform Case Study</div>
+          <div class="card-sub">7 search engines · ROA · Booking probability · Four-quadrant framework</div>
+        </div>
+        <span class="badge badge-case">Case</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Strategic Context</h4>
+          <p>International airline diversifying ad spend across 7 search engines. No single platform excels across all metrics — classic yin-yang trade-offs.</p>
+
+          <h4>Core Metrics Framework</h4>
+          <div class="formula">Net Revenue = Transaction Revenue − Ad Campaign Cost</div>
+          <div class="formula">ROA (Return on Ad Spend) = Net Revenue ÷ Cost</div>
+          <div class="formula">Booking Probability = CTR × Conversion Rate</div>
+
+          <h4>Platform Trade-offs Observed</h4>
+          <table class="data-table">
+            <thead><tr><th>Platform</th><th>Strength</th><th>Weakness</th></tr></thead>
+            <tbody>
+              <tr><td>Google US</td><td>Highest net revenue ($1.4M)</td><td>Highest cost — 2× competitors</td></tr>
+              <tr><td>MSN</td><td>Highest booking probability</td><td>Only ~10% of Google's volume</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Four-Quadrant Decision Framework</h4>
+          <div class="quad-grid">
+            <div class="quad-cell bad">
+              <span class="qlabel">Quadrant 1 — Cut</span>
+              <p>Low booking probability + High cost → Reduce or eliminate funding</p>
+            </div>
+            <div class="quad-cell good">
+              <span class="qlabel">Quadrant 2 — Scale</span>
+              <p>High booking probability + Low cost → Increase funding immediately</p>
+            </div>
+            <div class="quad-cell mid">
+              <span class="qlabel">Quadrant 3 — Optimize</span>
+              <p>High booking probability + High cost → Tactical optimization needed</p>
+            </div>
+            <div class="quad-cell low">
+              <span class="qlabel">Quadrant 4 — Improve</span>
+              <p>Low booking probability + Low cost → Fix performance before scaling</p>
+            </div>
+          </div>
+
+          <h4>Diagnostic Logic</h4>
+          <ul>
+            <li><strong>Low CTR</strong> → ad copy problem (creative, phone numbers, star ratings)</li>
+            <li><strong>Low conversion rate</strong> → landing page issue (website experience)</li>
+            <li>Bubble chart visualization: booking probability (x-axis) vs. cost (y-axis); bubble size = budget</li>
+          </ul>
+
+          <h4>Group Exercise Instructions</h4>
+          <ul>
+            <li>Groups of 5–6 formed during break</li>
+            <li>Each group selects one engine: MSN, Google Global, or Overture</li>
+            <li>45-minute deep-dive analysis using provided spreadsheet data</li>
+            <li>Deliverable: data-driven recommendations uploaded to Brightspace by one member</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Analytical mindset</strong>
+            Disentangle composite metrics before diagnosing. Low booking probability could be a CTR problem (ad) or a conversion problem (site) — they require completely different fixes.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── CONVERSATION SUPPLEMENT ─────────────────── -->
+  <div class="supplement-banner">
+    <div class="sb-icon">💬</div>
+    <div class="sb-text">
+      <strong>Concepts Reviewed in Today's Session</strong>
+      Questions and answers from the pre-class conversation — foundational definitions relevant to Day 3 content.
+    </div>
+  </div>
+
+  <div class="topic-group">
+    <div class="group-label">Conversation — Concept Review</div>
+
+    <!-- C1 -->
+    <div class="section-card" id="c1">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔁</div>
+        <div class="card-title-wrap">
+          <div class="card-title">SEM vs SEO</div>
+          <div class="card-sub">Paid vs organic · Hidden costs · Why they're complements not substitutes</div>
+        </div>
+        <span class="badge badge-key">Review</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <table class="data-table">
+            <thead><tr><th></th><th>SEO</th><th>SEM</th></tr></thead>
+            <tbody>
+              <tr><td>Cost model</td><td>Time / effort upfront</td><td>Pay per click</td></tr>
+              <tr><td>Speed to results</td><td>6–12 months</td><td>Immediate</td></tr>
+              <tr><td>Control</td><td>Low (algorithm-dependent)</td><td>High (bid, targeting, copy)</td></tr>
+              <tr><td>Longevity</td><td>Durable once earned</td><td>Stops with budget</td></tr>
+              <tr><td>Best for</td><td>Long-term brand authority</td><td>Campaigns, launches, testing</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Why "Free Traffic" Is a Myth</h4>
+          <ul>
+            <li>Content creation: writers, designers, time</li>
+            <li>Technical SEO: developers, audits</li>
+            <li>Link building: outreach, PR, sometimes paid placements</li>
+            <li>Tools: Ahrefs, SEMrush ($100–$500/month)</li>
+            <li>Time to results: 6–12 months minimum — and Google can wipe rankings overnight</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Right mental model</strong>
+            Use SEM to get traffic and test what converts now. Use SEO to build durable organic presence over time. Use SEM data to inform your SEO keyword strategy.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C2 -->
+    <div class="section-card" id="c2">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">💰</div>
+        <div class="card-title-wrap">
+          <div class="card-title">CPC vs CPM</div>
+          <div class="card-sub">Pay-per-click vs pay-per-thousand-impressions · The conversion formula</div>
+        </div>
+        <span class="badge badge-key">Review</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <table class="data-table">
+            <thead><tr><th></th><th>CPC</th><th>CPM</th></tr></thead>
+            <tbody>
+              <tr><td>You pay for</td><td>Each click</td><td>Every 1,000 impressions</td></tr>
+              <tr><td>Best for</td><td>Direct response, conversions</td><td>Brand awareness, reach</td></tr>
+              <tr><td>Risk</td><td>Pay only when engaged</td><td>Pay even if ignored</td></tr>
+              <tr><td>Platform default</td><td>Google Search</td><td>Meta / Instagram feed</td></tr>
+            </tbody>
+          </table>
+
+          <div class="formula">CPM = CPC × CTR × 1,000
+Example: $2 CPC × 1% CTR × 1,000 = $20 effective CPM</div>
+
+          <ul>
+            <li><strong>CPC</strong> → use when you want measurable action (clicks → purchases)</li>
+            <li><strong>CPM</strong> → use when you want eyeballs (brand launch, retargeting)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- C3 -->
+    <div class="section-card" id="c3">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">⚡</div>
+        <div class="card-title-wrap">
+          <div class="card-title">How Ad Auctions Work</div>
+          <div class="card-sub">Real-time bidding · Second-price auction · Programmatic DSPs</div>
+        </div>
+        <span class="badge badge-key">Review</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Where Auctions Happen</h4>
+          <table class="data-table">
+            <thead><tr><th>Platform</th><th>Type</th><th>Auction Triggered By</th></tr></thead>
+            <tbody>
+              <tr><td>Google Ads</td><td>Search + Display</td><td>User typing a query</td></tr>
+              <tr><td>Meta Ads</td><td>Facebook/Instagram</td><td>User loading their feed</td></tr>
+              <tr><td>Amazon Ads</td><td>Product search</td><td>User searching on Amazon</td></tr>
+              <tr><td>Programmatic</td><td>Any website</td><td>User visiting a webpage</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Google Search Auction — Step by Step</h4>
+          <ol>
+            <li>User types a query → Google runs an instant auction among all bidders on that keyword</li>
+            <li>Advertisers set a max bid: <em>"I'll pay up to $3 per click for 'running shoes'"</em></li>
+            <li>Google calculates Ad Rank = Max Bid × Quality Score</li>
+            <li>Highest Ad Rank wins the top slot</li>
+            <li>Winner pays only slightly more than the next bidder's price — <strong>second-price auction</strong></li>
+          </ol>
+
+          <div class="callout callout-amber">
+            <strong>Key insight</strong>
+            You rarely pay your max bid. If you bid $3 but the next competitor's Ad Rank only justifies $1.50, you pay $1.51. This keeps bidding honest and prevents overbidding.
+          </div>
+
+          <h4>Programmatic Advertising</h4>
+          <p>The entire auction process — across millions of websites — runs in <strong>~100 milliseconds</strong> via Demand-Side Platforms (DSPs). Advertisers set rules; algorithms bid automatically on their behalf.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end group -->
+
+  <!-- ── FROM THE SLIDES ─────────────────────────── -->
+  <div class="supplement-banner" style="margin-top:36px;">
+    <div class="sb-icon">🖼️</div>
+    <div class="sb-text">
+      <strong>Session 1 Slide Diagrams & Additional Notes</strong>
+      Key visuals, frameworks, and context from Prof. Ghose's slides — reconstructed for study.
+    </div>
+  </div>
+
+  <div class="topic-group">
+    <div class="group-label">Slide Diagrams & Frameworks</div>
+
+    <!-- D1: Course Overview -->
+    <div class="section-card" id="d1">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎓</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Course Overview — What Do We Study?</div>
+          <div class="card-sub">8 topic domains · Constructs & Metrics · Econometric analysis</div>
+        </div>
+        <span class="badge badge-key">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <p>DMA uses <strong>statistical regressions and econometric analysis</strong> to study constructs and metrics across 8 domains:</p>
+          <div class="wheel-grid">
+            <div class="wheel-item"><div class="wheel-dot"></div>AI economy and digital landscape</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Audience behavior and ad effectiveness</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Search and display efficacy</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>MMM + Attribution</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Journey-Based Marketing</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Sentiment analysis and social listening</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Engagement in online communities</div>
+            <div class="wheel-item"><div class="wheel-dot"></div>Mobile analytics</div>
+          </div>
+          <div class="callout callout-purple">
+            <strong>Prof. Ghose's framing</strong>
+            Every topic is studied through the lens of Constructs (what we're measuring) and Metrics (how we measure it) — always grounded in data, not intuition.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D2: AI Stack Diagrams -->
+    <div class="section-card" id="d2">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📐</div>
+        <div class="card-title-wrap">
+          <div class="card-title">AI Economy Stack — Slide Diagrams</div>
+          <div class="card-sub">6-tier value creation · Enterprise vs Consumer view · Regulatory company map</div>
+        </div>
+        <span class="badge badge-tech">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Value Creation in the AI Economy (Tier 0–5)</h4>
+          <div class="tier-stack">
+            <div class="tier-block tier-5">
+              <div class="tier-num">Tier 5</div>
+              <div><div class="tier-label">Top Layer</div><div class="tier-name">AI-native Applications &amp; Services</div></div>
+            </div>
+            <div class="tier-block tier-4">
+              <div class="tier-num">Tier 4</div>
+              <div><div class="tier-label">Middleware</div><div class="tier-name">Software Infrastructure</div></div>
+            </div>
+            <div class="tier-block tier-3">
+              <div class="tier-num">Tier 3</div>
+              <div><div class="tier-label">Models</div><div class="tier-name">Foundation Model Companies</div></div>
+            </div>
+            <div class="tier-block tier-2">
+              <div class="tier-num">Tier 2</div>
+              <div><div class="tier-label">Compute</div><div class="tier-name">Data Centers</div></div>
+            </div>
+            <div class="tier-block tier-1">
+              <div class="tier-num">Tier 1</div>
+              <div><div class="tier-label">Hardware</div><div class="tier-name">Chips / Semiconductors</div></div>
+            </div>
+            <div class="tier-block tier-0">
+              <div class="tier-num">Tier 0</div>
+              <div><div class="tier-label">Foundation</div><div class="tier-name">Energy Infrastructure</div></div>
+            </div>
+          </div>
+
+          <h4>High-Level Technology Stack — Who Operates Where</h4>
+          <div class="pyramid-wrap">
+            <div class="pyramid">
+              <div class="pyramid-level p-l1">AI Applications</div>
+              <div class="pyramid-level p-l2">AI Models</div>
+              <div class="pyramid-level p-l3">Cloud Computing</div>
+              <div class="pyramid-level p-l4">Chips</div>
+            </div>
+            <div class="pyramid-bracket">
+              <div class="bracket-label" style="color:var(--accent); font-weight:700;">← Consumers</div>
+              <div class="bracket-label" style="margin-top:4px;">(Apps + Models)</div>
+              <div class="bracket-label" style="margin-top:16px; color:var(--muted);">← Enterprises</div>
+              <div class="bracket-label">(All 4 layers)</div>
+            </div>
+          </div>
+
+          <h4>Who Controls What — The Regulatory Concern Map</h4>
+          <table class="data-table">
+            <thead><tr><th>Layer</th><th>Players</th></tr></thead>
+            <tbody>
+              <tr><td>AI Applications</td><td>Google, Meta, Microsoft, Amazon, Apple, Anthropic</td></tr>
+              <tr><td>AI Models</td><td>Google, Meta, OpenAI, Hugging Face, Microsoft, Amazon, Anthropic</td></tr>
+              <tr><td>Cloud Computing</td><td>Google, Amazon, Microsoft, Oracle</td></tr>
+              <tr><td>Chips</td><td>NVIDIA, AMD, Google, Amazon, Microsoft</td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout-rose">
+            <strong>Why this triggers regulators</strong>
+            The same firms appear across multiple layers. Google, Amazon, and Microsoft are in every row — that's vertical integration, and it's what makes antitrust cases so complex.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D3: AI Regulation -->
+    <div class="section-card" id="d3">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🏛️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">AI Regulation — Prof. Ghose's Predictions</div>
+          <div class="card-sub">Tying concerns · Impact on competition · Upstream exclusion</div>
+        </div>
+        <span class="badge badge-legal">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <h4>Tying</h4>
+          <ul>
+            <li>Tying across AI layers affects competition — e.g., being forced to buy the full Microsoft stack</li>
+            <li>Counter-argument: vertical integration also improves service quality and reduces prices</li>
+            <li>Regulator dilemma: hard to punish what also benefits consumers</li>
+          </ul>
+          <h4>Impact on Competition</h4>
+          <ul>
+            <li>Would control over the AI stack be leveraged to <strong>limit new entrants</strong>?</li>
+            <li>Could exclusive practices by upstream firms (chip/cloud layer) stifle competition downstream (app/model layer)?</li>
+          </ul>
+          <div class="callout callout-amber">
+            <strong>The core tension</strong>
+            Vertical integration = efficiency + innovation + better products. But it also = power concentration + entry barriers + potential for abuse. Regulators have to weigh both sides simultaneously.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D4: Antitrust Context -->
+    <div class="section-card" id="d4">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Antitrust Context — Three Audiences &amp; Litigation Process</div>
+          <div class="card-sub">DOJ · FTC · AGs · Prof. Ghose as Google's expert witness</div>
+        </div>
+        <span class="badge badge-legal">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <h4>Largest Antitrust Cases of the Last 25 Years</h4>
+          <ul>
+            <li>Antitrust lawsuits against Google, Meta &amp; Apple in the US and Europe</li>
+            <li>Core question: <strong>Is data a barrier to entry?</strong> (Meta, Google)</li>
+            <li>Everything starts with defining a <em>'market'</em> to assess monopoly</li>
+          </ul>
+
+          <h4>Three Audiences for Antitrust Cases</h4>
+          <div class="inout-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="inout-card inout-in">
+              <div class="inout-badge">Regulators</div>
+              <h5>DOJ &amp; FTC</h5>
+              <p>Federal government — bring the case</p>
+            </div>
+            <div class="inout-card" style="background:rgba(124,58,237,.06); border-color:rgba(124,58,237,.2);">
+              <div class="inout-badge" style="background:rgba(124,58,237,.12); color:var(--accent);">AGs</div>
+              <h5>State Attorneys General</h5>
+              <p>Texas, Arizona, California, New York, New Mexico</p>
+            </div>
+            <div class="inout-card" style="background:rgba(217,119,6,.06); border-color:rgba(217,119,6,.2);">
+              <div class="inout-badge" style="background:rgba(217,119,6,.12); color:var(--amber);">Politicians</div>
+              <h5>Senators</h5>
+              <p>Congressional pressure and hearings</p>
+            </div>
+          </div>
+
+          <h4>The Two Big Cases</h4>
+          <ul>
+            <li><strong>Google:</strong> Monopoly in "Open Web Display" advertising market</li>
+            <li><strong>Meta:</strong> Monopoly in "Personal Social Networking Services" market</li>
+          </ul>
+
+          <h4>How Litigation Expert Testimony Works</h4>
+          <ul>
+            <li><strong>Discovery:</strong> All datasets, internal documents, C-Suite interviews shared with experts on both sides</li>
+            <li>Both sides get access to the <strong>same</strong> underlying data and documents</li>
+            <li>Both sides release all raw data, processed data, and software code to the other side for replication/audit</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Your professor was Google's expert</strong>
+            DoJ experts: Robin Lee (Harvard), Gabriel Weintraub (Stanford), R. Ravi (CMU)<br>
+            Google experts: <strong>Mark Israel (CL), Anindya Ghose (NYU)</strong>, Paul Milgrom (Stanford)<br><br>
+            Prof. Ghose testified and submitted expert reports on Google's behalf — the MMM and substitutability arguments in class came directly from his expert work.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D5: AIDA Funnel -->
+    <div class="section-card" id="d5">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔺</div>
+        <div class="card-title-wrap">
+          <div class="card-title">The AIDA Purchase Funnel</div>
+          <div class="card-sub">Awareness → Interest → Desire → Action · Marketing primer</div>
+        </div>
+        <span class="badge badge-model">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <p>The classic framework for understanding how consumers move from first exposure to purchase. Used by the DOJ as their theoretical basis in the Google antitrust case.</p>
+
+          <div class="aida-wrap">
+            <div class="aida-funnel">
+              <div class="aida-level aida-A1">A — Awareness</div>
+              <div class="aida-level aida-I">I — Interest</div>
+              <div class="aida-level aida-D">D — Desire</div>
+              <div class="aida-level aida-A2">A — Action</div>
+            </div>
+          </div>
+
+          <table class="data-table" style="margin-top:14px;">
+            <thead><tr><th>Stage</th><th>Consumer State</th><th>Typical Ad Type</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Awareness</strong></td><td>Discovers the brand/product exists</td><td>YouTube, Display, TV</td></tr>
+              <tr><td><strong>Interest</strong></td><td>Wants to learn more</td><td>Social media, Content ads</td></tr>
+              <tr><td><strong>Desire</strong></td><td>Actively considering purchase</td><td>Search, Retargeting</td></tr>
+              <tr><td><strong>Action</strong></td><td>Purchases / converts</td><td>Brand search, Direct</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-rose">
+            <strong>DOJ's argument using AIDA</strong>
+            The DOJ claimed the purchase funnel is <em>linear and sequential</em> — meaning ad formats at each stage are non-substitutable (different markets). Google's defense: the funnel is fluid and budgets move freely across stages.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D6: Digital Ad Funnel 2010s -->
+    <div class="section-card" id="d6">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📱</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Digital Advertising of the 2010s Era</div>
+          <div class="card-sub">Channel-to-AIDA mapping · Funnel stack · Platform roles</div>
+        </div>
+        <span class="badge badge-model">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <p>How digital channels mapped to the AIDA funnel in the 2010s — the framework still shapes how advertisers allocate budgets today.</p>
+
+          <div style="display:flex; gap:20px; align-items:center; margin:16px 0;">
+            <div class="ad-funnel" style="flex:1;">
+              <div class="ad-level ad-l1">YouTube</div>
+              <div class="ad-level ad-l2">Display</div>
+              <div class="ad-level ad-l3">Facebook, Instagram &amp; Pinterest Prospecting</div>
+              <div class="ad-level ad-l4">Non-Brand Search &amp; Shopping</div>
+              <div class="ad-level ad-l5">Retargeting — All Channels</div>
+              <div class="ad-level ad-l6">Brand</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:2px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); font-weight:700; letter-spacing:.05em;">
+              <div style="padding:14px 0;">A</div>
+              <div style="padding:14px 0; margin-top:4px;">I</div>
+              <div style="padding:14px 0; margin-top:4px;">D</div>
+              <div style="padding:14px 0; margin-top:4px;">A</div>
+            </div>
+          </div>
+
+          <div class="callout callout-purple">
+            <strong>Key insight</strong>
+            YouTube and Display = top-of-funnel (Awareness). Brand search = bottom-of-funnel (Action). This is why YouTube ROAS looks "low" — it's building awareness, not driving immediate clicks. Different metrics apply at different funnel stages.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D7: IN/OUT Examples -->
+    <div class="section-card" id="d7">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔍</div>
+        <div class="card-title-wrap">
+          <div class="card-title">DOJ Market Definition — IN vs. OUT Examples</div>
+          <div class="card-sub">How the government narrowed the market · Same ad, different verdict</div>
+        </div>
+        <span class="badge badge-legal">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <p>The DOJ used real ad examples to argue different formats are <em>non-substitutable markets</em>. Google showed identical ads running in both "IN" and "OUT" placements to prove substitutability.</p>
+
+          <h4>Banner Ad — Same Ad, Different Ruling</h4>
+          <div class="inout-grid">
+            <div class="inout-card inout-in">
+              <div class="inout-badge">IN Market</div>
+              <h5>NYT Website (mobile browser)</h5>
+              <p>Fisher Investments banner ad on nytimes.com — counts as "open web display"</p>
+            </div>
+            <div class="inout-card inout-out">
+              <div class="inout-badge">OUT of Market</div>
+              <h5>NYT App</h5>
+              <p>Same Fisher Investments ad in the NYT mobile app — excluded as "in-app" (different market)</p>
+            </div>
+          </div>
+
+          <h4>Image vs. Native — Same Product, Different Ruling</h4>
+          <div class="inout-grid">
+            <div class="inout-card inout-in">
+              <div class="inout-badge">IN Market</div>
+              <h5>USA Today — Image/Banner Ad</h5>
+              <p>Shoe banner ad with product image and price ($149) on usatoday.com</p>
+            </div>
+            <div class="inout-card inout-out">
+              <div class="inout-badge">OUT of Market</div>
+              <h5>CNN — Native Ad</h5>
+              <p>Same shoe product as "Paid Content" blended into CNN's article grid — excluded as "native" format</p>
+            </div>
+          </div>
+
+          <h4>Same Banner, Different Platform</h4>
+          <div class="inout-grid">
+            <div class="inout-card inout-in">
+              <div class="inout-badge">IN Market</div>
+              <h5>Daily Mail Website</h5>
+              <p>Frontier Fiber 7GIG banner ad on dailymail.co.uk (open web)</p>
+            </div>
+            <div class="inout-card inout-out">
+              <div class="inout-badge">OUT of Market</div>
+              <h5>Instagram Feed</h5>
+              <p>Identical Frontier Fiber ad on Instagram — excluded as "social media" (different market)</p>
+            </div>
+          </div>
+
+          <h4>Same Video Ad, Different Website Context</h4>
+          <div class="inout-grid">
+            <div class="inout-card inout-in">
+              <div class="inout-badge">IN Market</div>
+              <h5>The Daily Meal Website</h5>
+              <p>NFL Thursday Night Football video ad on a food/lifestyle site</p>
+            </div>
+            <div class="inout-card inout-out">
+              <div class="inout-badge">OUT of Market</div>
+              <h5>NBC News Website</h5>
+              <p>Same NFL video ad on a news site — excluded because news context = "different market"</p>
+            </div>
+          </div>
+
+          <div class="callout callout-purple">
+            <strong>Google's counter</strong>
+            If the same advertiser runs the same creative on both the "IN" and "OUT" placement simultaneously — that's proof of substitutability, not two separate markets. Advertisers wouldn't do this if the formats didn't compete for the same budget.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D8: Market Definition Formula -->
+    <div class="section-card" id="d8">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📊</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Market Definition Formula — The Key to Antitrust</div>
+          <div class="card-sub">Denominator manipulation · Sherman Act threshold · Prof. Ghose's core argument</div>
+        </div>
+        <span class="badge badge-legal">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <div class="market-fraction">
+            <div class="mf-num">Market Share of Firm A</div>
+            <div class="mf-line"></div>
+            <div class="mf-den">Market Shares of Firm A + B + C + D + ···</div>
+            <div class="mf-caption">Fewer firms in the denominator → larger the market share of any given firm</div>
+          </div>
+
+          <div class="callout callout-rose">
+            <strong>The DOJ's strategy — shrink the denominator</strong>
+            By excluding mobile app ads, native ads, social media ads, and video ads on news sites, the DOJ reduced the pool of competitors in the denominator. Smaller denominator = higher Google market share = more likely to cross the 70% monopoly threshold.
+          </div>
+
+          <div class="callout callout-teal">
+            <strong>Google's defense — expand the denominator</strong>
+            Include all substitutable ad formats: open web, social, retail media, streaming, gaming. Wider definition = Google at ~28% market share = far below the Sherman Act's 70% monopoly threshold.
+          </div>
+
+          <div class="formula">Sherman Act monopoly threshold: 70%+ market share required
+→ DOJ's narrow market: Google ~70%+ (claim)
+→ Google's broad market: Google ~28% (actual)</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end slides group -->
+
+  <!-- ── SESSION 1B: OMNI-CHANNEL & PROGRAMMATIC ─── -->
+  <div class="supplement-banner" style="margin-top:24px;">
+    <div class="sb-icon">📡</div>
+    <div class="sb-text">
+      <strong>Session 1B — Omni-Channel Marketing Modeling & Analytics</strong>
+      Programmatic display advertising, RTB ecosystem, and the display→search halo effect study.
+    </div>
+  </div>
+
+  <div class="topic-group">
+    <div class="group-label">Programmatic Display Advertising</div>
+
+    <!-- E1: Ecosystem Evolution -->
+    <div class="section-card" id="e1">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🕰️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Display Ad Ecosystem Evolution</div>
+          <div class="card-sub">Direct deals (pre-1995) → Ad Networks (1995/6) → Programmatic (2007/8)</div>
+        </div>
+        <span class="badge badge-key">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Era 1 — Direct Deals (Pre-Digital)</h4>
+          <p>Publishers and advertisers negotiated one-on-one. A publisher's sales team would call an advertiser's media buyer, agree on a price, and manually place the ad. Simple but unscalable.</p>
+          <div style="display:flex; gap:8px; align-items:center; margin:12px 0; flex-wrap:wrap;">
+            <div style="background:var(--teal-soft); border:1px solid rgba(13,148,136,.3); border-radius:8px; padding:10px 16px; font-size:13px; color:var(--teal); font-weight:600;">Publisher #1</div>
+            <div style="font-size:20px; color:var(--muted);">→</div>
+            <div style="background:var(--accent-soft); border:1px solid rgba(124,58,237,.2); border-radius:8px; padding:10px 16px; font-size:12px; color:var(--muted);">Direct deal (manual)</div>
+            <div style="font-size:20px; color:var(--muted);">→</div>
+            <div style="background:var(--rose-soft); border:1px solid rgba(225,29,72,.2); border-radius:8px; padding:10px 16px; font-size:13px; color:var(--rose); font-weight:600;">Advertiser #1</div>
+          </div>
+          <p style="font-size:13px; color:var(--muted);">Problem: 3 publishers × 3 advertisers = 9 separate deals. Doesn't scale.</p>
+
+          <h4>Era 2 — Ad Networks (1995/6)</h4>
+          <p>Ad Networks emerged as intermediaries — aggregating publisher inventory and selling it to multiple advertisers in bulk. Publishers plugged in an Ad Server; advertisers used their own Ad Server on the other side.</p>
+          <table class="data-table">
+            <thead><tr><th>Side</th><th>Role</th><th>Tool</th></tr></thead>
+            <tbody>
+              <tr><td>Publisher</td><td>Has ad space to sell</td><td>Publisher's Ad Server</td></tr>
+              <tr><td>Ad Network</td><td>Intermediary — bundles inventory</td><td>Ad Network (indirect channel)</td></tr>
+              <tr><td>Advertiser</td><td>Wants to reach specific audiences</td><td>Advertiser's Ad Server</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:13px; color:var(--muted);">Also: some premium inventory still sold direct (publisher ↔ advertiser ad server, bypassing the network).</p>
+
+          <h4>Era 3 — Programmatic / Ad Exchange (2007/8)</h4>
+          <p>Real-time auctions replaced bulk deals. New players entered on both sides:</p>
+          <table class="data-table">
+            <thead><tr><th>New Player</th><th>Abbreviation</th><th>Who Uses It</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Supply-Side Platform</td><td><strong>SSP</strong></td><td>Publishers</td><td>Maximizes revenue by auctioning inventory in real-time</td></tr>
+              <tr><td>Ad Exchange</td><td>—</td><td>Both</td><td>The marketplace where SSP meets DSP — bids clear here</td></tr>
+              <tr><td>Demand-Side Platform</td><td><strong>DSP</strong></td><td>Advertisers</td><td>Lets advertisers bid algorithmically across many exchanges</td></tr>
+              <tr><td>Agency Trading Desk</td><td>ATD</td><td>Ad Agencies</td><td>Manages DSP buying on behalf of advertiser clients</td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout-purple">
+            <strong>The key shift</strong>
+            Pre-2007: you bought <em>placements</em> (e.g., "the homepage of NYT"). Post-2007: you buy <em>audiences</em> (e.g., "35-year-old males interested in cars, wherever they are on the web"). The ad finds the person, not the page.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- E2: Human vs Machine -->
+    <div class="section-card" id="e2">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🤖</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Human vs. Machine Ad Buying</div>
+          <div class="card-sub">Ad sales teams vs real-time bidding algorithms · Tiffany & Co. NYT example</div>
+        </div>
+        <span class="badge badge-key">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <p>Prof. Ghose used the NYT as the example publisher to contrast the two buying models side by side:</p>
+
+          <div class="inout-grid">
+            <div class="inout-card inout-in" style="background:rgba(124,58,237,.06); border-color:rgba(124,58,237,.2);">
+              <div class="inout-badge" style="background:rgba(124,58,237,.12); color:var(--accent);">Old Way</div>
+              <h5>Human — Ad Sales Teams</h5>
+              <p>Tiffany &amp; Co. calls the NYT ad sales team. They negotiate a rate card. Tiffany's banner runs on the homepage for a fixed CPM. One advertiser, one relationship, one placement.</p>
+            </div>
+            <div class="inout-card inout-in">
+              <div class="inout-badge">New Way — RTB</div>
+              <h5>Machines — Algorithms Evaluate Bids in Real-Time</h5>
+              <p>When a user loads the NYT, an auction fires instantly. AT&amp;T, Zipcar, Tiffany, Audi, Rolex, Gucci, T-Mobile all bid simultaneously. The highest bidder wins and their ad appears — in ~100ms.</p>
+            </div>
+          </div>
+
+          <div class="callout callout-amber">
+            <strong>Why this matters</strong>
+            In the human model, Tiffany pays the same rate whether the reader is a 22-year-old student or a 55-year-old wealth manager. In the RTB model, Tiffany only bids high when the reader profile matches their target — and pays less (or nothing) for everyone else.
+          </div>
+
+          <h4>Real Example from the Slide</h4>
+          <ul>
+            <li>Same NYT article page: one reader sees a <strong>Tiffany &amp; Co.</strong> leaderboard + rectangle (direct deal)</li>
+            <li>Another reader on the same page sees an <strong>AT&amp;T GoPhone</strong> banner + a <strong>Zipcar</strong> rectangle (RTB-served, different audience profile)</li>
+            <li>Same URL, same content, different ads — the user determines the ad, not the page</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E3: Programmatic RTB Flow -->
+    <div class="section-card" id="e3">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Programmatic Buying Ecosystem — RTB Flow</div>
+          <div class="card-sub">Trading Desk → DSP → Ad Exchange → SSP · IAB framework · ~100ms</div>
+        </div>
+        <span class="badge badge-model">Slide</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <p>The full programmatic stack from advertiser dollar to publisher impression, as shown in the IAB Spain diagram:</p>
+
+          <!-- RTB flow -->
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:18px 0; justify-content:center;">
+            <div style="text-align:center;">
+              <div style="background:#1e1b4b; color:white; padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">Advertiser<br><span style="font-size:10px; font-weight:400; opacity:.7;">+ Media Agency</span></div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">Ad Server</div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:rgba(217,119,6,.12); border:1px solid rgba(217,119,6,.3); color:var(--amber); padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">Trading Desk</div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:rgba(217,119,6,.12); border:1px solid rgba(217,119,6,.3); color:var(--amber); padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">DSP</div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:var(--accent); color:white; padding:10px 14px; border-radius:8px; font-size:12px; font-weight:700;">Ad Exchange<br><span style="font-size:10px; font-weight:400; opacity:.8;">RTB auction</span></div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:rgba(13,148,136,.12); border:1px solid rgba(13,148,136,.3); color:var(--teal); padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">SSP</div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">Ad Server</div>
+            </div>
+            <div style="color:var(--muted); font-size:18px;">→</div>
+            <div style="text-align:center;">
+              <div style="background:#1e1b4b; color:white; padding:10px 14px; border-radius:8px; font-size:12px; font-weight:600;">Publisher<br><span style="font-size:10px; font-weight:400; opacity:.7;">+ Audience</span></div>
+            </div>
+          </div>
+
+          <h4>What Each Player Does</h4>
+          <table class="data-table">
+            <thead><tr><th>Player</th><th>Full Name</th><th>Job</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Trading Desk</strong></td><td>Agency Trading Desk</td><td>Agency layer that manages DSP campaigns on behalf of clients</td></tr>
+              <tr><td><strong>DSP</strong></td><td>Demand-Side Platform</td><td>Buys impressions across multiple exchanges algorithmically (advertiser's tool)</td></tr>
+              <tr><td><strong>Ad Exchange</strong></td><td>—</td><td>The marketplace — runs the RTB auction, clears bids in ~100ms</td></tr>
+              <tr><td><strong>SSP</strong></td><td>Supply-Side Platform</td><td>Publisher's tool to maximize yield by exposing inventory to multiple DSPs simultaneously</td></tr>
+            </tbody>
+          </table>
+
+          <h4>What DATA flows through the system</h4>
+          <ul>
+            <li><strong>Social data tools, data suppliers, DMP</strong> (Data Management Platform), data exchanges — all feed audience signals into the bidding logic</li>
+            <li>DSPs use this data to decide <em>how much to bid</em> for each impression based on the user's profile</li>
+            <li><strong>Metrics layer:</strong> audience metrics, web analytics, and post-evaluation (ad effectiveness) close the loop after the auction</li>
+          </ul>
+
+          <div class="callout callout-teal">
+            <strong>RTB in plain English</strong>
+            A user loads a webpage. The publisher's SSP sends a bid request to the Ad Exchange with anonymized user data. Every DSP connected to the exchange evaluates the request and submits a bid in milliseconds. Highest bid wins. The winning ad renders. Total time: ~100ms. This happens billions of times per day.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end programmatic group -->
+
+  <div class="topic-group">
+    <div class="group-label">Display → Search Halo Effect Research</div>
+
+    <!-- E4: Display vs Search -->
+    <div class="section-card" id="e4">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔗</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Display vs. Search Engine Ads — The Halo Effect</div>
+          <div class="card-sub">Do display ads lift brand search behavior? · Randomized experiment design</div>
+        </div>
+        <span class="badge badge-model">Research</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>The Research Question</h4>
+          <ul>
+            <li>What is the impact of <strong>display ads</strong> on <strong>search ads</strong> for a given brand?</li>
+            <li>What is the impact of display ads on <strong>consumer search and purchase behavior</strong> more broadly?</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Why this is hard to answer</strong>
+            People who see a display ad and then search for the brand might have searched anyway. You need a randomized experiment to isolate causality — just observing the correlation tells you nothing.
+          </div>
+
+          <h4>How You'd Design the Experiment</h4>
+          <ul>
+            <li><strong>Randomly assign</strong> users into two groups: treatment (sees brand display ad) and control (sees an unrelated ad)</li>
+            <li>Measure subsequent <strong>search behavior</strong> for the advertised brand across both groups</li>
+            <li>The difference in search rates = causal effect of the display ad</li>
+            <li>Key: the control ad must be from a <strong>completely different category</strong> so it doesn't influence brand searches</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E5: Yahoo! Experiment -->
+    <div class="section-card" id="e5">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📊</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Yahoo! Natural Experiment — Key Results</div>
+          <div class="card-sub">40M daily users · Progressive, Acura, Samsung · 28–44% search lift</div>
+        </div>
+        <span class="badge badge-case">Research</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>Experimental Setting</h4>
+          <ul>
+            <li>Data from a <strong>natural experiment</strong> with display ads on Yahoo!'s front page (yahoo.com)</li>
+            <li>Yahoo! was both a <strong>search</strong> and <strong>display</strong> publisher — ~40% revenue from display, ~50% from search</li>
+            <li><strong>~40 million unique users</strong> visited the front page daily — one of the most heavily tracked sites at the time</li>
+            <li>Collected anonymized data on ad exposures and subsequent search behaviors</li>
+          </ul>
+
+          <h4>Three Campaigns Studied</h4>
+          <table class="data-table">
+            <thead><tr><th>Target Brand</th><th>Control Ad</th><th>Split Type</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Progressive Car Insurance</strong></td><td>TV show ("Lights Out" FX)</td><td>Front page split</td></tr>
+              <tr><td><strong>Acura TSX Sport Wagon</strong></td><td>Best Buy electronics retailer</td><td>Front page split</td></tr>
+              <tr><td><strong>Samsung Galaxy Tab</strong></td><td>Transformers action movie</td><td>Front page split</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:6px;">Each control ad was from a completely unrelated category — so any difference in brand search behavior between groups is attributable only to the target ad.</p>
+
+          <h4>Statistical Model</h4>
+          <div class="formula">Search<sub>ijt</sub> = α<sub>j</sub> + β<sub>j</sub> · AD<sub>it</sub> + ε<sub>ijt</sub></div>
+          <ul style="font-size:13.5px;">
+            <li><strong>Search<sub>ijt</sub></strong> — search behavior of user i for brand j at time t</li>
+            <li><strong>AD<sub>it</sub></strong> — whether user i was exposed to the brand's display ad at time t (1 = yes, 0 = control)</li>
+            <li><strong>β<sub>j</sub></strong> — the causal effect of the display ad on searches for brand j</li>
+            <li><strong>α<sub>j</sub></strong> — brand fixed effect (baseline search level for that brand)</li>
+          </ul>
+
+          <h4>Key Results</h4>
+          <div class="quad-grid">
+            <div class="quad-cell good">
+              <span class="qlabel">Own Brand Search Lift</span>
+              <p><strong>28% to 44%</strong> increase in searches for the advertised brand after display ad exposure</p>
+            </div>
+            <div class="quad-cell mid">
+              <span class="qlabel">Competitor Search Lift</span>
+              <p>Up to <strong>6%</strong> increase in searches for competitor brands — display ads raise category awareness</p>
+            </div>
+          </div>
+
+          <table class="data-table" style="margin-top:12px;">
+            <thead><tr><th>Campaign</th><th>Own Brand Lift</th><th>Competitor Lift</th><th>Main Competitor Searches</th></tr></thead>
+            <tbody>
+              <tr><td>Acura TSX</td><td>+44%</td><td>+3%</td><td>Volkswagen, Hyundai, Lexus, Volvo</td></tr>
+              <tr><td>Samsung Galaxy Tab</td><td>+44%</td><td>+6%</td><td>Apple iPad, Motorola Zoom</td></tr>
+              <tr><td>Progressive</td><td>+28%</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-rose">
+            <strong>The competitor spillover finding</strong>
+            Samsung's Galaxy Tab ad caused a 6% lift in searches for Apple's iPad. Why? Display ads raise <em>category awareness</em> — consumers who see a tablet ad start researching tablets, including competing brands. This is the "rising tide lifts all boats" effect — and it's a cost advertisers rarely account for.
+          </div>
+
+          <div class="callout callout-purple">
+            <strong>Takeaway for marketers</strong>
+            Display ads are not a direct-response tool — measure them on search lift and brand awareness, not CTR. A 0.1% CTR display campaign that drives a 44% lift in branded search is extremely valuable, even though the click-through rate looks terrible.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end research group -->
+
+  <!-- ── PM VOICE NOTES ───────────────────────────── -->
+  <div class="supplement-banner" style="margin-top:24px;">
+    <div class="sb-icon">🎙️</div>
+    <div class="sb-text">
+      <strong>PM Session — Voice Notes</strong>
+      Attribution models, MMM extensions, display commission stack, behavioral targeting, and the CTR regression model.
+    </div>
+  </div>
+
+  <div class="topic-group">
+    <div class="group-label">Attribution & Marketing Mix Modeling</div>
+
+    <!-- F1: Attribution Models -->
+    <div class="section-card" id="f1">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎯</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Attribution Models — From Simple to Causal</div>
+          <div class="card-sub">First-touch · Last-touch · Linear · Time-decay · MTA · MMM</div>
+        </div>
+        <span class="badge badge-model">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <p>Attribution = which touchpoint gets credit for the conversion? Every model below answers this differently — and most are wrong.</p>
+
+          <!-- Attribution model visual -->
+          <div style="margin:18px 0;">
+            <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+              <div style="background:#e0e7ff; border:1px solid #c7d2fe; border-radius:6px; padding:8px 12px; font-size:11px; text-align:center; min-width:80px;">
+                <div style="font-weight:700; color:#4338ca;">Display Ad</div>
+                <div style="color:#6b7280; font-size:10px;">Day 1</div>
+              </div>
+              <div style="color:var(--muted);">→</div>
+              <div style="background:#e0e7ff; border:1px solid #c7d2fe; border-radius:6px; padding:8px 12px; font-size:11px; text-align:center; min-width:80px;">
+                <div style="font-weight:700; color:#4338ca;">Email</div>
+                <div style="color:#6b7280; font-size:10px;">Day 3</div>
+              </div>
+              <div style="color:var(--muted);">→</div>
+              <div style="background:#e0e7ff; border:1px solid #c7d2fe; border-radius:6px; padding:8px 12px; font-size:11px; text-align:center; min-width:80px;">
+                <div style="font-weight:700; color:#4338ca;">Search Ad</div>
+                <div style="color:#6b7280; font-size:10px;">Day 7</div>
+              </div>
+              <div style="color:var(--muted);">→</div>
+              <div style="background:#dcfce7; border:1px solid #86efac; border-radius:6px; padding:8px 12px; font-size:11px; text-align:center; min-width:80px;">
+                <div style="font-weight:700; color:#166534;">Purchase</div>
+                <div style="color:#6b7280; font-size:10px;">Day 7</div>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted);">Same journey — different models give completely different credit:</p>
+          </div>
+
+          <table class="data-table">
+            <thead><tr><th>Model</th><th>Display Ad</th><th>Email</th><th>Search Ad</th><th>Scientific Basis</th></tr></thead>
+            <tbody>
+              <tr><td><strong>First-Touch</strong></td><td style="color:var(--teal); font-weight:700;">100%</td><td>0%</td><td>0%</td><td style="color:var(--rose);">None</td></tr>
+              <tr><td><strong>Last-Touch</strong></td><td>0%</td><td>0%</td><td style="color:var(--teal); font-weight:700;">100%</td><td style="color:var(--rose);">None</td></tr>
+              <tr><td><strong>Linear</strong></td><td>33%</td><td>33%</td><td>33%</td><td style="color:var(--rose);">None</td></tr>
+              <tr><td><strong>Time-Decay</strong></td><td>15%</td><td>30%</td><td>55%</td><td style="color:var(--rose);">None</td></tr>
+              <tr><td><strong>MTA (causal)</strong></td><td>Incremental lift</td><td>Incremental lift</td><td>Incremental lift</td><td style="color:var(--teal);">Experimental</td></tr>
+              <tr><td><strong>MMM</strong></td><td>Aggregate effect</td><td>Aggregate effect</td><td>Aggregate effect</td><td style="color:var(--teal);">Regression</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-rose">
+            <strong>Prof. Ghose's point</strong>
+            First-touch, last-touch, linear, and time-decay all lack scientific basis. They're arbitrary rules, not measurements. Only MTA (with control groups) and MMM (with regression) can actually prove causality.
+          </div>
+
+          <h4>Why MMM Surged Post-2021</h4>
+          <ul>
+            <li>Apple's IDFA change (2021) destroyed user-level tracking for iOS — MTA models lost their data foundation</li>
+            <li>MMM works on <strong>aggregate data</strong>, not user-level cookies — so it survived the privacy shift</li>
+            <li>Brands that had MMM infrastructure were ahead; those relying on last-click scrambled</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- F2: MMM Extensions -->
+    <div class="section-card" id="f2">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📐</div>
+        <div class="card-title-wrap">
+          <div class="card-title">MMM Extensions — Saturation, Interaction & Lag</div>
+          <div class="card-sub">Quadratic terms · Omnichannel synergies · Time-delayed effects</div>
+        </div>
+        <span class="badge badge-model">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <p>A basic MMM regresses sales on ad spend by channel. But three extensions make it dramatically more accurate:</p>
+
+          <h4>1 — Saturation Effects (Diminishing Returns)</h4>
+          <div style="display:flex; gap:20px; align-items:flex-start; margin:12px 0; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+              <ul>
+                <li>First dollar of ad spend → high return</li>
+                <li>Hundredth dollar → near-zero return</li>
+                <li>Modeled with a <strong>quadratic (squared) term</strong> on spend</li>
+                <li>Tells you exactly where the curve flattens — your budget ceiling</li>
+              </ul>
+            </div>
+            <div style="flex:1; min-width:180px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);">
+              Sales = α + β₁·Spend + β₂·Spend² + ε<br><br>
+              <span style="color:var(--muted); font-size:10px;">β₂ &lt; 0 captures the diminishing return</span>
+            </div>
+          </div>
+
+          <h4>2 — Interaction Effects (Omnichannel Synergies)</h4>
+          <ul>
+            <li>TV + Search together outperform TV alone + Search alone added up</li>
+            <li>Display ad exposure → lifts branded search CTR (the Yahoo! halo we studied)</li>
+            <li>Captured by an <strong>interaction term</strong>: TV_Spend × Search_Spend</li>
+            <li>Without this term, MMM underestimates top-of-funnel channels because their value flows through lower-funnel channels</li>
+          </ul>
+          <div class="formula">Sales = α + β₁·TV + β₂·Search + β₃·(TV × Search) + ε
+β₃ > 0 = synergy exists between the two channels</div>
+
+          <h4>3 — Lag Effects (Time-Delayed Impact)</h4>
+          <ul>
+            <li>A TV ad run in October may drive sales in November and December</li>
+            <li>Display ads build brand memory that converts weeks later</li>
+            <li>Modeled by including <strong>lagged spend variables</strong>: Spend<sub>t-1</sub>, Spend<sub>t-2</sub>, etc.</li>
+            <li>Without lag terms, MMM underattributes brand-building channels and overattributes performance channels</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>Why these three matter together</strong>
+            Without saturation → you'll overbid on channels past their effective ceiling. Without interaction → you'll cut TV thinking it has low ROI (missing that it amplifies search). Without lag → you'll underinvest in brand-building because the payoff is delayed. All three biases push companies toward short-term performance marketing and away from brand investment.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end attribution group -->
+
+  <div class="topic-group">
+    <div class="group-label">Display Advertising — Economics & Targeting</div>
+
+    <!-- F3: Commission Stack -->
+    <div class="section-card" id="f3">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">💸</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Display Commission Stack — Where the Ad Dollar Goes</div>
+          <div class="card-sub">65–75% intermediary take · Publisher gets 25–30¢ · Vertical integration motive</div>
+        </div>
+        <span class="badge badge-key">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <p>For every $1 an advertiser spends on programmatic display, here's how it breaks down:</p>
+
+          <!-- Dollar breakdown visual -->
+          <div style="margin:18px 0;">
+            <div style="background:#1e1b4b; border-radius:10px; overflow:hidden;">
+              <div style="background:var(--rose); width:100%; padding:12px 16px; color:white; font-size:13px; font-weight:700; display:flex; justify-content:space-between;">
+                <span>Advertiser pays</span><span>$1.00</span>
+              </div>
+              <div style="background:rgba(225,29,72,.5); width:75%; padding:10px 16px; color:white; font-size:12px; display:flex; justify-content:space-between;">
+                <span>DSP fee</span><span style="font-size:11px; opacity:.8;">~15¢</span>
+              </div>
+              <div style="background:rgba(217,119,6,.7); width:65%; padding:10px 16px; color:white; font-size:12px; display:flex; justify-content:space-between;">
+                <span>Ad Exchange fee</span><span style="font-size:11px; opacity:.8;">~20¢</span>
+              </div>
+              <div style="background:rgba(217,119,6,.5); width:55%; padding:10px 16px; color:white; font-size:12px; display:flex; justify-content:space-between;">
+                <span>SSP fee</span><span style="font-size:11px; opacity:.8;">~15¢</span>
+              </div>
+              <div style="background:rgba(13,148,136,.6); width:30%; padding:12px 16px; color:white; font-size:13px; font-weight:700; display:flex; justify-content:space-between;">
+                <span>Publisher receives</span><span>25–30¢</span>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-top:8px; text-align:center;">65–75¢ of every advertiser dollar goes to intermediaries. Publisher gets the rest.</p>
+          </div>
+
+          <h4>Why Big Platforms Are Vertically Integrating</h4>
+          <ul>
+            <li>Google owns: Ad Exchange (DV360), DSP, SSP — captures the full margin on both sides</li>
+            <li>Meta owns its entire stack end-to-end — no intermediary fees</li>
+            <li>Amazon building out its own DSP/SSP stack for the same reason</li>
+            <li>By owning all layers, they keep the 65–75¢ instead of sharing it</li>
+          </ul>
+
+          <div class="callout callout-amber">
+            <strong>The regulatory angle</strong>
+            This is exactly why the DOJ sued Google for "Open Web Display" — Google simultaneously operates the DSP (buyer's tool), the Ad Exchange (the marketplace), and the SSP (seller's tool). It's like one company owning the stock exchange, the broker, and the bank. Each layer has information advantages over the others.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F4: Behavioral Targeting -->
+    <div class="section-card" id="f4">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎯</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Behavioral Targeting Types</div>
+          <div class="card-sub">5 methods · Historical search · Real-time · Location · Demographic · Cross-device</div>
+        </div>
+        <span class="badge badge-key">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <div class="wheel-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="wheel-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <div style="display:flex; align-items:center; gap:8px;"><div class="wheel-dot"></div><strong>Historical Search Patterns</strong></div>
+              <p style="font-size:12px; color:var(--muted); margin:0;">Cookies tracking past searches — "searched 'flights to Paris' 3 days ago." Now served Air France ads wherever you browse.</p>
+            </div>
+            <div class="wheel-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <div style="display:flex; align-items:center; gap:8px;"><div class="wheel-dot"></div><strong>Real-Time Browsing Behavior</strong></div>
+              <p style="font-size:12px; color:var(--muted); margin:0;">What you're reading <em>right now</em>. Reading a car review article → Audi ad fires immediately via RTB.</p>
+            </div>
+            <div class="wheel-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <div style="display:flex; align-items:center; gap:8px;"><div class="wheel-dot"></div><strong>Location-Based Targeting</strong></div>
+              <p style="font-size:12px; color:var(--muted); margin:0;">Verizon knows you're within 1 foot of a Starbucks with 97% accuracy. Ad fires for competitor coffee shop. Geo-fencing around venues, stores, events.</p>
+            </div>
+            <div class="wheel-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <div style="display:flex; align-items:center; gap:8px;"><div class="wheel-dot"></div><strong>Demographic Profiling</strong></div>
+              <p style="font-size:12px; color:var(--muted); margin:0;">Age, gender, income inferred from behavior patterns and declared data. Tiffany targets 30-55, HHI $200K+ segments.</p>
+            </div>
+            <div class="wheel-item" style="flex-direction:column; align-items:flex-start; gap:4px; grid-column:1/-1;">
+              <div style="display:flex; align-items:center; gap:8px;"><div class="wheel-dot"></div><strong>Cross-Device Tracking via Fingerprinting</strong></div>
+              <p style="font-size:12px; color:var(--muted); margin:0;">Links your phone, laptop, and tablet without cookies — uses browser config, screen resolution, fonts, IP address patterns. Post-IDFA this became the dominant workaround. Controversial because it can't be opted out of the way cookies can.</p>
+            </div>
+          </div>
+
+          <div class="callout callout-rose">
+            <strong>Post-Apple IDFA (2021) shift</strong>
+            Historical search + real-time browsing relied on third-party cookies and mobile ad IDs. Apple's opt-out default gutted both for iOS. Cross-device fingerprinting surged as a replacement — and it's why regulators are now looking at it too.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end display group -->
+
+  <div class="topic-group">
+    <div class="group-label">Regression Models & SEM Deep Dive</div>
+
+    <!-- F5: CTR Regression Model -->
+    <div class="section-card" id="f5">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📉</div>
+        <div class="card-title-wrap">
+          <div class="card-title">CTR Regression Model — Variables & Insights</div>
+          <div class="card-sub">Ad rank · Brand name · Retailer · Walmart landing page case</div>
+        </div>
+        <span class="badge badge-model">Model</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>The Model</h4>
+          <div class="formula">CTR = f(Ad Rank, Ad Quality Score, Keywords, Brand Name, Retailer Presence, ...)</div>
+
+          <h4>Variables Included vs Excluded — and Why</h4>
+          <table class="data-table">
+            <thead><tr><th>Variable</th><th>Included?</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Ad Rank</td><td style="color:var(--teal);">✓ Yes</td><td>Higher position → higher CTR, direct mechanical effect</td></tr>
+              <tr><td>Ad Quality Score</td><td style="color:var(--teal);">✓ Yes</td><td>Better ad copy → more clicks</td></tr>
+              <tr><td>Number of Keywords</td><td style="color:var(--teal);">✓ Yes</td><td>More keyword coverage → more impression opportunities</td></tr>
+              <tr><td>Brand Name present</td><td style="color:var(--teal);">✓ Yes</td><td>Branded ads get higher CTR — recognition drives clicks</td></tr>
+              <tr><td>Retailer presence</td><td style="color:var(--teal);">✓ Yes</td><td>Retail ads (price/availability) drive higher intent clicks</td></tr>
+              <tr><td>Landing Page Quality</td><td style="color:var(--rose);">✗ Excluded</td><td>User can't see landing page before clicking — doesn't affect CTR</td></tr>
+              <tr><td>Conversion Rate</td><td style="color:var(--rose);">✗ Excluded</td><td>Secondary outcome — happens after the click, not a driver of it</td></tr>
+            </tbody>
+          </table>
+
+          <h4>The Walmart Landing Page Case</h4>
+          <div class="callout callout-amber">
+            <strong>Why landing page quality was insignificant — then suddenly significant</strong>
+            Walmart had a uniquely good landing page for a specific product. But competitors noticed and immediately copied the design. So in the dataset, landing page quality showed as statistically <em>insignificant</em> — because everyone had similar quality pages, there was no variation to detect.<br><br>
+            During a brief window when Walmart had differentiated its page before competitors copied it, landing page quality <em>was</em> significant. The moment it got copied: back to insignificant.<br><br>
+            <strong>Lesson:</strong> Insignificant ≠ unimportant. It means there's no variation in your data to measure the effect. Competitive dynamics can mask real causal relationships in regression.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F6: Antitrust Market Shares -->
+    <div class="section-card" id="f6">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📊</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Antitrust — Actual Market Share Breakdown</div>
+          <div class="card-sub">Social 48% · Streaming 15% · Retail 9% · Open web 28% · MAG-6 framing</div>
+        </div>
+        <span class="badge badge-legal">Key</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+
+          <h4>MAG-6 — The Dominant Six</h4>
+          <p>Prof. Ghose's framing for the six companies that dominate digital advertising: <strong>Meta, Apple, Google, Microsoft, Amazon, X</strong>. All six appear in the antitrust conversations across the US and EU.</p>
+
+          <h4>The Broad Market Definition — Actual Share Data</h4>
+          <p>When Prof. Ghose used MMM to define the market broadly (Google's defense argument), the ad budget data showed:</p>
+
+          <!-- Market share donut-style bar -->
+          <div style="margin:18px 0;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:120px; font-size:12px; color:var(--text); font-weight:600; text-align:right;">Social Media</div>
+                <div style="flex:1; background:var(--surface); border-radius:4px; height:28px; overflow:hidden;">
+                  <div style="width:48%; height:100%; background:#4f46e5; border-radius:4px; display:flex; align-items:center; padding-left:10px; color:white; font-size:11px; font-weight:700;">48%</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:120px; font-size:12px; color:var(--text); font-weight:600; text-align:right;">Open Web Display</div>
+                <div style="flex:1; background:var(--surface); border-radius:4px; height:28px; overflow:hidden;">
+                  <div style="width:28%; height:100%; background:var(--accent); border-radius:4px; display:flex; align-items:center; padding-left:10px; color:white; font-size:11px; font-weight:700;">28%</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:120px; font-size:12px; color:var(--text); font-weight:600; text-align:right;">Streaming Media</div>
+                <div style="flex:1; background:var(--surface); border-radius:4px; height:28px; overflow:hidden;">
+                  <div style="width:15%; height:100%; background:var(--teal); border-radius:4px; display:flex; align-items:center; padding-left:10px; color:white; font-size:11px; font-weight:700;">15%</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:120px; font-size:12px; color:var(--text); font-weight:600; text-align:right;">Retail Media</div>
+                <div style="flex:1; background:var(--surface); border-radius:4px; height:28px; overflow:hidden;">
+                  <div style="width:9%; height:100%; background:var(--amber); border-radius:4px; display:flex; align-items:center; padding-left:8px; color:white; font-size:11px; font-weight:700;">9%</div>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-top:8px;">Google's share of "Open Web Display" = 28% of that 28% slice — well below the Sherman Act's 70% monopoly threshold.</p>
+          </div>
+
+          <div class="callout callout-purple">
+            <strong>The MMM proof</strong>
+            Adobe's quarterly budget reallocation data — moving spend between Facebook, Google, Amazon, TikTok based on ROI — was the empirical evidence that these channels compete for the same budget. That substitutability is what makes it one market, not four separate ones. Prof. Ghose's regression quantified it.
+          </div>
+
+          <div class="callout callout-teal">
+            <strong>Accenture Interactive connection</strong>
+            The same data-driven, MMM-based approach that Accenture used to dethrone WPP/Publicis is what Prof. Ghose used to dethrone the DOJ's market definition in court. Same methodology, different arena. That's the value of knowing how to run these models.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end regression group -->
+
+  </div><!-- end tab-day3 -->
+
+  <!-- ══════════ TAB: DAY 4 (May 7) ══════════ -->
+  <div class="tab-panel active" id="tab-day4">
+
+    <header class="page-header">
+      <div class="course-pill">Digital Marketing Analytics · Module 1</div>
+      <h1>Day 4 In-Person Notes</h1>
+      <p class="subtitle">Online WOM, social listening, text mining, reputation, mobile analytics, count data models</p>
+      <div class="meta-row">
+        <div class="meta-chip"><span>📅</span> Thu, 07 May 2026</div>
+        <div class="meta-chip"><span>🏫</span> NYU Stern MSBAI</div>
+        <div class="meta-chip"><span>📖</span> Prof. Anindya Ghose</div>
+      </div>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Day 4 Progress</span>
+        <span><strong>100%</strong> — Full day captured</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width:100%; animation:none;"></div>
+      </div>
+    </div>
+
+    <!-- ── GROUP A: WORD OF MOUTH ──────────────── -->
+    <div class="topic-group">
+      <div class="group-label">Social Listening &amp; Word of Mouth</div>
+
+      <!-- WOM Basics -->
+      <div class="section-card open" id="d4-s1">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">💬</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Online WOM as a Demand Estimation Tool</div>
+            <div class="card-sub">4th dimension to RFM · Social listening at scale · Review conversion lift</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>Why Online WOM Matters</h4>
+          <ul>
+            <li>Consumer-generated content captures <strong>features and sentiments</strong> traditional marketing data misses</li>
+            <li>Complements the classic <strong>4 Ps</strong> (Price, Promotion, Placement, Product) in demand models</li>
+            <li>Becomes the <strong>4th dimension</strong> added to RFM metrics: Recency · Frequency · Monetary → + <em>Advocacy</em></li>
+          </ul>
+
+          <h4>The Full Sales Equation (from the board)</h4>
+          <div class="formula-box">
+            <div class="formula-title">Master Sales Model</div>
+            <span class="formula-var">Sales</span><span class="formula-subscript">it</span> <span class="formula-op">=</span>
+            <span class="formula-coef">d₁</span>·<span class="formula-var">Price</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₂</span>·<span class="formula-var">Promotion</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₃</span>·<span class="formula-var">Placement</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₄</span>·<span class="formula-var">TV Ads</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₅</span>·<span class="formula-var">Print Ads</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₆</span>·<span class="formula-var">Digital Ads</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef" style="background:rgba(251,191,36,.15);padding:2px 6px;border-radius:4px;">d₇·<span class="formula-var">Online WOM</span><span class="formula-subscript">it</span></span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₈</span>·<span class="formula-var">Seasonality</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-error">ε</span><span class="formula-subscript">it</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--muted);margin-top:-4px;">Online WOM (d₇) is the new variable Prof. Ghose's research added — circled on the board.</p>
+
+          <h4>Social Listening at Scale</h4>
+          <ul>
+            <li>Tools: <strong>Brandwatch, Hootsuite, Sprout Social, Audiense, Awario, Synthesio</strong></li>
+            <li><strong>270% increase</strong> in conversion rates from online reviews</li>
+            <li><strong>88%</strong> of buyers influenced by reviews before purchase decisions</li>
+            <li><strong>72%</strong> don't take action until they've read reviews</li>
+            <li><strong>18% uplift</strong> in sales directly attributed to review presence</li>
+          </ul>
+
+        </div></div>
+      </div>
+
+      <!-- Review Impact Patterns -->
+      <div class="section-card" id="d4-s2">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">📈</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Review Impact Patterns — Concave Function</div>
+            <div class="card-sub">Diminishing returns · Negative contagion · Volume vs. quality</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>Review Volume → Sales Lift (Diminishing Returns)</h4>
+          <div class="concave-chart">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;">SALES LIFT FROM CUMULATIVE REVIEWS</div>
+            <div class="concave-bars">
+              <div class="cbar-wrap">
+                <div class="cbar-val">+10%</div>
+                <div class="cbar" style="height:34px;"></div>
+                <div class="cbar-label">1 review</div>
+              </div>
+              <div class="cbar-wrap">
+                <div class="cbar-val">+30%</div>
+                <div class="cbar" style="height:90px;"></div>
+                <div class="cbar-label">50 reviews</div>
+              </div>
+              <div class="cbar-wrap">
+                <div class="cbar-val">+37%</div>
+                <div class="cbar" style="height:101px;"></div>
+                <div class="cbar-label">100 reviews</div>
+              </div>
+              <div class="cbar-wrap">
+                <div class="cbar-val">+41%</div>
+                <div class="cbar" style="height:108px;"></div>
+                <div class="cbar-label">150 reviews</div>
+              </div>
+              <div class="cbar-wrap">
+                <div class="cbar-val">+44%</div>
+                <div class="cbar" style="height:114px;"></div>
+                <div class="cbar-label">200 reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <table class="data-table" style="margin-top:8px;">
+            <thead><tr><th>Review Band</th><th>Incremental Lift</th><th>Takeaway</th></tr></thead>
+            <tbody>
+              <tr><td>0 → 1 review</td><td>+10%</td><td>Any review is better than none</td></tr>
+              <tr><td>1 → 50 reviews</td><td>+20% more</td><td>Biggest marginal returns here</td></tr>
+              <tr><td>50 → 100</td><td>+7%</td><td>Rapidly diminishing</td></tr>
+              <tr><td>100 → 150</td><td>+4%</td><td>Near saturation</td></tr>
+              <tr><td>150 → 200</td><td>+3%</td><td>Flat — similar to ad saturation</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-rose" style="margin-top:14px;">
+            <strong>Negative Review Contagion</strong>
+            Early negative reviews create a cascading effect — subsequent reviewers anchor on initial negative sentiment. First-mover reviews disproportionately shape product perception. The order of reviews matters, not just the average.
+          </div>
+
+          <div class="callout callout-teal">
+            <strong>"If this is the worst that can happen…"</strong>
+            Negative reviews with negative sentiment can <em>increase</em> sales when they are <strong>informative</strong>. A 3-star review explaining a niche flaw ("only bad with Kingston SD cards") tells potential buyers the product works fine for their use case.
+          </div>
+
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ── GROUP B: TEXT MINING ────────────────── -->
+    <div class="topic-group">
+      <div class="group-label">Text Mining Methodology</div>
+
+      <!-- Social Listening Model -->
+      <div class="section-card" id="d4-s3">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">🔬</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Social Listening Model — Full Equation</div>
+            <div class="card-sub">Beyond valence + volume · 9-variable regression · Whiteboard formula</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>Traditional vs. Advanced Text Mining</h4>
+          <table class="data-table">
+            <thead><tr><th>Traditional</th><th>Advanced (Ghose)</th></tr></thead>
+            <tbody>
+              <tr><td>Valence only (avg. star rating)</td><td>Sentiment-feature pairs ("excellent packaging")</td></tr>
+              <tr><td>Volume only (# of reviews)</td><td>Subjectivity score (manufacturer vs. reviewer)</td></tr>
+              <tr><td>Cannot detect nuance</td><td>Readability metrics</td></tr>
+              <tr><td>Misses grammatical quality</td><td>Grammatical / spelling error counts</td></tr>
+              <tr><td></td><td>Reviewer identity disclosure</td></tr>
+              <tr><td></td><td>Helpful votes %</td></tr>
+            </tbody>
+          </table>
+
+          <h4>The Social Listening Model (from the board)</h4>
+          <div class="formula-box">
+            <div class="formula-title">Social Listening Model — Whiteboard Equation</div>
+            <span class="formula-var">Sales</span><span class="formula-subscript">it</span> <span class="formula-op">=</span>
+            <span class="formula-coef">d₁</span>·<span class="formula-var">Avg. Rating</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₂</span>·<span class="formula-var">Volume of Reviews</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₃</span>·<span class="formula-var">Subjectivity Score</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₄</span>·<span class="formula-var">Spelling Errors</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₅</span>·<span class="formula-var">Grammatical Errors</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-coef">d₆</span>·<span class="formula-var">% Helpful Votes</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₇</span>·<span class="formula-var">Reviewer Identity Disclosure</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₈</span>·<span class="formula-var">Average Readability</span><span class="formula-subscript">it</span><br>
+            <span class="formula-op">+</span> <span class="formula-coef">d₉</span>·<span class="formula-var">Sentiment-Feature</span><span class="formula-subscript">it</span>
+            <span class="formula-op">+</span> <span class="formula-error">ε</span><span class="formula-subscript">it</span>
+          </div>
+
+          <h4>Sentiment-Feature Scoring — 3 Methods</h4>
+          <ul>
+            <li><strong>Human annotation</strong> with inter-coder reliability (Jaccard coefficient measures agreement between annotators)</li>
+            <li><strong>Frequency-based weighting</strong> — how often a feature-modifier pair appears across all reviews</li>
+            <li><strong>Location importance</strong> — higher placement in a review = higher weight</li>
+          </ul>
+
+          <h4>What's Missing Even in Advanced Models</h4>
+          <ul>
+            <li>Time factors and review recency (older reviews may be stale)</li>
+            <li>Representativeness of reviewer population</li>
+            <li>Specific product feedback vs. shipping/service complaints</li>
+          </ul>
+
+          <div class="callout callout-purple">
+            <strong>User-Generated Product Reviews → Sales</strong>
+            Camera example: "excellent photos" = +6% sales lift; "poor photos" = -2%. "excellent lenses" = +3%; "poor lenses" = -1%. Photos feature is 2× more important than lenses. Positive adjectives are 3× stronger than negative ones.
+          </div>
+
+        </div></div>
+      </div>
+
+      <!-- Grammar Impact -->
+      <div class="section-card" id="d4-s4">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">✏️</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Spelling &amp; Grammar → Real Economic Impact</div>
+            <div class="card-sub">Hotel industry · Zappos case · Real estate · Dating profiles</div>
+          </div>
+          <span class="badge badge-tech">Research</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <table class="data-table">
+            <thead><tr><th>Industry</th><th>Finding</th></tr></thead>
+            <tbody>
+              <tr><td>Hotels</td><td>Reviews with spelling/grammar mistakes reduce demand by <strong>13%</strong></td></tr>
+              <tr><td>Real Estate</td><td>Error-free listings sell <strong>3 days faster</strong> and are <strong>10× more likely to sell</strong></td></tr>
+              <tr><td>Dating Profiles</td><td><strong>14% impact</strong> on match rates from grammar quality</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Zappos Case Study</h4>
+          <ul>
+            <li>Fixed <strong>6 million reviews</strong> at <strong>$0.25 each</strong> (via Amazon Mechanical Turk at $0.10/review originally)</li>
+            <li>Result: <strong>7% increase in sales</strong> after grammar corrections</li>
+            <li>Surveyed 978/1,000 reviewers about corrections — <strong>zero negative responses</strong></li>
+            <li>Ethics debate divided the corporate boardroom — data won</li>
+          </ul>
+
+          <div class="callout callout-amber">
+            <strong>Grammar quality signals credibility</strong>
+            Well-written reviews add 10%+ to predictive accuracy of demand models — beyond sentiment and volume alone. Text literacy is a proxy for review trustworthiness.
+          </div>
+
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ── GROUP C: REPUTATION & PRICING ─────────── -->
+    <div class="topic-group">
+      <div class="group-label">Reputation, Pricing Power &amp; Market Structure</div>
+
+      <!-- Pricing Power -->
+      <div class="section-card" id="d4-s5">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">💰</div>
+          <div class="card-title-wrap">
+            <div class="card-title">The Value of Text — Reputation &amp; Price Premiums</div>
+            <div class="card-sub">Seller feedback text · Dollar impact per phrase · Context paradoxes</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>Context: Consumers Don't Always Buy Cheapest</h4>
+          <p>Willoughby's ($1,999) outsells 17th Street Photo ($1,859) for the same Canon camera — a <strong>7.5% price premium = $140</strong>. This is purely a reputation-driven effect captured from text feedback.</p>
+
+          <h4>Price Premium Formula</h4>
+          <div class="formula-box">
+            <div class="formula-title">Reputation Pricing Model</div>
+            <span class="formula-var">PricePremium</span> <span class="formula-op">=</span> <span class="formula-coef">a</span> <span class="formula-op">×</span> <span class="formula-var">Π</span><span class="formula-subscript">i</span> <span class="formula-op">+</span> <span class="formula-coef">b</span><br>
+            <br>
+            <span style="font-size:11px;color:#a78bfa;">Expanded — scoring each dimension-modifier pair:</span><br>
+            <span class="formula-var">PricePremium</span> <span class="formula-op">=</span> <span class="formula-coef">a</span> <span class="formula-op">×</span> Σ [<span class="formula-coef">w</span> <span class="formula-op">×</span> <span class="formula-coef">α(μⱼ,i)</span> <span class="formula-op">×</span> <span class="formula-coef">R(μⱼ,i)</span>] <span class="formula-op">+</span> <span class="formula-coef">b</span>
+          </div>
+
+          <h4>Phrase → Dollar Impact</h4>
+          <div class="premium-grid">
+            <div class="premium-item"><span class="premium-phrase">"wonderful experience"</span><span class="premium-val premium-pos">+$5.86</span></div>
+            <div class="premium-item"><span class="premium-phrase">"never received"</span><span class="premium-val premium-neg">−$7.56</span></div>
+            <div class="premium-item"><span class="premium-phrase">"outstanding seller"</span><span class="premium-val premium-pos">+$5.76</span></div>
+            <div class="premium-item"><span class="premium-phrase">"defective product"</span><span class="premium-val premium-neg">−$6.82</span></div>
+            <div class="premium-item"><span class="premium-phrase">"excellent service"</span><span class="premium-val premium-pos">+$5.27</span></div>
+            <div class="premium-item"><span class="premium-phrase">"horrible experience"</span><span class="premium-val premium-neg">−$6.79</span></div>
+            <div class="premium-item"><span class="premium-phrase">"lightning delivery"</span><span class="premium-val premium-pos">+$4.84</span></div>
+            <div class="premium-item"><span class="premium-phrase">"bad experience"</span><span class="premium-val premium-neg">−$5.26</span></div>
+            <div class="premium-item"><span class="premium-phrase">"perfectly packaged"</span><span class="premium-val premium-pos">+$3.74</span></div>
+            <div class="premium-item"><span class="premium-phrase">"poor packaging"</span><span class="premium-val premium-neg">−$2.92</span></div>
+          </div>
+
+          <h4>The Context Paradox — Why "Good" Can Be Negative</h4>
+          <div class="callout callout-rose">
+            <strong>"good packaging" = −0.56% · "AAA++++ seller" = −2.93%</strong><br><br>
+            <strong>Why negative?</strong> Context interpretation. "Good packaging" signals the seller felt the need to mention basic competence — damning with faint praise. It's the <em>recommendation letter problem</em>: "He is a good student, he works hard" → admission committee reads this as a REJECT signal.<br><br>
+            "AAA++++" is overclaiming — buyers interpret desperation, not quality.<br><br>
+            <strong>Takeaway: People interpret things differently, according to context. One size does NOT fit all.</strong>
+          </div>
+
+          <h4>Two Lessons from Prof. Ghose</h4>
+          <ol>
+            <li><strong>Measure what people DO, not what they SAY</strong> — revealed preference beats stated preference</li>
+            <li><strong>Measure in context</strong> — same phrase has opposite effects depending on platform/product</li>
+          </ol>
+
+        </div></div>
+      </div>
+
+      <!-- Market Structure -->
+      <div class="section-card" id="d4-s6">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">🗺️</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Market Structure via Text Mining — Automotive Case</div>
+            <div class="card-sub">Edmunds.com · Co-occurrence · Cadillac repositioning · 0.76 correlation</div>
+          </div>
+          <span class="badge badge-tech">Case Study</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>The Research Question (Netzer et al. 2012)</h4>
+          <p>Can we replace expensive brand surveys with forum text mining to understand competitive market structure?</p>
+
+          <h4>Methodology</h4>
+          <ol>
+            <li>Text mine Edmunds.com sedan forum posts → extract brand/model co-occurrences</li>
+            <li>Compute <strong>lift</strong> for each brand pair: <code>lift(A,B) = P(A,B) / P(A)×P(B)</code></li>
+            <li>Build associative network → visualize as perceptual map</li>
+          </ol>
+
+          <table class="data-table">
+            <thead><tr><th>Text Mining Map</th><th>Ground Truth (JD Power used car transactions)</th></tr></thead>
+            <tbody>
+              <tr><td>Consumer forums → co-occurrence → lift scores</td><td>Actual transaction records: who bought what after owning what</td></tr>
+              <tr><td>Zero survey data needed</td><td>Real revealed preference data</td></tr>
+              <tr><td colspan="2" style="text-align:center;font-weight:700;color:var(--accent);">Correlation = 0.76 · R² ≈ 58% of variance explained</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Market Clusters Found</h4>
+          <ul>
+            <li><strong>Import Luxury cluster:</strong> BMW, Mercedes-Benz, Audi, Lexus, Infiniti, Porsche, Jaguar, Volvo, Acura</li>
+            <li><strong>Japanese/Asian mainstream:</strong> Honda, Toyota, Mazda, Nissan, Subaru, Hyundai, Kia</li>
+            <li><strong>Domestic American:</strong> Ford, Chevrolet, Dodge, Buick, Oldsmobile, Mercury, Pontiac</li>
+          </ul>
+
+          <h4>Cadillac Repositioning Case (2003)</h4>
+          <div class="callout callout-purple">
+            GM launched a campaign to move Cadillac from "domestic American" perception to "import luxury" competitor. Text mining detected the shift in consumer discussion <strong>before it showed up in sales data</strong>. This proves text mining is a <em>leading indicator</em> of market movement, while sales data is a lagging indicator.
+          </div>
+
+          <div class="callout callout-teal">
+            <strong>The Right Metric Takeaway</strong>
+            Not sufficient to just measure. You must measure using the <strong>RIGHT metric</strong>. Sales data would have missed the Cadillac shift entirely for months.
+          </div>
+
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ── GROUP D: MOBILE ANALYTICS ─────────────── -->
+    <div class="topic-group">
+      <div class="group-label">Mobile Analytics — Prof. Ghose's TAP Framework</div>
+
+      <div class="section-card" id="d4-s7">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">📱</div>
+          <div class="card-title-wrap">
+            <div class="card-title">The 9 Forces of the Mobile Economy</div>
+            <div class="card-sub">Location cascade · Crowdedness · Trajectory · O2O synergies</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>What Makes Mobile Unique: Portable + Personal</h4>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Force</th><th>Business Application</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Location</strong></td><td>Geo-targeting, geo-fencing</td></tr>
+              <tr><td>2</td><td><strong>Location → Time</strong></td><td>Time-of-day offers, rush hour targeting</td></tr>
+              <tr><td>3</td><td><strong>Location → Context</strong></td><td>Near competitor = send coupon</td></tr>
+              <tr><td>4</td><td><strong>Location → Crowdedness</strong></td><td>Dense crowds = higher purchase rates</td></tr>
+              <tr><td>5</td><td><strong>Location → Weather</strong></td><td>Rainy day = umbrella push notification</td></tr>
+              <tr><td>6</td><td><strong>Location → Trajectory</strong></td><td>Where you're headed predicts purchase intent</td></tr>
+              <tr><td>7</td><td><strong>Location → Social Dynamics</strong></td><td>"Great Minds Move Alike" — community targeting</td></tr>
+              <tr><td>8</td><td><strong>Location → Saliency</strong></td><td>Attention-based ad delivery</td></tr>
+              <tr><td>9</td><td><strong>Location → Tech-Mix</strong></td><td>Bluetooth iBeacon, Wi-Fi, GPS layering</td></tr>
+            </tbody>
+          </table>
+
+          <h4>Key Firm Rules (from slides)</h4>
+          <ul>
+            <li>Cap <strong>FREQUENCY</strong> of messaging — over-messaging destroys trust</li>
+            <li>Engage in only <strong>RELEVANT</strong> messaging</li>
+            <li><strong>Redemption window duration</strong> is critical — 20-min expiration drives urgency</li>
+          </ul>
+
+          <h4>Crowdedness Increases Purchase Rates</h4>
+          <table class="data-table">
+            <thead><tr><th>Crowd Density (passengers/m²)</th><th>Purchase Rate</th></tr></thead>
+            <tbody>
+              <tr><td>0.906 (sparse)</td><td>2.73%</td></tr>
+              <tr><td>1.96</td><td>2.75%</td></tr>
+              <tr><td>3.047</td><td>2.95%</td></tr>
+              <tr><td>4.02</td><td>3.79%</td></tr>
+              <tr><td>4.965 (dense)</td><td><strong>4.04% (+48.1% vs sparse)</strong></td></tr>
+            </tbody>
+          </table>
+
+          <h4>Trajectory Targeting Results (Field Experiment, 83,370 users)</h4>
+          <table class="data-table">
+            <thead><tr><th>Metric</th><th>Best Group</th></tr></thead>
+            <tbody>
+              <tr><td>Highest redemption rate</td><td><strong>Trajectory-based</strong></td></tr>
+              <tr><td>Highest spending in store</td><td><strong>Trajectory-based</strong></td></tr>
+              <tr><td>Least time spent in store</td><td>Trajectory-based (efficient buyers)</td></tr>
+              <tr><td>Fastest redemption after offer</td><td>Trajectory-based</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-purple">
+            <strong>O2O Synergy</strong>
+            Offline billboard + mobile geo-fencing = greater than the sum of parts. Online-to-offline (O2O) synergies increase coupon redemptions because the billboard creates awareness and the mobile offer closes the loop at the exact moment the consumer is nearby.
+          </div>
+
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ── GROUP E: COUNT DATA MODELS ─────────────── -->
+    <div class="topic-group">
+      <div class="group-label">Count Data Models — Poisson &amp; NBREG</div>
+
+      <div class="section-card" id="d4-s8">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">🔢</div>
+          <div class="card-title-wrap">
+            <div class="card-title">When Y is a Count — Model Selection Framework</div>
+            <div class="card-sub">OLS failure · Logit vs Poisson vs NBREG · Overdispersion test</div>
+          </div>
+          <span class="badge badge-key">Key</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+
+          <h4>The Core Decision Tree</h4>
+          <div class="dtree">
+            <div class="dtree-node">
+              <div class="dtree-question">What type is your dependent variable (Y)?</div>
+              <div class="dtree-branches">
+                <div class="dtree-branch">
+                  <div class="dtree-condition">Binary (0 or 1)</div>
+                  <div class="dtree-result">Logit</div>
+                  <div class="dtree-desc">Sale occurred? Yes/No. Outputs probability 0–1.</div>
+                </div>
+                <div class="dtree-branch">
+                  <div class="dtree-condition">Count, mean ≈ variance</div>
+                  <div class="dtree-result">Poisson</div>
+                  <div class="dtree-desc">Clicks, sessions, # purchases. Equidispersion.</div>
+                </div>
+                <div class="dtree-branch">
+                  <div class="dtree-condition">Count, variance &gt;&gt; mean</div>
+                  <div class="dtree-result">NBREG</div>
+                  <div class="dtree-desc">Overdispersed count data — the real-world default.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Why Not OLS for Binary/Count Y?</h4>
+          <ul>
+            <li>OLS: <code>Y = a + bX</code> → unbounded, can predict 1.3 or −0.2 (impossible probabilities)</li>
+            <li><strong>Logit</strong> uses the logistic S-curve: <code>P(Y=1) = 1 / (1 + e^−z)</code> → always between 0 and 1</li>
+            <li>Logit coefficients are <strong>log-odds</strong> — convert via <code>e^coefficient</code> to get odds ratios</li>
+          </ul>
+
+          <h4>Poisson vs NBREG</h4>
+          <table class="data-table">
+            <thead><tr><th></th><th>Poisson</th><th>Negative Binomial (NBREG)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Assumption</strong></td><td>Mean = Variance</td><td>Variance &gt; Mean (overdispersion)</td></tr>
+              <tr><td><strong>Real-world fit</strong></td><td>Rare — data rarely equidispersed</td><td>Common default for count data</td></tr>
+              <tr><td><strong>Extra parameter</strong></td><td>None</td><td>Alpha (dispersion parameter)</td></tr>
+              <tr><td><strong>STATA command</strong></td><td><code>poisson Y X</code></td><td><code>nbreg Y X</code></td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-amber">
+            <strong>Test for overdispersion in STATA</strong>
+            Run <code>nbreg Y X</code> — if the <strong>alpha</strong> parameter is statistically significant, your data is overdispersed → use NBREG, not Poisson. Significance results can differ between models when overdispersion is present.
+          </div>
+
+          <h4>Interpreting Coefficients</h4>
+          <ul>
+            <li>Take <strong>e^(coefficient)</strong> to get the incidence rate ratio (IRR)</li>
+            <li>Example: coefficient = 0.676 → e^0.676 = 1.97 → one-unit increase in AverageRating nearly <strong>doubles the odds</strong> of a sale</li>
+          </ul>
+
+        </div></div>
+      </div>
+
+    </div><!-- end count models group -->
+
+  </div><!-- end tab-day4 -->
+
+  <!-- ══════════ TAB: QUIZ PREP ══════════ -->
+  <div class="tab-panel" id="tab-quiz">
+
+    <header class="page-header">
+      <div class="course-pill">Digital Marketing Analytics · Quiz Prep</div>
+      <h1>Quiz Preparation</h1>
+      <p class="subtitle">Key formulas, model selection rules, and conceptual questions from Days 3 &amp; 4</p>
+      <div class="meta-row">
+        <div class="meta-chip"><span>📚</span> Days 3 &amp; 4 content</div>
+        <div class="meta-chip"><span>🎯</span> Tap each question to reveal answer</div>
+      </div>
+    </header>
+
+    <div class="topic-group">
+      <div class="group-label">Model Selection</div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q1</span> When should you use Logit vs Poisson vs NBREG? What is the decision rule? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Check your dependent variable Y. If Y is binary (0/1) → Logit. If Y is a count and mean ≈ variance → Poisson. If Y is a count and variance &gt;&gt; mean (overdispersion) → NBREG. In STATA, run nbreg and check if alpha is significant — significant alpha = use NBREG.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q2</span> Why can't you use OLS when Y is binary? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">OLS is unbounded — it can predict values like 1.3 or −0.2, which are impossible probabilities. Logit uses the logistic S-curve P(Y=1) = 1/(1+e^−z) which constrains all predictions between 0 and 1.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q3</span> How do you interpret a logit coefficient? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Logit coefficients are log-odds. To interpret: take e^(coefficient). If coefficient = 0.676, then e^0.676 = 1.97, meaning a one-unit increase in that variable nearly doubles the odds of the outcome occurring.</div>
+      </div>
+    </div>
+
+    <div class="topic-group">
+      <div class="group-label">Social Listening &amp; WOM</div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q4</span> What are the 9 variables in the Social Listening Model? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Sales = d₁(Avg. Rating) + d₂(Volume of Reviews) + d₃(Subjectivity Score) + d₄(Spelling Errors) + d₅(Grammatical Errors) + d₆(% Helpful Votes) + d₇(Reviewer Identity Disclosure) + d₈(Avg. Readability) + d₉(Sentiment-Feature pairs) + ε</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q5</span> Why does "good packaging" have a negative coefficient on price premium? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Context interpretation. Saying "good packaging" signals the seller felt the need to mention basic competence — it's damning with faint praise. Similar to a recommendation letter saying only "he's a good student, he works hard" — admission committees interpret this as a REJECT. People interpret language according to context, not face value.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q6</span> What is the relationship between review volume and sales? Is it linear? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">It's a concave function (diminishing returns). First 1 review = +10% lift. By 50 reviews = +30% cumulative. 50–100 reviews = only +7% more. By 200 reviews = +44% total. Similar to advertising saturation. The biggest marginal returns come from the first handful of reviews.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q7</span> Can negative reviews increase sales? Under what condition? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Yes — when the negative review is informative. Example: "Video problems with some SDHC cards (especially Kingston)" — a buyer who doesn't use Kingston cards reads this as a green light. The key is informativeness, not sentiment. Vague negative reviews hurt; specific negative reviews can help.</div>
+      </div>
+    </div>
+
+    <div class="topic-group">
+      <div class="group-label">Market Structure &amp; Mobile</div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q8</span> What is the lift metric and how is it used in brand associative networks? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">lift(A,B) = P(A,B) / [P(A) × P(B)]. It measures how often two brands are mentioned together relative to how often they'd appear together by chance. High lift = brands are perceived as close substitutes. Used to build co-occurrence matrices that reveal competitive market structure from forum data.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q9</span> What was the correlation between the text mining perceptual map and the actual brand-switching map? What was the ground truth baseline? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Correlation = 0.76 (R² ≈ 58% of variance explained). The ground truth was JD Power PIN data — actual used car transaction records showing who bought what after owning what. This is revealed preference data (what people did), stronger than survey data (what people said they'd do).</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q10</span> Does more crowded environment increase or decrease mobile purchase rates? By how much? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Crowdedness INCREASES purchase rates. From 0.906 persons/m² (2.73%) to 4.965 persons/m² (4.04%) — a 48.1% increase in purchase rate. Counter-intuitive but empirically robust. Firms should target users in crowded contexts, not avoid them.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q11</span> What are the two key lessons Prof. Ghose emphasizes about measurement? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">1. Measure what people DO, not what they SAY — revealed preference beats stated preference. 2. Measure in context — one size does not fit all. The same phrase ("good packaging") has opposite effects depending on context. The Cadillac case shows text mining is a leading indicator while sales data is lagging.</div>
+      </div>
+    </div>
+
+    <div class="topic-group">
+      <div class="group-label">Key Numbers to Remember</div>
+      <div class="section-card open" id="quiz-stats">
+        <div class="card-header" onclick="toggle(this)">
+          <div class="card-icon">🔢</div>
+          <div class="card-title-wrap">
+            <div class="card-title">Statistics &amp; Facts Sheet</div>
+            <div class="card-sub">Everything you need to cite in answers</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="card-body"><div class="card-body-inner">
+          <table class="data-table">
+            <thead><tr><th>Fact</th><th>Number</th></tr></thead>
+            <tbody>
+              <tr><td>Review conversion rate uplift</td><td><strong>270%</strong></td></tr>
+              <tr><td>Buyers influenced by reviews</td><td><strong>88%</strong></td></tr>
+              <tr><td>Hotel demand drop from grammar errors</td><td><strong>13%</strong></td></tr>
+              <tr><td>Zappos reviews fixed</td><td><strong>6 million @ $0.25 each</strong></td></tr>
+              <tr><td>Zappos sales increase after fix</td><td><strong>7%</strong></td></tr>
+              <tr><td>Real estate: error-free days faster</td><td><strong>3 days</strong></td></tr>
+              <tr><td>Real estate: error-free likelihood to sell</td><td><strong>10×</strong></td></tr>
+              <tr><td>Dating profile grammar impact</td><td><strong>14% on match rates</strong></td></tr>
+              <tr><td>Text mining vs brand-switching correlation</td><td><strong>0.76</strong></td></tr>
+              <tr><td>Crowdedness purchase rate lift</td><td><strong>+48.1%</strong></td></tr>
+              <tr><td>Trajectory experiment: users</td><td><strong>83,370</strong></td></tr>
+              <tr><td>Willoughby's price premium</td><td><strong>7.5% = $140</strong></td></tr>
+              <tr><td>"wonderful experience" price premium</td><td><strong>+$5.86</strong></td></tr>
+              <tr><td>"never received" price penalty</td><td><strong>−$7.56</strong></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+    </div>
+
+  </div><!-- end tab-quiz -->
+
+</main>
+
+<script>
+function toggle(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('btn-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Sidebar active link on scroll
+const sections = document.querySelectorAll('[id^="s"],[id^="c"]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const active = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

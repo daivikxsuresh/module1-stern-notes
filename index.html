@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daivik's Module 1 Notes · NYU Stern MSBAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg: #0d0f18;
+  --surface: #131627;
+  --card: #161929;
+  --card-hover: #1c2035;
+  --border: rgba(255,255,255,.08);
+  --border-hover: rgba(255,255,255,.14);
+  --text: #e8e9f3;
+  --muted: #7b7fa8;
+  --faint: #3d4060;
+  --indigo: #6366f1;
+  --indigo-dim: #4f51c4;
+  --indigo-glow: rgba(99,102,241,.18);
+  --indigo-soft: rgba(99,102,241,.1);
+  --violet: #7c3aed;
+  --violet-dim: #6d28d9;
+  --violet-glow: rgba(124,58,237,.18);
+  --violet-soft: rgba(124,58,237,.1);
+  --lavender: #a78bfa;
+  --teal: #14b8a6;
+  --amber: #f59e0b;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* dot grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(99,102,241,.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* dual glow orbs */
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 1000px; height: 400px;
+  background: radial-gradient(ellipse at 35% 50%, rgba(99,102,241,.13) 0%, transparent 60%),
+              radial-gradient(ellipse at 65% 50%, rgba(124,58,237,.10) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── WRAPPER ─────────────────────────────── */
+.wrapper {
+  width: 100%;
+  max-width: 860px;
+  padding: 72px 28px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER ──────────────────────────────── */
+.course-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--lavender);
+  background: rgba(167,139,250,.1);
+  border: 1px solid rgba(167,139,250,.2);
+  border-radius: 20px;
+  padding: 4px 14px;
+  display: inline-block;
+  margin-bottom: 22px;
+}
+
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 6vw, 54px);
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+
+.page-title em {
+  font-style: italic;
+  color: var(--lavender);
+}
+
+.page-sub {
+  font-size: 15px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 28px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 56px;
+}
+
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-chip .chip-icon { font-size: 12px; }
+
+/* ── SECTION LABEL ───────────────────────── */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 16px;
+  padding-left: 2px;
+}
+
+/* ── CARDS GRID ──────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 56px;
+}
+
+@media (max-width: 640px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+/* ── COURSE CARD ─────────────────────────── */
+.course-card {
+  display: block;
+  text-decoration: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px 26px 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1),
+              box-shadow .22s ease,
+              border-color .22s ease,
+              background .22s ease;
+  animation: cardIn .5s ease both;
+}
+
+.course-card:nth-child(1) { animation-delay: .05s; }
+.course-card:nth-child(2) { animation-delay: .15s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* accent bar on top */
+.course-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 18px 18px 0 0;
+  transition: height .2s ease;
+}
+
+.course-card.indigo::before { background: linear-gradient(90deg, var(--indigo), #818cf8); }
+.course-card.violet::before { background: linear-gradient(90deg, var(--violet), var(--lavender)); }
+
+/* glow blob in corner */
+.course-card::after {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  transition: opacity .22s ease, transform .22s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.course-card.indigo::after { background: radial-gradient(circle, var(--indigo-glow), transparent 70%); }
+.course-card.violet::after { background: radial-gradient(circle, var(--violet-glow), transparent 70%); }
+
+.course-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-hover);
+  background: var(--card-hover);
+}
+
+.course-card.indigo:hover { box-shadow: 0 12px 40px var(--indigo-glow); }
+.course-card.violet:hover { box-shadow: 0 12px 40px var(--violet-glow); }
+
+.course-card:hover::before { height: 4px; }
+.course-card:hover::after  { opacity: 1; transform: scale(1.1); }
+
+/* card icon */
+.card-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  transition: border-color .2s ease;
+}
+
+.indigo .card-icon-wrap  { background: var(--indigo-soft); }
+.violet .card-icon-wrap  { background: var(--violet-soft); }
+.indigo:hover .card-icon-wrap { border-color: rgba(99,102,241,.3); }
+.violet:hover .card-icon-wrap { border-color: rgba(124,58,237,.3); }
+
+/* card content */
+.card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.indigo .card-tag { color: #818cf8; }
+.violet .card-tag { color: var(--lavender); }
+
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.card-prof {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+/* day chips */
+.day-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.day-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+  color: var(--muted);
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.indigo:hover .day-chip {
+  background: var(--indigo-soft);
+  color: #818cf8;
+  border-color: rgba(99,102,241,.25);
+}
+
+.violet:hover .day-chip {
+  background: var(--violet-soft);
+  color: var(--lavender);
+  border-color: rgba(124,58,237,.25);
+}
+
+.day-chip.quiz-chip { font-style: italic; }
+
+/* CTA */
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+  transition: background .2s, color .2s, border-color .2s, gap .2s;
+  pointer-events: none;
+}
+
+.indigo:hover .card-cta {
+  background: var(--indigo-soft);
+  color: #818cf8;
+  border-color: rgba(99,102,241,.3);
+  gap: 12px;
+}
+
+.violet:hover .card-cta {
+  background: var(--violet-soft);
+  color: var(--lavender);
+  border-color: rgba(124,58,237,.3);
+  gap: 12px;
+}
+
+.card-cta .arrow { font-size: 14px; transition: transform .2s ease; }
+.indigo:hover .card-cta .arrow { transform: translateX(3px); }
+.violet:hover .card-cta .arrow { transform: translateX(3px); }
+
+/* ── TIMELINE STRIP ──────────────────────── */
+.timeline-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 16px;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 56px;
+}
+
+.timeline::-webkit-scrollbar { display: none; }
+
+.tl-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+  text-align: center;
+}
+
+.tl-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.tl-dot.indigo { background: var(--indigo); box-shadow: 0 0 8px rgba(99,102,241,.5); }
+.tl-dot.violet { background: var(--violet); box-shadow: 0 0 8px rgba(124,58,237,.5); }
+
+.tl-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  min-width: 28px;
+  margin-bottom: 18px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.tl-day {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  margin-bottom: 2px;
+  letter-spacing: .05em;
+}
+
+.tl-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.tl-date.indigo { color: #818cf8; }
+.tl-date.violet { color: var(--lavender); }
+
+.tl-course {
+  font-size: 10px;
+  color: var(--faint);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* ── FOOTER ──────────────────────────────── */
+footer {
+  text-align: center;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+}
+
+.footer-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: .06em;
+}
+
+.footer-text span { color: var(--muted); }
+
+/* ── ANIMATION ───────────────────────────── */
+.header-anim {
+  animation: fadeUp .55s ease both;
+}
+.header-anim:nth-child(1) { animation-delay: .0s; }
+.header-anim:nth-child(2) { animation-delay: .07s; }
+.header-anim:nth-child(3) { animation-delay: .14s; }
+.header-anim:nth-child(4) { animation-delay: .21s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ── HEADER ─────────────────────────── -->
+  <div class="header-anim">
+    <div class="course-pill">MSBAI · NYU Stern · Module 1 · Spring 2026</div>
+  </div>
+
+  <div class="header-anim">
+    <h1 class="page-title">Daivik's <em>Notes</em></h1>
+  </div>
+
+  <div class="header-anim">
+    <p class="page-sub">In-person lecture notes, slide summaries, and quiz prep — Module 1</p>
+  </div>
+
+  <div class="header-anim">
+    <div class="meta-row">
+      <div class="meta-chip"><span class="chip-icon">📅</span> May 4 – 7, 2026</div>
+      <div class="meta-chip"><span class="chip-icon">🏫</span> NYU Stern MSBAI</div>
+      <div class="meta-chip"><span class="chip-icon">👨‍🏫</span> Prof. Anindya Ghose</div>
+      <div class="meta-chip"><span class="chip-icon">✅</span> Module 1 Complete</div>
+    </div>
+  </div>
+
+  <!-- ── COURSE CARDS ───────────────────── -->
+  <div class="section-label">Courses</div>
+
+  <div class="cards-grid">
+
+    <!-- IAAI -->
+    <a class="course-card indigo" href="./iaai/index.html">
+      <div class="card-icon-wrap">🤖</div>
+      <div class="card-tag">IAAI</div>
+      <div class="card-title">AI &amp; Analytics in Industry</div>
+      <div class="card-prof">Prof. Anindya Ghose</div>
+      <div class="day-chips">
+        <span class="day-chip">Day 1 · May 4</span>
+        <span class="day-chip">Day 2 · May 5</span>
+        <span class="day-chip quiz-chip">Takeaways + Quiz</span>
+      </div>
+      <div class="card-cta">Open Notes <span class="arrow">→</span></div>
+    </a>
+
+    <!-- DMA -->
+    <a class="course-card violet" href="./dma/index.html">
+      <div class="card-icon-wrap">📊</div>
+      <div class="card-tag">DMA</div>
+      <div class="card-title">Digital Marketing Analytics</div>
+      <div class="card-prof">Prof. Anindya Ghose</div>
+      <div class="day-chips">
+        <span class="day-chip">Day 3 · May 6</span>
+        <span class="day-chip">Day 4 · May 7</span>
+        <span class="day-chip quiz-chip">Quiz Prep</span>
+      </div>
+      <div class="card-cta">Open Notes <span class="arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <!-- ── TIMELINE ────────────────────────── -->
+  <div class="timeline-label">Module Timeline</div>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot indigo"></div>
+      <div class="tl-day">Day 1</div>
+      <div class="tl-date indigo">May 4</div>
+      <div class="tl-course">IAAI</div>
+    </div>
+
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-dot indigo"></div>
+      <div class="tl-day">Day 2</div>
+      <div class="tl-date indigo">May 5</div>
+      <div class="tl-course">IAAI</div>
+    </div>
+
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-dot violet"></div>
+      <div class="tl-day">Day 3</div>
+      <div class="tl-date violet">May 6</div>
+      <div class="tl-course">DMA</div>
+    </div>
+
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-dot violet"></div>
+      <div class="tl-day">Day 4</div>
+      <div class="tl-date violet">May 7</div>
+      <div class="tl-course">DMA</div>
+    </div>
+
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────── -->
+  <footer>
+    <p class="footer-text">NYU Stern MSBAI · Class of 2026 · <span>Module 1 Complete</span></p>
+  </footer>
+
+</div>
+
+</body>
+</html>
