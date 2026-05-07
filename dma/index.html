@@ -1024,6 +1024,15 @@ body::after {
     <nav class="sidebar-nav">
       <a href="#quiz-stats"><span class="nav-num">—</span>Facts Cheat Sheet</a>
     </nav>
+    <div class="sidebar-section-label" style="margin-top:10px;">MCQ (Q1–Q18)</div>
+    <nav class="sidebar-nav">
+      <a href="#tab-quiz"><span class="nav-num">—</span>Model Selection (Q1–Q3)</a>
+      <a href="#tab-quiz"><span class="nav-num">—</span>WOM &amp; Social (Q4–Q7)</a>
+      <a href="#tab-quiz"><span class="nav-num">—</span>Market &amp; Mobile (Q8–Q11)</a>
+      <a href="#tab-quiz"><span class="nav-num">—</span>Day 3 Topics (Q12–Q18)</a>
+    </nav>
+    <div class="sidebar-section-label" style="margin-top:10px;">True / False (T/F 1–20)</div>
+    <div class="sidebar-section-label" style="margin-top:6px;">Short Answer (SA 1–3)</div>
   </div>
 </nav>
 
@@ -3404,6 +3413,173 @@ Example: $2 CPC × 1% CTR × 1,000 = $20 effective CPM</div>
       <div class="quiz-card" onclick="this.classList.toggle('open')">
         <div class="quiz-q"><span class="quiz-num">Q11</span> What are the two key lessons Prof. Ghose emphasizes about measurement? <span class="quiz-chevron">▼</span></div>
         <div class="quiz-a">1. Measure what people DO, not what they SAY — revealed preference beats stated preference. 2. Measure in context — one size does not fit all. The same phrase ("good packaging") has opposite effects depending on context. The Cadillac case shows text mining is a leading indicator while sales data is lagging.</div>
+      </div>
+    </div>
+
+    <!-- ── DAY 3 MCQ (MISSING FROM ORIGINAL QUIZ) ── -->
+    <div class="topic-group">
+      <div class="group-label">Digital Advertising &amp; Day 3 Topics</div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q12</span> What does AIDA stand for and what does it describe? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Awareness → Interest → Desire → Action. It maps the consumer purchase journey from first exposure to final conversion. Digital marketing channels are mapped to different stages: display ads build awareness; search ads capture intent (Desire/Action stage).</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q13</span> What is the key insight from the Yahoo! display advertising experiment? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">Display ads have a <strong>halo effect on search</strong>. Users exposed to display ads from a brand subsequently searched for that brand more often, even without clicking the display ad. Implication: measuring display ROI by clicks alone understates its true value — it also lifts branded search volume.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q14</span> What is the difference between CPC and CPM? Which is better for which objective? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong>CPC (Cost-per-Click):</strong> you pay only when someone clicks — best for performance/conversion goals. <strong>CPM (Cost-per-Mille):</strong> you pay per 1,000 impressions regardless of clicks — best for awareness/branding goals. Key: match the pricing model to the campaign objective.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q15</span> In a Google ad auction, how is ad rank calculated and what does it mean? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong>Ad Rank = Bid × Quality Score.</strong> Quality Score accounts for ad relevance, expected CTR, and landing page experience. This means a lower bidder with a higher Quality Score can outrank a higher bidder. Google uses a second-price auction: the winner pays just enough to beat the next-highest ad rank, not their full bid.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q16</span> What is RTB (Real-Time Bidding) and how does it work? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">RTB is programmatic ad buying where impressions are auctioned in real time (~100ms) as a webpage loads. Publisher sends impression data to an SSP → Ad Exchange → DSPs bid on behalf of advertisers → highest bid wins → ad is served. Replaced manual insertion orders, enabling precise audience targeting at scale.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q17</span> What is the central argument in the Google antitrust case and why does market definition matter? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">DOJ argued Google illegally monopolized the search advertising market. Market definition is the battleground: if you define the market as "all digital advertising," Google has ~25% share (not a monopoly). If you define it as "general search advertising," Google has ~90% share (clearly a monopoly). Prof. Ghose served as Google's expert witness arguing for the broader market definition.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">Q18</span> What is a Marketing Mix Model (MMM) and what is the "substitutability" argument? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a">MMM is a statistical model (typically OLS) that attributes sales to different marketing channels (TV, digital, social, etc.) using aggregate time-series data. The <strong>substitutability argument</strong> (Ghose's expert testimony): if consumers treat Google search and Bing/DuckDuckGo as substitutes, Google's market power is constrained — supporting a broad market definition and weakening the monopoly claim.</div>
+      </div>
+    </div>
+
+    <!-- ── TRUE / FALSE ── -->
+    <div class="topic-group">
+      <div class="group-label" style="display:flex;align-items:center;gap:8px;">True / False Practice <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(124,58,237,.12);color:var(--accent);border:1px solid rgba(124,58,237,.2);border-radius:4px;padding:2px 8px;">26 pts on exam</span></div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;">Click each card to reveal TRUE or FALSE with the reasoning.</p>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 1</span> SEO is paid placement; SEM is organic search ranking. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> Reversed. SEM (Search Engine Marketing) is paid — you bid for placement. SEO (Search Engine Optimization) is earned/organic — you rank through content relevance and backlinks. The confusion comes from both using search engines.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 2</span> In a real-time bidding auction, the winning advertiser pays exactly what they bid. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> RTB uses a <strong>second-price (Vickrey) auction</strong>. The winner pays just enough to beat the second-highest bid — not their own full bid. This incentivizes honest bidding (bid your true value).</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 3</span> The AIDA model flows: Awareness → Interest → Desire → Action. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> This is the correct sequence. Display ads typically target early stages (Awareness/Interest); search ads capture late-funnel intent (Desire/Action). A full-funnel strategy uses both.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 4</span> Ad Rank = Bid × Quality Score in Google's auction. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> A lower bid with a high Quality Score (relevant ad, good CTR, strong landing page) can outrank a higher bid with low Quality Score. This protects user experience while letting Google maximize auction revenue.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 5</span> CPM is better suited for direct-response performance campaigns than CPC. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> CPM (pay per impression) is better for <em>awareness</em> goals. CPC (pay per click) is better for <em>performance/conversion</em> goals because you only pay when a user takes an action. Aligning pricing model with objective is a core DMA principle.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 6</span> Display ads can increase branded search volume even when users don't click on them. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> This is the <strong>halo effect</strong> shown in the Yahoo! experiment. Display ad exposure raised brand salience — users later searched for the brand organically. Measuring display ROI by clicks alone severely underestimates its value.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 7</span> The Google antitrust case outcome depends heavily on how broadly the relevant market is defined. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> Broad market = Google has ~25% share (competitive). Narrow market (general search ads) = Google has ~90% share (monopoly). Prof. Ghose testified for Google arguing the broad definition. Market definition is the entire game in antitrust cases.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 8</span> Negative reviews always hurt a product's sales. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> Negative reviews can INCREASE sales when they are <em>informative and specific</em>. Example: "video problems with Kingston SDHC cards" — a buyer who doesn't use Kingston reads this as a green light. Vague negative reviews hurt; specific negative reviews can segment and help.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 9</span> The Social Listening Model contains 5 independent variables. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> The model has <strong>9 variables</strong>: Avg. Rating, Volume, Subjectivity, Spelling Errors, Grammatical Errors, % Helpful Votes, Reviewer Identity Disclosure, Avg. Readability, Sentiment-Feature pairs.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 10</span> The relationship between review volume and sales is linear — each additional review adds the same sales lift. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> The relationship is <strong>concave (diminishing returns)</strong>. First review = +10% lift. By 50 reviews = +30% total. Going from 50 to 100 = only +7% more. Similar to advertising saturation — biggest returns come from the first few reviews.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 11</span> Spelling and grammar quality in online content has measurable economic consequences. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> Multiple studies confirm: Zappos fixed 6M reviews → +7% sales. Hotel listings with grammar errors → 13% demand drop. Real estate listings without errors → sold 3 days faster and 10× more likely to sell. Dating profiles → 14% higher match rate.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 12</span> "Good packaging" in a product review is a positive signal that increases price premium. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> "Good packaging" is damning with faint praise — coefficient is <strong>−0.56%</strong> on price premium. The fact that a reviewer mentions basic packaging suggests there's little else to praise. Context matters: people interpret language by what's implied, not just what's said.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 13</span> Text mining of online discussions is a leading indicator of brand perception shifts, while sales data is lagging. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> The Cadillac case demonstrates this. Forum discussions on Edmunds.com showed Cadillac's repositioning working before it showed up in sales. Text = leading indicator. Sales = lagging indicator. This is the strategic value of social listening.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 14</span> Lift &gt; 1 between two brands means they are mentioned together less often than expected by chance. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> Lift &gt; 1 means brands are mentioned together <em>more</em> often than chance would predict — they are perceived as close substitutes. lift(A,B) = P(A,B) / [P(A)×P(B)]. Lift &lt; 1 would mean they're mentioned together less than expected.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 15</span> Poisson regression assumes that the variance of Y equals the mean of Y. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> This is the equidispersion assumption. In reality, count data is almost always overdispersed (variance &gt; mean), which is why NBREG is typically preferred over Poisson for real-world data.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 16</span> If the alpha parameter in NBREG is not statistically significant, Poisson is the better model choice. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> Non-significant alpha means the overdispersion parameter is indistinguishable from zero — your data is equidispersed, meaning Poisson's mean=variance assumption holds. Use Poisson. Significant alpha → use NBREG.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 17</span> NBREG and Poisson coefficients are interpreted the same way as OLS coefficients. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> You must exponentiate: <strong>e^(coefficient)</strong> gives you the incidence rate ratio. Example: coefficient = 0.676 → e^0.676 = 1.97 → one-unit increase in that variable nearly doubles the expected count. Direct coefficient = log of the rate ratio, not the rate itself.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 18</span> Crowded environments reduce mobile purchase rates because people are distracted and uncomfortable. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> Counter-intuitive empirical finding: crowdedness <em>increases</em> purchase rates from 2.73% to 4.04% — a <strong>+48.1% lift</strong>. Possible explanation: crowded environments create social proof and urgency. Marketers should target users in crowded contexts, not avoid them.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 19</span> Trajectory-based mobile targeting (where the user is heading) outperforms location-only targeting (where they are now). <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--teal)">✓ TRUE.</strong> Trajectory targeting was the best-performing type in the experiment (83,370 users). Knowing where someone is <em>going</em> is more predictive than knowing where they are <em>now</em>. The TAP framework emphasizes targeting the full movement context, not just the snapshot.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">T/F 20</span> In the social listening model, a reviewer disclosing their real identity (vs. anonymous) has no effect on the credibility or impact of the review. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong style="color:var(--rose)">✗ FALSE.</strong> Reviewer Identity Disclosure is one of the 9 variables in the Social Listening Model — it has a statistically significant effect. Disclosed-identity reviewers are perceived as more credible, affecting both the weight the model gives the review and consumer interpretation of sentiment.</div>
+      </div>
+    </div>
+
+    <!-- ── SHORT ANSWER PRACTICE ── -->
+    <div class="topic-group">
+      <div class="group-label" style="display:flex;align-items:center;gap:8px;">Short Answer Practice <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(13,148,136,.12);color:#0d9488;border:1px solid rgba(13,148,136,.2);border-radius:4px;padding:2px 8px;">6 pts on exam</span></div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;">These mirror the style of written exam questions. Click to reveal a model answer.</p>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">SA 1</span> A STATA output shows the coefficient for <em>ReviewVolume</em> is 0.046 and significant at p&lt;0.01. Interpret this and state the business implication. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong>Interpretation:</strong> A one-unit increase in ReviewVolume is associated with a 0.046-unit increase in the log-odds of a sale (if logit) or a 4.6% increase in expected sales count (if count model, after exponentiation). The coefficient is statistically significant — we can rule out chance with 99% confidence.<br><br><strong>Business implication:</strong> Generating more reviews drives sales. However, given the concave relationship in the literature, the marginal return per additional review declines — early reviews matter most. Prioritize review acquisition for new products with zero reviews before optimizing further.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">SA 2</span> You run NBREG in STATA and the alpha parameter is not significant (p = 0.43). What does this tell you? What should you do next? <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong>What it tells you:</strong> Alpha (the dispersion parameter) is not statistically distinguishable from zero. This means your count data does <em>not</em> exhibit overdispersion — variance ≈ mean, and Poisson's equidispersion assumption holds.<br><br><strong>What to do:</strong> Rerun the model using <code>poisson Y X</code>. Poisson is the appropriate model when variance ≈ mean. Using NBREG when it's unnecessary adds an estimated parameter without improving fit — violates parsimony.</div>
+      </div>
+
+      <div class="quiz-card" onclick="this.classList.toggle('open')">
+        <div class="quiz-q"><span class="quiz-num">SA 3</span> Explain why text mining of online forums is strategically valuable for Cadillac's brand management, and what the Edmunds.com case demonstrated. <span class="quiz-chevron">▼</span></div>
+        <div class="quiz-a"><strong>Strategic value:</strong> Text mining captures unsolicited consumer opinions at scale — what people actually think, not what they say when asked. It reveals brand perceptions, competitive positioning, and feature-level sentiment without the cost and bias of surveys.<br><br><strong>Edmunds.com case:</strong> By building a co-occurrence (lift) matrix from forum discussions, researchers created a perceptual map of the used-car market. The map correlated 0.76 with JD Power PIN transaction data (actual revealed-preference purchases). Key insight: the text mining map was a <em>leading indicator</em> — it detected Cadillac's successful repositioning as a performance brand <em>before</em> it appeared in sales data. Managers can use this for early-stage strategy evaluation without waiting for financial results.</div>
       </div>
     </div>
 
