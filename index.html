@@ -30,6 +30,9 @@ html { scroll-behavior: smooth; }
   --violet-soft: rgba(124,58,237,.1);
   --lavender: #a78bfa;
   --teal: #14b8a6;
+  --teal-dim: #0d9488;
+  --teal-glow: rgba(20,184,166,.18);
+  --teal-soft: rgba(20,184,166,.1);
   --amber: #f59e0b;
 }
 
@@ -155,7 +158,7 @@ body::after {
   margin-bottom: 56px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .cards-grid { grid-template-columns: 1fr; }
 }
 
@@ -179,6 +182,7 @@ body::after {
 
 .course-card:nth-child(1) { animation-delay: .05s; }
 .course-card:nth-child(2) { animation-delay: .15s; }
+.course-card:nth-child(3) { animation-delay: .25s; }
 
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(16px); }
@@ -197,6 +201,7 @@ body::after {
 
 .course-card.indigo::before { background: linear-gradient(90deg, var(--indigo), #818cf8); }
 .course-card.violet::before { background: linear-gradient(90deg, var(--violet), var(--lavender)); }
+.course-card.teal::before   { background: linear-gradient(90deg, var(--teal-dim), var(--teal)); }
 
 /* glow blob in corner */
 .course-card::after {
@@ -212,6 +217,7 @@ body::after {
 
 .course-card.indigo::after { background: radial-gradient(circle, var(--indigo-glow), transparent 70%); }
 .course-card.violet::after { background: radial-gradient(circle, var(--violet-glow), transparent 70%); }
+.course-card.teal::after   { background: radial-gradient(circle, var(--teal-glow),   transparent 70%); }
 
 .course-card:hover {
   transform: translateY(-5px);
@@ -221,6 +227,7 @@ body::after {
 
 .course-card.indigo:hover { box-shadow: 0 12px 40px var(--indigo-glow); }
 .course-card.violet:hover { box-shadow: 0 12px 40px var(--violet-glow); }
+.course-card.teal:hover   { box-shadow: 0 12px 40px var(--teal-glow);   }
 
 .course-card:hover::before { height: 4px; }
 .course-card:hover::after  { opacity: 1; transform: scale(1.1); }
@@ -238,8 +245,10 @@ body::after {
 
 .indigo .card-icon-wrap  { background: var(--indigo-soft); }
 .violet .card-icon-wrap  { background: var(--violet-soft); }
+.teal   .card-icon-wrap  { background: var(--teal-soft);   }
 .indigo:hover .card-icon-wrap { border-color: rgba(99,102,241,.3); }
 .violet:hover .card-icon-wrap { border-color: rgba(124,58,237,.3); }
+.teal:hover   .card-icon-wrap { border-color: rgba(20,184,166,.3); }
 
 /* card content */
 .card-tag {
@@ -252,6 +261,7 @@ body::after {
 
 .indigo .card-tag { color: #818cf8; }
 .violet .card-tag { color: var(--lavender); }
+.teal   .card-tag { color: var(--teal); }
 
 .card-title {
   font-family: 'DM Serif Display', serif;
@@ -299,6 +309,12 @@ body::after {
   border-color: rgba(124,58,237,.25);
 }
 
+.teal:hover .day-chip {
+  background: var(--teal-soft);
+  color: var(--teal);
+  border-color: rgba(20,184,166,.25);
+}
+
 .day-chip.quiz-chip { font-style: italic; }
 
 /* CTA */
@@ -333,9 +349,17 @@ body::after {
   gap: 12px;
 }
 
+.teal:hover .card-cta {
+  background: var(--teal-soft);
+  color: var(--teal);
+  border-color: rgba(20,184,166,.3);
+  gap: 12px;
+}
+
 .card-cta .arrow { font-size: 14px; transition: transform .2s ease; }
 .indigo:hover .card-cta .arrow { transform: translateX(3px); }
 .violet:hover .card-cta .arrow { transform: translateX(3px); }
+.teal:hover   .card-cta .arrow { transform: translateX(3px); }
 
 /* ── TIMELINE STRIP ──────────────────────── */
 .timeline-label {
@@ -379,6 +403,7 @@ body::after {
 
 .tl-dot.indigo { background: var(--indigo); box-shadow: 0 0 8px rgba(99,102,241,.5); }
 .tl-dot.violet { background: var(--violet); box-shadow: 0 0 8px rgba(124,58,237,.5); }
+.tl-dot.teal   { background: var(--teal);   box-shadow: 0 0 8px rgba(20,184,166,.5);  }
 
 .tl-line {
   flex: 1;
@@ -407,6 +432,7 @@ body::after {
 
 .tl-date.indigo { color: #818cf8; }
 .tl-date.violet { color: var(--lavender); }
+.tl-date.teal   { color: var(--teal); }
 
 .tl-course {
   font-size: 10px;
@@ -465,7 +491,7 @@ footer {
 
   <div class="header-anim">
     <div class="meta-row">
-      <div class="meta-chip"><span class="chip-icon">📅</span> May 4 – 7, 2026</div>
+      <div class="meta-chip"><span class="chip-icon">📅</span> May 4 – 9, 2026</div>
       <div class="meta-chip"><span class="chip-icon">🏫</span> NYU Stern MSBAI</div>
       <div class="meta-chip"><span class="chip-icon">👨‍🏫</span> Prof. Anindya Ghose</div>
       <div class="meta-chip"><span class="chip-icon">✅</span> Module 1 Complete</div>
@@ -501,6 +527,19 @@ footer {
         <span class="day-chip">Day 3 · May 6</span>
         <span class="day-chip">Day 4 · May 7</span>
         <span class="day-chip quiz-chip">Quiz Prep</span>
+      </div>
+      <div class="card-cta">Open Notes <span class="arrow">→</span></div>
+    </a>
+
+    <!-- Stats Using R -->
+    <a class="course-card teal" href="./stats/index.html">
+      <div class="card-icon-wrap">📐</div>
+      <div class="card-tag">Stats · R</div>
+      <div class="card-title">Foundations of Statistics Using R</div>
+      <div class="card-prof">Prof. Sosulski · Prof. Lakner</div>
+      <div class="day-chips">
+        <span class="day-chip">Day 5 · May 8</span>
+        <span class="day-chip">Day 6 · May 9</span>
       </div>
       <div class="card-cta">Open Notes <span class="arrow">→</span></div>
     </a>
@@ -544,6 +583,24 @@ footer {
       <div class="tl-day">Day 4</div>
       <div class="tl-date violet">May 7</div>
       <div class="tl-course">DMA</div>
+    </div>
+
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-dot teal"></div>
+      <div class="tl-day">Day 5</div>
+      <div class="tl-date teal">May 8</div>
+      <div class="tl-course">Stats R</div>
+    </div>
+
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-dot teal"></div>
+      <div class="tl-day">Day 6</div>
+      <div class="tl-date teal">May 9</div>
+      <div class="tl-course">Stats R</div>
     </div>
 
   </div>
