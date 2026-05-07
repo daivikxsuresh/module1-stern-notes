@@ -697,6 +697,7 @@ footer {
   <div class="sidebar-brand">
     <div class="sidebar-badge">IAAI · Module 1</div>
     <div class="sidebar-title">Lecture Notes</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px;">Prof. Foster Provost</div>
   </div>
 
   <div id="sidebar-day1">
@@ -733,6 +734,23 @@ footer {
       <a href="#d2-adsafe" class="case-link"><span class="dot"></span>Competitive Advantage — AdSafe ★</a>
       <a href="#d2-uncertainty"><span class="dot"></span>AI Project Uncertainty</a>
       <a href="#d2-spiral"><span class="dot"></span>Spiral Investment Model</a>
+    </div>
+  </div>
+
+  <div id="sidebar-takeaways" style="display:none">
+    <div class="sidebar-day-label">Takeaways & Quiz</div>
+    <div class="sidebar-nav">
+      <a href="#panel-takeaways"><span class="dot"></span>Key Takeaways</a>
+      <a href="#q1"><span class="dot"></span>Q1 — AUC vs Accuracy</a>
+      <a href="#q2"><span class="dot"></span>Q2 — Targeting Threshold</a>
+      <a href="#q3"><span class="dot"></span>Q3 — Table Model</a>
+      <a href="#q4"><span class="dot"></span>Q4 — Kosinski Privacy</a>
+      <a href="#q5"><span class="dot"></span>Q5 — LLM Temperature</a>
+      <a href="#q6"><span class="dot"></span>Q6 — Churn Targeting</a>
+      <a href="#q7"><span class="dot"></span>Q7 — A/B OEC Design</a>
+      <a href="#q8"><span class="dot"></span>Q8 — Data Uncertainty</a>
+      <a href="#q9"><span class="dot"></span>Q9 — IAS Data Moat</a>
+      <a href="#q10"><span class="dot"></span>Q10 — Zillow Case</a>
     </div>
   </div>
 </nav>
@@ -1961,12 +1979,14 @@ function switchDay(day) {
   document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sidebar-day1').style.display = 'none';
   document.getElementById('sidebar-day2').style.display = 'none';
+  document.getElementById('sidebar-takeaways').style.display = 'none';
 
   document.getElementById('panel-' + day).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const tabs = document.querySelectorAll('.day-tab');
   if (day === 'day1') { tabs[0].classList.add('active'); document.getElementById('sidebar-day1').style.display = 'block'; }
   if (day === 'day2') { tabs[1].classList.add('active'); document.getElementById('sidebar-day2').style.display = 'block'; }
-  if (day === 'takeaways') { tabs[2].classList.add('active'); }
+  if (day === 'takeaways') { tabs[2].classList.add('active'); document.getElementById('sidebar-takeaways').style.display = 'block'; }
 }
 
 // Init sidebar
