@@ -751,6 +751,16 @@ footer {
       <a href="#q8"><span class="dot"></span>Q8 — Data Uncertainty</a>
       <a href="#q9"><span class="dot"></span>Q9 — IAS Data Moat</a>
       <a href="#q10"><span class="dot"></span>Q10 — Zillow Case</a>
+      <a href="#q11"><span class="dot"></span>Q11 — Lift Chart (Ch.8)</a>
+      <a href="#q12"><span class="dot"></span>Q12 — Expected Profit (Ch.7)</a>
+      <a href="#q13"><span class="dot"></span>Q13 — Persuadables (Ch.11)</a>
+      <a href="#q14"><span class="dot"></span>Q14 — Data Moat (Ch.13)</a>
+      <a href="#q15"><span class="dot"></span>Q15 — Network Effects (Ch.13)</a>
+      <a href="#q16"><span class="dot"></span>Q16 — Real Options (Ch.13)</a>
+      <a href="#q17"><span class="dot"></span>Q17 — Interpretability (Ch.14)</a>
+      <a href="#q18"><span class="dot"></span>Q18 — Profit Curve Peak (Ch.8)</a>
+      <a href="#q19"><span class="dot"></span>Q19 — Proxy Features (Ch.13)</a>
+      <a href="#q20"><span class="dot"></span>Q20 — Accuracy Fallacy (Synth)</a>
     </div>
   </div>
 </nav>
@@ -1822,9 +1832,18 @@ footer {
       </div>
 
       <!-- ─── QUIZ ─────────────────────────────────── -->
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:14px 18px;margin-bottom:24px;">
+        <span style="font-size:1.3rem;">📅</span>
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#818cf8;margin-bottom:2px;">Exam Date</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text);">May 29, 2026</div>
+          <div style="font-size:12px;color:var(--muted);font-style:italic;">Final Exam · Covers all material · 40% of total grade · IAAI Assignment 4 also due</div>
+        </div>
+      </div>
+
       <div class="quiz-intro">
         <h2>Module 1 Self-Check Quiz</h2>
-        <p>10 questions spanning Day 1 + Day 2. Click an option to reveal the answer and explanation.</p>
+        <p>20 questions spanning Days 1 &amp; 2 + DSB Chapters 7–8, 11, 13–14. Click an option to reveal the answer and explanation.</p>
         <div class="quiz-score-bar">
           <div class="score-display"><span id="score-correct">0</span>/<span id="score-total">0</span></div>
           <div class="score-label">answered correctly</div>
@@ -1961,6 +1980,136 @@ footer {
         <div class="q-explanation" id="q10-exp">Two compounding failures: (1) Selection bias — Zillow only observed houses where sellers accepted offers, meaning training data systematically under-represented overpriced homes. Homeowners rationally accept low-ball offers only when they believe their home is actually worth less, so the training set was biased toward "algorithm already overpaid" scenarios. (2) Market reaction — the model assumed a static environment, but sellers and agents adapted, making the model's assumptions progressively less valid after deployment. Day 1 concept (selection bias / data understanding) + Day 2 concept (anticipating ecosystem reactions to AI deployment).</div>
       </div>
 
+      <!-- Q11 -->
+      <div class="q-block" id="q11">
+        <div class="q-meta">Question 11 · Ch. 8 · Model Performance Visualization</div>
+        <div class="q-text">A lift chart shows your model scores 3.2× at the top decile. What does this mean operationally?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q11')">A. The model is 3.2× more accurate than a baseline logistic regression.</button>
+          <button class="q-option" onclick="answer(this, true, 'q11')">B. Targeting the top 10% of model-scored customers yields 3.2× the response rate of random targeting.</button>
+          <button class="q-option" onclick="answer(this, false, 'q11')">C. The AUC of the model is 3.2× better than the AUC of the null model.</button>
+          <button class="q-option" onclick="answer(this, false, 'q11')">D. The top decile contains 3.2% of all true positives in the dataset.</button>
+        </div>
+        <div class="q-explanation" id="q11-exp">Lift at a given percentile = (response rate in that bucket) / (overall response rate). A lift of 3.2× at the top decile means that if you mail only the top 10% of customers ranked by model score, you get 3.2 times as many responses per person as if you mailed randomly. This directly translates to ROI: same budget, 3.2× the hits. The lift curve is the practitioner's tool for deciding how deep to cut into a ranked list.</div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="q-block" id="q12">
+        <div class="q-meta">Question 12 · Ch. 7 · Decision Analytic Thinking</div>
+        <div class="q-text">In the DSB cost-benefit framework, expected profit from targeting a customer = ?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q12')">A. P(positive) × revenue − P(negative) × cost</button>
+          <button class="q-option" onclick="answer(this, false, 'q12')">B. (TP rate × benefit) − (FP rate × cost)</button>
+          <button class="q-option" onclick="answer(this, true, 'q12')">C. p × b(Y=1, Ŷ=1) + (1−p) × b(Y=0, Ŷ=1) where p is predicted probability and b() is the benefit matrix entry</button>
+          <button class="q-option" onclick="answer(this, false, 'q12')">D. Accuracy × average transaction value</button>
+        </div>
+        <div class="q-explanation" id="q12-exp">Expected profit = p(response) × benefit(TP) + [1−p(response)] × cost(FP). Concretely: if a customer has a 15% predicted response probability, the offer costs $2, and a responder generates $40 profit: Expected value = 0.15 × $40 + 0.85 × (−$2) = $6.00 − $1.70 = $4.30 → profitable to mail. The framework replaces "is this customer likely to respond?" with "is targeting this customer profitable in expectation?" — a fundamentally different and more useful question.</div>
+      </div>
+
+      <!-- Q13 -->
+      <div class="q-block" id="q13">
+        <div class="q-meta">Question 13 · Ch. 11 · Profit and Competition</div>
+        <div class="q-text">In the churn counterfactual framework, who should you NOT target with a retention offer, even if they have a high churn probability?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q13')">A. Low-CLV customers, because their lifetime value doesn't justify the offer cost.</button>
+          <button class="q-option" onclick="answer(this, false, 'q13')">B. Customers who have already contacted support, because they're too aware of the brand's problems.</button>
+          <button class="q-option" onclick="answer(this, true, 'q13')">C. Both "certain churners" (who will leave regardless) and "certain stayers" (who will stay regardless) — only the persuadable segment matters.</button>
+          <button class="q-option" onclick="answer(this, false, 'q13')">D. Long-tenure customers, because they've already demonstrated loyalty.</button>
+        </div>
+        <div class="q-explanation" id="q13-exp">The four segments: (1) Certain stayers — waste of offer budget, they stay regardless. (2) Certain churners — waste of offer budget, they leave regardless. (3) Persuadables — high Δp (the offer genuinely moves P(stay)), this is your target. (4) Do-not-disturbs — the offer might actually cause them to churn (reactance). The business variable is Δp × CLV, not just P(churn). A customer with 90% churn probability but Δp ≈ 0 is not worth targeting.</div>
+      </div>
+
+      <!-- Q14 -->
+      <div class="q-block" id="q14">
+        <div class="q-meta">Question 14 · Ch. 13 · Data Science Strategy</div>
+        <div class="q-text">What is a "data moat" and which case study from class best illustrates it?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q14')">A. A regulatory barrier that prevents competitors from accessing government datasets, illustrated by Mega Bank.</button>
+          <button class="q-option" onclick="answer(this, false, 'q14')">B. A large training dataset that produces a model with very high AUC, illustrated by the KDD churn dataset.</button>
+          <button class="q-option" onclick="answer(this, true, 'q14')">C. A data asset so large and continuously refreshed that competitors cannot replicate it even with the same algorithm, illustrated by AdSafe/IAS seeing every ad impression.</button>
+          <button class="q-option" onclick="answer(this, false, 'q14')">D. A data warehouse protected by encryption and access controls, preventing data breaches.</button>
+        </div>
+        <div class="q-explanation" id="q14-exp">A data moat is a self-reinforcing competitive advantage built on data that grows harder to replicate over time. IAS (formerly AdSafe) was the canonical example: by processing every ad impression for brand safety, they accumulated a scale of labeled impression data no competitor could match. This data moat enabled launching new product lines (fraud detection, viewability) at near-zero marginal cost. DSB Ch. 13 frames this as "real options" — the initial investment buys not just the current product but the option to build future products from the same data infrastructure.</div>
+      </div>
+
+      <!-- Q15 -->
+      <div class="q-block" id="q15">
+        <div class="q-meta">Question 15 · Ch. 13 · Data Network Effects</div>
+        <div class="q-text">What is a data network effect and why does it create durable competitive advantage?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q15')">A. More users sharing data with each other creates a social network that competitors cannot duplicate.</button>
+          <button class="q-option" onclick="answer(this, true, 'q15')">B. More users → more data → better models → better product → more users, creating a self-reinforcing loop that compounds over time.</button>
+          <button class="q-option" onclick="answer(this, false, 'q15')">C. Data is subject to network externalities — each additional data point reduces marginal cost to zero.</button>
+          <button class="q-option" onclick="answer(this, false, 'q15')">D. Larger datasets enable hiring more data scientists, creating an organizational network effect.</button>
+        </div>
+        <div class="q-explanation" id="q15-exp">The data network effect loop: more users generate more behavioral data → data trains better predictive models → better models improve the product experience → better product attracts more users → cycle repeats. Each iteration widens the gap vs. late entrants. Examples: Google Search (more queries → better ranking algorithms → users prefer Google → more queries), Facebook (more profiles → better ad targeting → more advertisers → better content/reach → more profiles). A new entrant with the same algorithm but without historical data cannot replicate the performance, regardless of engineering talent.</div>
+      </div>
+
+      <!-- Q16 -->
+      <div class="q-block" id="q16">
+        <div class="q-meta">Question 16 · Ch. 13 · Real Options</div>
+        <div class="q-text">In DSB's real options framework, why might a firm collect data even if it has no immediate use for it?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q16')">A. Because data storage is cheap and there's no downside to accumulation.</button>
+          <button class="q-option" onclick="answer(this, false, 'q16')">B. Because regulators require data retention for a minimum of 7 years in most industries.</button>
+          <button class="q-option" onclick="answer(this, true, 'q16')">C. Because data collected today creates the option to build products and answer questions in the future that aren't yet predictable — the value is the optionality, not the immediate application.</button>
+          <button class="q-option" onclick="answer(this, false, 'q16')">D. Because data collected early is always higher quality than data collected later as the market matures.</button>
+        </div>
+        <div class="q-explanation" id="q16-exp">Real options in finance = the right (not obligation) to make a future investment. Applied to data: collecting behavioral data today buys you the option to build a model or answer a question in the future — even if that question hasn't been asked yet. DSB Ch. 13 example: Harrah's (now Caesars) built a massive customer database for loyalty tracking. Years later, that same data enabled predictive CLV models, fraud detection, and personalization they never anticipated. The decision to collect data should be evaluated not just on known current use cases but on the option value for unknown future applications.</div>
+      </div>
+
+      <!-- Q17 -->
+      <div class="q-block" id="q17">
+        <div class="q-meta">Question 17 · Ch. 14 · Interpretability vs. Accuracy</div>
+        <div class="q-text">When is interpretability more important than predictive accuracy, and when is the reverse true?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q17')">A. Interpretability always matters more — executives can't act on a model they don't understand.</button>
+          <button class="q-option" onclick="answer(this, false, 'q17')">B. Accuracy always matters more — the business cares about outcomes, not explanations.</button>
+          <button class="q-option" onclick="answer(this, true, 'q17')">C. Interpretability matters more when the model informs human decisions or has legal/ethical implications; accuracy matters more when the model acts autonomously and outcomes can be measured.</button>
+          <button class="q-option" onclick="answer(this, false, 'q17')">D. The trade-off only applies to neural networks — other models are always interpretable.</button>
+        </div>
+        <div class="q-explanation" id="q17-exp">DSB Ch. 14 frames this as context-dependent. Interpretability is critical when: (1) humans must review and act on model recommendations (they need to know why), (2) regulations require explainability (GDPR, lending decisions), (3) the model could embed bias that needs auditing. Accuracy matters more when: (1) the model acts autonomously with measurable outcomes (spam filter, fraud detection), (2) stakeholders only care about aggregate performance. The Mega Bank example illustrates the middle ground — a model ML estimated, but sales reps modified based on local knowledge. High interpretability enabled the human-in-the-loop collaboration that drove $500M in revenue.</div>
+      </div>
+
+      <!-- Q18 -->
+      <div class="q-block" id="q18">
+        <div class="q-meta">Question 18 · Ch. 8 · Profit Curves</div>
+        <div class="q-text">In a profit curve plotted against percentage of customers targeted (x-axis), what does the peak of the curve represent?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q18')">A. The threshold at which the model achieves maximum AUC.</button>
+          <button class="q-option" onclick="answer(this, true, 'q18')">B. The optimal targeting threshold — the percentage of highest-scored customers that maximizes total expected profit.</button>
+          <button class="q-option" onclick="answer(this, false, 'q18')">C. The point where precision equals recall in the model.</button>
+          <button class="q-option" onclick="answer(this, false, 'q18')">D. The maximum number of customers the model can classify correctly.</button>
+        </div>
+        <div class="q-explanation" id="q18-exp">Profit curves plot cumulative expected profit as you move down the model's ranked list. The curve rises as long as each additional targeted customer contributes positive expected profit (P(respond) × benefit > cost). After the peak, you're targeting customers where cost exceeds expected benefit — profit declines. The peak = optimal cutoff. This replaces arbitrary thresholds (50%) with a business-grounded one derived from the actual cost-benefit structure. If you have a fixed mailing budget, you read off the x-axis percentage at the peak and target that fraction of your list.</div>
+      </div>
+
+      <!-- Q19 -->
+      <div class="q-block" id="q19">
+        <div class="q-meta">Question 19 · Ch. 13 · Privacy and Proxy Features</div>
+        <div class="q-text">Why could Facebook Likes predict sexual orientation (AUC 0.88) even though no Like directly encodes sexuality? What broader principle does this demonstrate?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q19')">A. Facebook used hidden metadata, not the Likes themselves, to make the prediction.</button>
+          <button class="q-option" onclick="answer(this, false, 'q19')">B. Users explicitly disclosed their orientation through their profile settings, which were correlated with Like behavior.</button>
+          <button class="q-option" onclick="answer(this, true, 'q19')">C. Behavioral patterns (which pages people Like) correlate with demographic attributes through shared social networks and cultural affinities — the proxy feature problem.</button>
+          <button class="q-option" onclick="answer(this, false, 'q19')">D. The algorithm guessed randomly and 0.88 AUC is expected when the base rate is above 50%.</button>
+        </div>
+        <div class="q-explanation" id="q19-exp">The proxy feature problem: protected attributes (sexuality, race, political views) that companies cannot legally collect are nonetheless predictable from behavioral signals that correlate with them through social network structure. Liking "Wicked the Musical" or "Kathy Griffin" doesn't mention sexuality — but the aggregate pattern of Likes across millions of users reveals demographic clusters. Kosinski (2013) showed this for gender (93%), ethnicity (95%), political views (85%), IQ (r=0.39). Implication: even if a firm is "not collecting" sensitive attributes, behavioral data may encode them implicitly. This is a central tension in algorithmic fairness and data ethics (DSB Ch. 14).</div>
+      </div>
+
+      <!-- Q20 -->
+      <div class="q-block" id="q20">
+        <div class="q-meta">Question 20 · Ch. 7–11 · Synthesis</div>
+        <div class="q-text">A colleague argues: "Our model has 91% accuracy — we should deploy it immediately for loan decisions." What is the most complete and correct pushback?</div>
+        <div class="q-options">
+          <button class="q-option" onclick="answer(this, false, 'q20')">A. "91% accuracy is not statistically significant without a p-value."</button>
+          <button class="q-option" onclick="answer(this, false, 'q20')">B. "We need to check AUC first — accuracy is never a valid metric."</button>
+          <button class="q-option" onclick="answer(this, true, 'q20')">C. "Accuracy ignores class imbalance, doesn't account for differential costs of errors (a missed default vs. a wrongly denied loan have very different costs), and doesn't tell us the optimal decision threshold — we need expected profit analysis."</button>
+          <button class="q-option" onclick="answer(this, false, 'q20')">D. "We should use precision and recall instead — they are always better than accuracy."</button>
+        </div>
+        <div class="q-explanation" id="q20-exp">Three-part pushback tying together the full IAAI framework: (1) Class imbalance — if 91% of loans are repaid, a model predicting "approve everyone" gets 91% accuracy but catches zero defaults. (2) Asymmetric costs — a missed default (false negative) costs the bank the full loan amount; a wrongly denied loan (false positive) costs only lost interest income. These are NOT equal, so the 50% threshold is wrong. (3) Expected profit > accuracy — the right framework is cost-benefit matrix × confusion matrix probabilities summed across all decisions. The optimal threshold comes from the profit curve, not a fixed cutoff. Additionally: loan decisions have legal interpretability requirements (ECOA, FCRA) — a black-box model may violate fair lending law regardless of accuracy.</div>
+      </div>
+
       <button id="quiz-reset" onclick="resetQuiz()">↺ Reset Quiz</button>
 
     </div><!-- /panel-takeaways -->
@@ -2052,7 +2201,7 @@ function resetQuiz() {
   document.getElementById('score-correct').textContent = '0';
   document.getElementById('score-total').textContent = '0';
 
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 20; i++) {
     const block = document.getElementById('q' + i);
     block.classList.remove('answered-correct', 'answered-wrong');
     block.querySelectorAll('.q-option').forEach(o => {
