@@ -340,6 +340,365 @@ body::after {
   padding: 4px 14px;
   margin-bottom: 20px;
 }
+
+/* ─── NOTES CONTENT ───────────────────────────── */
+.notes-section {
+  margin-bottom: 48px;
+}
+
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.card:hover {
+  border-color: var(--border);
+  box-shadow: 0 2px 14px rgba(13,148,136,.08);
+}
+
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.card ul, .card ol {
+  padding-left: 22px;
+  margin: 0;
+}
+
+.card li {
+  color: var(--text-body);
+  font-size: 14.5px;
+  margin-bottom: 5px;
+  line-height: 1.65;
+}
+
+.card li::marker { color: var(--accent); }
+
+.card p {
+  color: var(--text-body);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+pre.code-block {
+  background: #0d1a19;
+  border: 1px solid rgba(13,148,136,.35);
+  border-radius: 10px;
+  padding: 18px 22px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #a3e4d7;
+  overflow-x: auto;
+  margin: 14px 0;
+  line-height: 1.75;
+  white-space: pre;
+}
+
+.output-block {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--accent-mid);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--teal-dim);
+  margin: -4px 0 16px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.output-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.callout {
+  background: rgba(13,148,136,.06);
+  border: 1px solid rgba(13,148,136,.22);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 14.5px;
+  color: var(--text-body);
+  line-height: 1.65;
+}
+
+.callout strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.callout-amber {
+  background: rgba(217,119,6,.06);
+  border-color: rgba(217,119,6,.25);
+}
+
+.callout-amber strong { color: #92400e; }
+
+.callout-rose {
+  background: rgba(225,29,72,.05);
+  border-color: rgba(225,29,72,.2);
+}
+
+.callout-rose strong { color: #9f1239; }
+
+/* fn table */
+.fn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 14px 0;
+}
+
+.fn-table th {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.fn-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-body);
+  vertical-align: top;
+  line-height: 1.55;
+}
+
+.fn-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.fn-table tr:last-child td { border-bottom: none; }
+
+/* two col */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+/* exercise + homework */
+.hw-box {
+  background: linear-gradient(135deg, rgba(13,148,136,.08), rgba(13,148,136,.03));
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 30px 36px;
+  margin: 40px 0 20px;
+}
+
+.hw-box-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.hw-box-due {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.exercise-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.exercise-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(13,148,136,.2);
+  border-radius: 4px;
+  padding: 2px 9px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.exercise-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.exercise-card ul {
+  padding-left: 22px;
+  margin: 0;
+}
+
+.exercise-card li {
+  font-size: 14px;
+  color: var(--text-body);
+  margin-bottom: 5px;
+  line-height: 1.6;
+}
+
+.exercise-card li::marker { color: var(--accent); }
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(13,148,136,.2);
+  border-radius: 6px;
+  padding: 4px 12px;
+}
+
+.step-list {
+  counter-reset: step;
+  padding: 0;
+  list-style: none;
+  margin: 12px 0;
+}
+
+.step-list li {
+  counter-increment: step;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 14.5px;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.step-list li:last-child { border-bottom: none; }
+
+.step-list li::before {
+  content: counter(step);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.day5-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: linear-gradient(135deg, rgba(13,148,136,.07), rgba(13,148,136,.02));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 40px;
+}
+
+.day5-header-icon { font-size: 40px; flex-shrink: 0; }
+
+.day5-header-text h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.day5-header-text p {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--text-body);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notes-section { animation: fadeSlideUp .35s ease-out both; }
 </style>
 </head>
 <body>
@@ -357,11 +716,17 @@ body::after {
   <div id="sidebar-day5">
     <div class="sidebar-section-label" style="margin-top:4px;">Day 5 — May 8</div>
     <nav class="sidebar-nav">
-      <a href="#day5-top"><span class="nav-num">—</span>Prof. Kristen Sosulski</a>
-      <a href="#day5-top"><span class="nav-num">—</span>Scripts &amp; Loops</a>
-      <a href="#day5-top"><span class="nav-num">—</span>Reshaping Data</a>
-      <a href="#day5-top"><span class="nav-num">—</span>Functions &amp; Shiny</a>
-      <a href="#day5-top"><span class="nav-num">—</span>RMarkdown</a>
+      <a href="#s-review"><span class="nav-num">01</span>Jeopardy Review</a>
+      <a href="#s-ai"><span class="nav-num">02</span>AI &amp; Prompting</a>
+      <a href="#s-data-fundamentals"><span class="nav-num">03</span>Data Fundamentals</a>
+      <a href="#s-dplyr"><span class="nav-num">04</span>dplyr Package</a>
+      <a href="#s-import"><span class="nav-num">05</span>Importing Data</a>
+      <a href="#s-ggplot"><span class="nav-num">06</span>ggplot2 Visuals</a>
+      <a href="#s-functions"><span class="nav-num">07</span>Custom Functions</a>
+      <a href="#s-sapply"><span class="nav-num">08</span>sapply</a>
+      <a href="#s-flex"><span class="nav-num">09</span>Flexdashboards</a>
+      <a href="#s-shiny"><span class="nav-num">10</span>R Shiny</a>
+      <a href="#s-hw"><span class="nav-num">★</span>Exercises &amp; HW</a>
     </nav>
   </div>
 
@@ -390,28 +755,841 @@ body::after {
     <button class="tab-btn" onclick="switchTab('day6')" id="btn-day6">Day 6 · May 9</button>
   </div>
 
-  <!-- DAY 5 TAB -->
+  <!-- ═══════════════════════════════════════════════ DAY 5 TAB -->
   <div class="tab-panel active" id="tab-day5">
-    <div id="day5-top" class="blank-panel">
-      <div class="blank-icon">📊</div>
-      <div class="prof-chip">👩‍🏫 Prof. Kristen Sosulski · KMC 5-90</div>
-      <div class="blank-title">Day 5 Notes</div>
-      <div class="blank-sub">Class is Friday, May 8. Notes will be added after the session.</div>
 
-      <div class="topics-preview">
-        <div class="topics-preview-label">Topics from Tracker</div>
-        <ul>
-          <li>Scripts, control flow &amp; loops in R</li>
-          <li>Reshaping and transforming data</li>
-          <li>Writing custom functions</li>
-          <li>Building Shiny apps</li>
-          <li>RMarkdown for reproducible reports</li>
-        </ul>
+    <!-- Header -->
+    <div class="day5-header">
+      <div class="day5-header-icon">📊</div>
+      <div class="day5-header-text">
+        <h2>R Day 5 — Full Session Notes</h2>
+        <p>Prof. Kristen Sosulski · Fri May 8, 2026 · KMC 5-90</p>
+        <div class="meta-row">
+          <span class="meta-chip">Lessons 1–6 Review</span>
+          <span class="meta-chip">dplyr · ggplot2 · Shiny</span>
+          <span class="meta-chip">16 hrs content remaining</span>
+          <span class="meta-chip">HW due 5/26</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- DAY 6 TAB -->
+    <!-- ── SECTION 1: Jeopardy Review ──────────────── -->
+    <div class="notes-section" id="s-review">
+      <div class="section-eyebrow">Section 01</div>
+      <h2 class="section-title">R Programming Review (Jeopardy Game)</h2>
+
+      <div class="callout">
+        <strong>Class result</strong>
+        Scored 1,000+ points — beat last year's class performance. The review covered everything from Lessons 1–6 before moving into new material.
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Key Functions Tested</div>
+          <ul>
+            <li><code>c()</code> — combine values into a vector</li>
+            <li><code>mean(x, na.rm=TRUE)</code> — average, ignoring NAs</li>
+            <li><code>summary(df)</code> — descriptive stats for each column</li>
+            <li><code>hist(x)</code> — univariate histogram</li>
+            <li><code>ggplot()</code> — from the ggplot2 package</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Data Structures &amp; Types</div>
+          <ul>
+            <li><strong>Structures:</strong> vectors, matrices, data frames</li>
+            <li><strong>Assignment:</strong> <code>&lt;-</code> or <code>=</code></li>
+            <li><strong>Equality:</strong> <code>==</code> (test) vs <code>=</code> (assign)</li>
+            <li><strong>Comparison:</strong> <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>!=</code></li>
+            <li><strong>Types:</strong> numeric, character, factor</li>
+          </ul>
+        </div>
+      </div>
+
+      <pre class="code-block"># Quick review — things you must know cold
+x &lt;- c(10, 20, 30, NA, 50)
+mean(x, na.rm = TRUE)        # ignores NA → 27.5
+
+df &lt;- data.frame(a = 1:5, b = letters[1:5])
+summary(df)                  # quick overview of every column
+
+hist(x, main = "My Histogram", xlab = "Values")</pre>
+    </div>
+
+    <!-- ── SECTION 2: AI Usage ─────────────────────── -->
+    <div class="notes-section" id="s-ai">
+      <div class="section-eyebrow">Section 02</div>
+      <h2 class="section-title">AI Usage Strategies &amp; Best Practices</h2>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Tools the Class Uses</div>
+          <ul>
+            <li>ChatGPT, Gemini, Perplexity</li>
+            <li>Screenshot code → ask AI to explain it</li>
+            <li>NotebookLM for slide creation</li>
+            <li>RStudio built-in help &amp; cheat sheets</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">How to Prompt Well</div>
+          <ul>
+            <li>Include the lesson number and your skill level</li>
+            <li>Tell the AI which libraries you're allowed to use</li>
+            <li>Ask for step-by-step explanations, not just code</li>
+            <li>Always verify the output against expected results</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>Key instructor point</strong>
+        The goal isn't to get a quick answer — it's to build the instinct for <em>knowing what you want</em> and evaluating AI output critically. Understanding the steps is what makes you able to assess whether AI-generated code is correct. This matters especially for exams and job interviews.
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: Data Project Fundamentals ───── -->
+    <div class="notes-section" id="s-data-fundamentals">
+      <div class="section-eyebrow">Section 03</div>
+      <h2 class="section-title">Data Project Fundamentals</h2>
+
+      <div class="card">
+        <div class="card-title">6 Questions to Ask About Any New Dataset</div>
+        <ol class="step-list">
+          <li>How many observations (rows) and variables (columns) are there?</li>
+          <li>What are the data types of each column (numeric, character, factor)?</li>
+          <li>Are there missing values — and if so, what do they mean?</li>
+          <li>What does each row represent? (the entity / unit of analysis)</li>
+          <li>Where did the data come from and can you trust it?</li>
+          <li>What time period does it cover?</li>
+        </ol>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">The Process</div>
+          <ul>
+            <li>Data represents real-world phenomena — always ask "what does a row mean?"</li>
+            <li><strong>80%</strong> of the work is in preparation and tidying</li>
+            <li>Only 20% is analysis and visualization</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Quick Exploration Code</div>
+          <pre class="code-block" style="margin:0;font-size:12px;">nrow(df)     # number of rows
+ncol(df)     # number of cols
+dim(df)      # rows × cols
+str(df)      # types + preview
+head(df)     # first 6 rows
+summary(df)  # stats per column</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: dplyr ────────────────────────── -->
+    <div class="notes-section" id="s-dplyr">
+      <div class="section-eyebrow">Section 04</div>
+      <h2 class="section-title">dplyr — Data Manipulation Package</h2>
+
+      <div class="callout">
+        <strong>What is dplyr?</strong>
+        dplyr is R's equivalent of Python's pandas. It gives you a clean, readable grammar for manipulating data frames. It's part of the tidyverse. Always load it with <code>library(dplyr)</code>.
+      </div>
+
+      <table class="fn-table">
+        <thead>
+          <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>select()</td><td>Choose columns to keep</td><td><code>select(df, col1, col2)</code></td></tr>
+          <tr><td>filter()</td><td>Keep rows that match a condition</td><td><code>filter(df, amount &gt; 100)</code></td></tr>
+          <tr><td>mutate()</td><td>Create a new column (or overwrite one)</td><td><code>mutate(df, ratio = a/b)</code></td></tr>
+          <tr><td>summarize()</td><td>Collapse rows into summary statistics</td><td><code>summarize(df, avg = mean(x))</code></td></tr>
+          <tr><td>group_by()</td><td>Group rows before summarizing</td><td><code>group_by(df, region)</code></td></tr>
+          <tr><td>arrange()</td><td>Sort rows</td><td><code>arrange(df, desc(amount))</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <div class="card-title">The Pipe Operator <code>|&gt;</code></div>
+        <p style="margin-bottom:10px;">The pipe passes the left-hand result as the first argument to the right-hand function. It makes multi-step operations read like a sentence.</p>
+        <pre class="code-block">library(dplyr)
+
+# Without pipe (hard to read)
+arrange(summarize(group_by(filter(df, region == "East"), region),
+  total = sum(sales)), desc(total))
+
+# With pipe (clean and readable)
+df |&gt;
+  filter(region == "East") |&gt;
+  group_by(region) |&gt;
+  summarize(total = sum(sales)) |&gt;
+  arrange(desc(total))</pre>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">select() — Pick Columns</div>
+          <pre class="code-block" style="margin:0;font-size:12px;">library(readr)
+sales &lt;- read_csv("salesdata.csv")
+
+# Keep only two columns
+sales |&gt; select(region, amount)
+
+# Drop a column with minus
+sales |&gt; select(-id)</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">filter() — Subset Rows</div>
+          <pre class="code-block" style="margin:0;font-size:12px;"># Single condition
+sales |&gt; filter(amount &gt; 500)
+
+# Multiple conditions (AND)
+sales |&gt; filter(amount &gt; 500,
+                region == "West")
+
+# OR condition
+sales |&gt; filter(region == "East" |
+                region == "West")</pre>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">mutate() — New Columns</div>
+          <pre class="code-block" style="margin:0;font-size:12px;"># Create a new column
+sales |&gt; mutate(tax = amount * 0.08)
+
+# Multiple new columns at once
+sales |&gt; mutate(
+  tax    = amount * 0.08,
+  total  = amount + tax
+)</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">group_by() + summarize()</div>
+          <pre class="code-block" style="margin:0;font-size:12px;"># Total sales by region
+sales |&gt;
+  group_by(region) |&gt;
+  summarize(
+    total = sum(amount),
+    avg   = mean(amount),
+    n     = n()
+  )</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: Importing Data ──────────────── -->
+    <div class="notes-section" id="s-import">
+      <div class="section-eyebrow">Section 05</div>
+      <h2 class="section-title">Importing Data with readr</h2>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">read.csv() — Base R</div>
+          <pre class="code-block" style="margin:0;font-size:12px;">df &lt;- read.csv("internet_usage.csv")
+# Returns a plain data.frame
+# Converts strings to factors (older R)
+# Slower on large files</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">read_csv() — readr (preferred)</div>
+          <pre class="code-block" style="margin:0;font-size:12px;">library(readr)
+df &lt;- read_csv("internet_usage.csv",
+               skip = 0)
+# Returns a tibble (enhanced data frame)
+# Keeps strings as strings
+# Faster + better error messages</pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Best practice</strong>
+        Always use <code>read_csv()</code> from the readr package. It returns a <strong>tibble</strong> — an enhanced data frame used throughout the tidyverse that prints more cleanly and is faster to work with.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's Datasets</div>
+        <table class="fn-table" style="margin:0;">
+          <thead><tr><th>File</th><th>What it contains</th><th>Key columns</th></tr></thead>
+          <tbody>
+            <tr><td>internet_usage.csv</td><td>World Bank internet usage % by country and year</td><td>country, iso2c, iso3c, 1960–2025</td></tr>
+            <tr><td>bikesharedailydata.csv</td><td>Capital Bikeshare daily rental counts 2011–2012</td><td>instant, dteday, season, temp, atemp, hum, windspeed, casual, registered, cnt</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tidying Wide → Long (Pivot)</div>
+        <p style="margin-bottom:10px;">The internet usage data comes in <em>wide</em> format — each year is its own column. We need to pivot it to <em>long</em> (tidy) format so ggplot2 can work with it.</p>
+        <pre class="code-block">library(readr)
+library(dplyr)
+library(tidyr)
+
+internet_readr &lt;- read_csv("internet_usage.csv", skip = 0)
+
+# After selecting only countries (removing aggregates),
+# pivot from wide to long
+tidy_internet_readr &lt;- internet_readr |&gt;
+  pivot_longer(
+    cols      = -c(country, iso2c, iso3c),
+    names_to  = "year",
+    values_to = "usage"
+  ) |&gt;
+  mutate(year = as.numeric(year))
+
+# Result: 4 columns — country, iso3c, year, usage</pre>
+        <div class="output-block"><span class="output-label">tibble preview</span>## # A tibble: 5 × 4
+##   country        iso3c  year usage
+##   &lt;chr&gt;          &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Afghanistan    AFG    1992    NA
+## 2 Albania        ALB    1992    NA
+## 3 Algeria        DZA    1992    NA
+## 4 American Samoa ASM    1992    NA
+## 5 Andorra        AND    1992    NA</div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: ggplot2 ──────────────────────── -->
+    <div class="notes-section" id="s-ggplot">
+      <div class="section-eyebrow">Section 06</div>
+      <h2 class="section-title">ggplot2 — Data Visualization</h2>
+
+      <div class="callout">
+        <strong>ggplot2 grammar</strong>
+        Every ggplot is built the same way: <code>ggplot(data, aes(x, y, color, group)) + geom_*() + ...</code>. The <code>aes()</code> function maps columns to visual properties. You add layers with <code>+</code>.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Line Chart — Internet Usage Over Time</div>
+        <pre class="code-block">library(ggplot2)
+library(ggthemes)
+
+line01 &lt;- ggplot(tidy_internet_readr,
+                 aes(x     = year,
+                     y     = usage,
+                     color = country,
+                     group = country)) +
+  geom_line() +
+  labs(title = "World Internet Usage",
+       x     = "Year",
+       y     = "% of Population") +
+  theme_economist()
+
+line01   # render the plot</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Bar Chart — Bar / Column</div>
+        <pre class="code-block">bar01 &lt;- ggplot(tidy_internet_readr,
+                aes(x = country, y = usage)) +
+  geom_col() +
+  labs(title = "Internet Usage by Country") +
+  theme_minimal()
+
+bar01</pre>
+        <div class="callout callout-amber" style="margin-top:10px;">
+          <strong>geom_bar vs geom_col</strong>
+          Use <code>geom_bar()</code> when you want R to count rows for you. Use <code>geom_col()</code> when your data already has the height values as a column. For this dataset, use <code>geom_col()</code>.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Making it Interactive with plotly</div>
+        <pre class="code-block">library(plotly)
+
+# Wrap any ggplot object with ggplotly()
+ggplotly(line01)    # hover, zoom, pan — all automatic</pre>
+        <p style="font-size:14px;color:var(--muted);margin-top:8px;font-style:italic;">ggplotly converts any ggplot into an interactive HTML widget with no extra code.</p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: Custom Functions ────────────── -->
+    <div class="notes-section" id="s-functions">
+      <div class="section-eyebrow">Section 07</div>
+      <h2 class="section-title">Writing Custom Functions</h2>
+
+      <div class="callout">
+        <strong>Why write your own functions?</strong>
+        When you need to repeat the same operation many times, wrap it in a function instead of copying and pasting code. Functions also make your code easier to test and reuse.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Function Structure</div>
+        <pre class="code-block"># Part 1 — define the function
+myfunction &lt;- function(myparameter) {
+  return(myparameter + 2)
+}
+
+# Part 2 — call the function
+myfunction(5)    # → [1] 7
+myfunction(10)   # → [1] 12</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Adding Input Validation</div>
+        <p style="margin-bottom:10px;">What happens if someone passes a string instead of a number? Add a check with <code>is.numeric()</code>:</p>
+        <pre class="code-block">myfunction &lt;- function(myparameter) {
+  if (!is.numeric(myparameter)) {
+    stop("Input must be numeric")
+  }
+  return(myparameter + 2)
+}
+
+myfunction("hello")   # → Error: Input must be numeric
+myfunction(8)         # → [1] 10</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Multiple Arguments</div>
+        <pre class="code-block"># Function with two parameters
+addTogether &lt;- function(x, y) {
+  return(x + y)
+}
+
+addTogether(3, 4)          # → [1] 7
+addTogether(x=3, y=4)      # same — named arguments (alternative)
+addTogether(3, "hello")    # → Error (type mismatch)</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Built-in Functions You Should Know</div>
+        <table class="fn-table" style="margin:0;">
+          <thead><tr><th>Function</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>toupper(x)</td><td>Convert string to uppercase</td></tr>
+            <tr><td>mean(x, na.rm=TRUE)</td><td>Average, skip NAs</td></tr>
+            <tr><td>is.numeric(x)</td><td>Returns TRUE/FALSE — is x a number?</td></tr>
+            <tr><td>is.na(x)</td><td>Returns TRUE/FALSE — is x missing?</td></tr>
+            <tr><td>sqrt(x)</td><td>Square root</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pseudocode → Real Code Workflow</div>
+        <p style="margin-bottom:10px;font-size:14px;color:var(--text-body);">Before writing code, sketch the logic in plain English (pseudocode), then translate:</p>
+        <pre class="code-block"># Pseudocode:
+# function "averageTwo" takes two numbers x and y
+# adds them together, divides by 2, returns result
+
+averageTwo &lt;- function(x, y) {
+  if (!is.numeric(x) | !is.numeric(y)) stop("Both inputs must be numeric")
+  return((x + y) / 2)
+}
+
+averageTwo(10, 20)   # → [1] 15</pre>
+      </div>
+    </div>
+
+    <!-- ── SECTION 8: sapply ───────────────────────── -->
+    <div class="notes-section" id="s-sapply">
+      <div class="section-eyebrow">Section 08</div>
+      <h2 class="section-title">sapply — Apply a Function Over a Vector</h2>
+
+      <div class="callout">
+        <strong>The apply family</strong>
+        Instead of writing a for loop to apply a function to every element, R has the <em>apply family</em>. <code>sapply()</code> applies a function over a vector or list and returns a simplified result (usually a vector).
+      </div>
+
+      <div class="card">
+        <div class="card-title">sapply() Syntax</div>
+        <pre class="code-block"># Pattern: sapply(vector_or_list, function)
+
+# Define a function
+takemean &lt;- function(x) { mean(x, na.rm = TRUE) }
+
+# Apply it over a named list of vectors
+my_data &lt;- list(a = c(1,2,3), b = c(10,20), c = c(5,5,5,5))
+sapply(my_data, takemean)</pre>
+        <div class="output-block">##  a  b  c
+##  2 15  5</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Exercise 03 Pattern — Function on Bikeshare Column</div>
+        <pre class="code-block">library(readr)
+bikeshare &lt;- read_csv("bikesharedailydata.csv")
+
+# Define your function (example: square each value)
+f &lt;- function(x) { x^2 }
+
+# Apply it over the atemp column
+sapply(bikeshare$atemp, f)</pre>
+        <div class="output-block">## [1] 0.1322 0.1251 0.0359 0.0450 0.0526 ...
+## (731 values — one per day in the dataset)</div>
+        <div class="callout" style="margin-top:10px;">
+          <strong>For Exercise 03</strong>
+          You can use any column from bikeshare and any function. The example above squares <code>atemp</code> (normalized feeling temperature). You could also compute <code>sqrt(x)</code>, <code>x * 100</code>, <code>round(x, 2)</code>, etc. The key is: define the function, then <code>sapply(bikeshare$column, your_function)</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 9: Flexdashboards ──────────────── -->
+    <div class="notes-section" id="s-flex">
+      <div class="section-eyebrow">Section 09</div>
+      <h2 class="section-title">Flexdashboards</h2>
+
+      <div class="callout">
+        <strong>What is a Flexdashboard?</strong>
+        A Flexdashboard is an R Markdown document that publishes a group of related visualizations as a dashboard web page. It can be static (plain HTML) or dynamic (powered by Shiny).
+      </div>
+
+      <div class="card">
+        <div class="card-title">Setup</div>
+        <ol class="step-list">
+          <li>Install the package: <code>install.packages("flexdashboard")</code></li>
+          <li>In RStudio: File → New File → R Markdown → From Template → Flex Dashboard</li>
+          <li>Open and render <code>flexboard_01_timeseries.Rmd</code> (provided in today's zip)</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Available Components</div>
+        <ul>
+          <li>Interactive JavaScript visualizations (htmlwidgets — e.g., plotly, leaflet)</li>
+          <li>Standard R graphical output (base R, ggplot2, lattice)</li>
+          <li>Tabular data with sorting, filtering, paging</li>
+          <li>Value boxes — highlight a single important number</li>
+          <li>Gauges — display a value on a meter within a range</li>
+          <li>Text annotations</li>
+        </ul>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Layout by Column (default)</div>
+          <p style="font-size:14px;color:var(--text-body);margin-bottom:8px;">Level-2 markdown headers (<code>##</code>) define columns. Charts stack vertically inside each column.</p>
+          <pre class="code-block" style="font-size:11.5px;">---
+output: flexdashboard::flex_dashboard
+---
+
+## Column 1
+### Chart A
+[code]
+
+## Column 2
+### Chart B
+[code]
+
+### Chart C
+[code]</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">Layout by Row</div>
+          <p style="font-size:14px;color:var(--text-body);margin-bottom:8px;">Add <code>orientation: rows</code> in the YAML header to stack charts in rows instead of columns.</p>
+          <pre class="code-block" style="font-size:11.5px;">---
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+## Row 1
+### Chart A
+
+## Row 2
+### Chart B
+### Chart C</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Scrolling Layout</div>
+        <p style="font-size:14px;color:var(--text-body);margin-bottom:8px;">By default, charts resize to fill the browser height. To let charts keep their natural height and scroll the page:</p>
+        <pre class="code-block">---
+output:
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll    # scroll instead of fill
+---</pre>
+      </div>
+    </div>
+
+    <!-- ── SECTION 10: R Shiny ─────────────────────── -->
+    <div class="notes-section" id="s-shiny">
+      <div class="section-eyebrow">Section 10</div>
+      <h2 class="section-title">R Shiny — Interactive Web Apps</h2>
+
+      <div class="callout">
+        <strong>What is Shiny?</strong>
+        Shiny is a web application framework for R. It lets you build interactive web apps using only R — no HTML, JavaScript, or CSS knowledge required (though you can add them). Apps can be published online without a web server.
+      </div>
+
+      <div class="card">
+        <div class="card-title">The 3-Section Structure — Every Shiny App</div>
+        <pre class="code-block">library(shiny)
+
+# ── SECTION 1: UI ─────────────────────────────────
+# Nested R functions that assemble the HTML interface
+ui &lt;- fluidPage(
+  titlePanel("My App Title"),
+  sliderInput("bins",                  # input ID
+              "Number of bins:",       # label shown to user
+              min = 1, max = 50,
+              value = 30),             # default
+  plotOutput("distPlot")               # output placeholder
+)
+
+# ── SECTION 2: SERVER ─────────────────────────────
+# Instructions for building / rebuilding R objects shown in UI
+server &lt;- function(input, output) {
+  output$distPlot &lt;- renderPlot({
+    hist(rnorm(input$bins),            # reacts to slider
+         main = "Histogram")
+  })
+}
+
+# ── SECTION 3: SHINY APP ──────────────────────────
+# Combines ui and server — always the last line
+shinyApp(ui = ui, server = server)</pre>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">UI Inputs</div>
+          <ul>
+            <li><code>sliderInput()</code> — numeric slider</li>
+            <li><code>numericInput()</code> — type a number</li>
+            <li><code>textInput()</code> — free text</li>
+            <li><code>selectInput()</code> — dropdown</li>
+            <li><code>radioButtons()</code> — pick one</li>
+            <li><code>checkboxGroupInput()</code> — pick many</li>
+            <li><code>dateInput()</code> — date picker</li>
+            <li><code>fileInput()</code> — upload a file</li>
+            <li><code>actionButton()</code> — trigger an action</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">UI Layout Functions</div>
+          <ul>
+            <li><code>fluidPage()</code> — the outer container</li>
+            <li><code>sidebarLayout()</code> — sidebar + main panel</li>
+            <li><code>fluidRow()</code> — row of columns</li>
+            <li><code>flowLayout()</code> — items flow left to right</li>
+            <li><code>verticalLayout()</code> — items stacked vertically</li>
+            <li><code>wellPanel()</code> — a shaded panel box</li>
+            <li><code>tabsetPanel()</code> — multiple tabs</li>
+          </ul>
+          <div style="margin-top:12px;">
+            <div class="card-title" style="font-size:14px;">Server Outputs</div>
+            <ul>
+              <li><code>renderPlot({})</code> → <code>plotOutput()</code></li>
+              <li><code>renderTable({})</code> → <code>tableOutput()</code></li>
+              <li><code>renderPrint({})</code> → <code>verbatimTextOutput()</code></li>
+              <li><code>renderText({})</code> → <code>textOutput()</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Building Your First Shiny App</div>
+        <ol class="step-list">
+          <li>Install: <code>install.packages("shiny")</code></li>
+          <li>In RStudio: File → New File → Shiny Web App → Single File → choose a folder name</li>
+          <li>R creates a new folder with <code>app.R</code> inside it</li>
+          <li>Edit <code>app.R</code> — this is the only file you modify</li>
+          <li>Run it: <code>runApp("path/to/your/app/folder")</code></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-title">App Walkthrough — nyuclasses Data</div>
+        <pre class="code-block">library(readr)
+library(shiny)
+library(dplyr)
+library(stringr)
+
+# Load data
+nyuclasses &lt;- read_csv("nyuclasses/nyuclasses.csv")
+
+# Filter to only Assignment rows
+nyuclasses &lt;- nyuclasses |&gt;
+  filter(str_detect(assessment, "^Assignment"))</pre>
+        <p style="font-size:14px;color:var(--text-body);margin-top:10px;"><code>str_detect()</code> from the stringr package checks if a string matches a pattern. <code>"^Assignment"</code> means "starts with the word Assignment".</p>
+      </div>
+    </div>
+
+    <!-- ── SECTION: Exercises + Homework ──────────── -->
+    <div class="notes-section" id="s-hw">
+      <div class="section-eyebrow">Post-Module Assignment</div>
+      <h2 class="section-title">Exercises 1–4 &amp; Homework</h2>
+
+      <div class="hw-box">
+        <div class="hw-box-title">Post-Module Homework</div>
+        <span class="hw-box-due">Due: Monday, May 26 by 11:59 PM ET · Brightspace → Assignments → Post Module: R Exercises 1–4</span>
+
+        <div class="callout callout-amber" style="margin-bottom:20px;">
+          <strong>Submit 2 files</strong>
+          (1) Your <code>.Rmd</code> file with all four exercises completed — rename it <code>lastname_first_inclass.Rmd</code><br>
+          (2) Your <code>app.R</code> file for Exercise 4 — keep it named <code>app.R</code>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-tag">Exercise 01</div>
+          <div class="exercise-title">dplyr Operations on Sales Data</div>
+          <ul>
+            <li>Use <code>select()</code>, <code>filter()</code>, <code>mutate()</code>, <code>summarize()</code>, <code>group_by()</code>, and <code>arrange()</code></li>
+            <li>Chain operations together using the pipe <code>|&gt;</code></li>
+            <li>Use the salesdata or internet_usage dataset from today's project folder</li>
+          </ul>
+          <pre class="code-block" style="margin-top:10px;">library(readr)
+library(dplyr)
+
+# Template — adapt to the actual dataset
+df &lt;- read_csv("your_data.csv")
+
+df |&gt;
+  filter(column &gt; threshold) |&gt;
+  select(col1, col2, col3) |&gt;
+  mutate(new_col = col1 / col2) |&gt;
+  group_by(group_col) |&gt;
+  summarize(avg = mean(new_col, na.rm = TRUE)) |&gt;
+  arrange(desc(avg))</pre>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-tag">Exercise 02</div>
+          <div class="exercise-title">ggplot2 Visualization</div>
+          <ul>
+            <li>Create at least one line chart and one bar/column chart using ggplot2</li>
+            <li>Use <code>aes()</code> to map your x, y, and optionally color/group</li>
+            <li>Add axis labels and a title with <code>labs()</code></li>
+            <li>Bonus: wrap with <code>ggplotly()</code> for interactivity</li>
+          </ul>
+          <pre class="code-block" style="margin-top:10px;">library(ggplot2)
+library(plotly)
+
+# Line chart
+p &lt;- ggplot(tidy_internet_readr,
+            aes(x = year, y = usage,
+                color = country, group = country)) +
+  geom_line() +
+  labs(title = "Internet Usage Over Time",
+       x = "Year", y = "% Population") +
+  theme_minimal()
+
+ggplotly(p)    # make it interactive</pre>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-tag">Exercise 03</div>
+          <div class="exercise-title">Custom Function + sapply on Bikeshare Data</div>
+          <ul>
+            <li>Load <code>bikesharedailydata.csv</code> with <code>read_csv()</code></li>
+            <li>Write a user-defined function that performs a calculation on a numeric input</li>
+            <li>Apply it over a column from the bikeshare data frame using <code>sapply()</code></li>
+            <li>Add input validation with <code>is.numeric()</code> for extra credit</li>
+          </ul>
+          <pre class="code-block" style="margin-top:10px;">library(readr)
+bikeshare &lt;- read_csv("bikesharedailydata.csv")
+
+# Define your function — replace x^2 with your own operation
+my_fn &lt;- function(x) {
+  if (!is.numeric(x)) stop("Input must be numeric")
+  return(x^2)    # or sqrt(x), or x * 100, etc.
+}
+
+# Apply over a column of your choice
+result &lt;- sapply(bikeshare$atemp, my_fn)
+head(result)    # show first 6 values</pre>
+          <div class="callout" style="margin-top:10px;">
+            <strong>Bikeshare column reference</strong>
+            Good numeric columns to use: <code>temp</code> (temperature, 0–1 normalized), <code>atemp</code> (feeling temp), <code>hum</code> (humidity), <code>windspeed</code>, <code>casual</code> (casual riders), <code>registered</code>, <code>cnt</code> (total riders).
+          </div>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-tag">Exercise 04</div>
+          <div class="exercise-title">Modify the nyuclasses Shiny App</div>
+          <p style="font-size:14px;color:var(--text-body);margin-bottom:12px;">Achieve <strong>2 or more</strong> of the following enhancements to the provided <code>app.R</code>:</p>
+          <ul>
+            <li>Revise the app to default to the most recent assignment's distribution</li>
+            <li>Add a <code>selectInput()</code> selector that filters by one or more students</li>
+            <li>Add doughnut charts showing completion / late / uncompleted by assignment</li>
+            <li>Add a student list panel</li>
+          </ul>
+          <pre class="code-block" style="margin-top:12px;">library(shiny)
+library(readr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+
+nyuclasses &lt;- read_csv("nyuclasses/nyuclasses.csv") |&gt;
+  filter(str_detect(assessment, "^Assignment"))
+
+ui &lt;- fluidPage(
+  titlePanel("NYU Classes Dashboard"),
+
+  sidebarLayout(
+    sidebarPanel(
+      # ── Add your inputs here ──────────────────
+      selectInput("assignment",
+                  "Select Assignment:",
+                  choices = unique(nyuclasses$assessment)),
+
+      # Example: student selector (Exercise 04 enhancement)
+      selectInput("student",
+                  "Filter by Student:",
+                  choices = c("All", unique(nyuclasses$student)),
+                  multiple = TRUE,
+                  selected = "All")
+    ),
+
+    mainPanel(
+      plotOutput("distPlot")
+      # Add more outputs here for doughnut charts, tables, etc.
+    )
+  )
+)
+
+server &lt;- function(input, output) {
+  # Reactive data filtered by inputs
+  filtered &lt;- reactive({
+    df &lt;- nyuclasses |&gt;
+      filter(assessment == input$assignment)
+    if (!"All" %in% input$student) {
+      df &lt;- df |&gt; filter(student %in% input$student)
+    }
+    df
+  })
+
+  output$distPlot &lt;- renderPlot({
+    ggplot(filtered(), aes(x = score)) +
+      geom_histogram(fill = "#0d9488", color = "white", bins = 20) +
+      labs(title = paste("Distribution:", input$assignment)) +
+      theme_minimal()
+  })
+}
+
+shinyApp(ui = ui, server = server)</pre>
+        </div>
+      </div>
+
+      <!-- Quick reference -->
+      <div class="card">
+        <div class="card-title">Assignment Quick Reference — All Libraries You'll Need</div>
+        <div class="chip-row">
+          <span class="chip">library(readr)</span>
+          <span class="chip">library(dplyr)</span>
+          <span class="chip">library(tidyr)</span>
+          <span class="chip">library(ggplot2)</span>
+          <span class="chip">library(plotly)</span>
+          <span class="chip">library(stringr)</span>
+          <span class="chip">library(shiny)</span>
+          <span class="chip">library(ggthemes)</span>
+          <span class="chip">library(flexdashboard)</span>
+        </div>
+        <div class="callout callout-rose" style="margin-top:12px;">
+          <strong>File submission checklist</strong>
+          Before submitting: (1) Rename your .Rmd to <code>lastname_first_inclass.Rmd</code> · (2) Keep <code>app.R</code> as is · (3) Make sure all code chunks run without errors — knit the .Rmd to verify · (4) Upload both files to Brightspace → Post Module: R Exercises 1–4
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end tab-day5 -->
+
+  <!-- ═══════════════════════════════════════════════ DAY 6 TAB -->
   <div class="tab-panel" id="tab-day6">
     <div id="day6-top" class="blank-panel">
       <div class="blank-icon">📈</div>
