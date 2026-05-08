@@ -721,11 +721,12 @@ pre.code-block {
       <a href="#s-data-fundamentals"><span class="nav-num">03</span>Data Fundamentals</a>
       <a href="#s-dplyr"><span class="nav-num">04</span>dplyr Package</a>
       <a href="#s-import"><span class="nav-num">05</span>Importing Data</a>
-      <a href="#s-ggplot"><span class="nav-num">06</span>ggplot2 Visuals</a>
-      <a href="#s-functions"><span class="nav-num">07</span>Custom Functions</a>
-      <a href="#s-sapply"><span class="nav-num">08</span>sapply</a>
-      <a href="#s-flex"><span class="nav-num">09</span>Flexdashboards</a>
-      <a href="#s-shiny"><span class="nav-num">10</span>R Shiny</a>
+      <a href="#s-cleaning"><span class="nav-num">06</span>Data Cleaning</a>
+      <a href="#s-ggplot"><span class="nav-num">07</span>ggplot2 Visuals</a>
+      <a href="#s-functions"><span class="nav-num">08</span>Custom Functions</a>
+      <a href="#s-sapply"><span class="nav-num">09</span>sapply</a>
+      <a href="#s-flex"><span class="nav-num">10</span>Flexdashboards</a>
+      <a href="#s-shiny"><span class="nav-num">11</span>R Shiny</a>
       <a href="#s-hw"><span class="nav-num">★</span>Exercises &amp; HW</a>
     </nav>
   </div>
@@ -780,7 +781,7 @@ pre.code-block {
 
       <div class="callout">
         <strong>Class result</strong>
-        Scored 1,000+ points — beat last year's class performance. The review covered everything from Lessons 1–6 before moving into new material.
+        Scored 1,100+ points — beat last year's class performance. The review covered everything from Lessons 1–6 before moving into new material.
       </div>
 
       <div class="two-col">
@@ -1051,9 +1052,116 @@ tidy_internet_readr &lt;- internet_readr |&gt;
       </div>
     </div>
 
-    <!-- ── SECTION 6: ggplot2 ──────────────────────── -->
-    <div class="notes-section" id="s-ggplot">
+    <!-- ── SECTION 6: Data Cleaning ─────────────────── -->
+    <div class="notes-section" id="s-cleaning">
       <div class="section-eyebrow">Section 06</div>
+      <h2 class="section-title">Data Cleaning &amp; Preparation</h2>
+
+      <div class="callout">
+        <strong>80 / 20 Rule</strong>
+        80% of any real data project is cleaning and preparation. Only 20% is analysis. The tools below are what you use to assess, handle, and fix messy data before visualization or modeling.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Identifying Missing Values</div>
+        <pre class="code-block"># Is each value NA?
+is.na(df$column)                    # → vector of TRUE/FALSE
+
+# How many NAs in one column?
+sum(is.na(df$column))               # → single integer
+
+# How many NAs in every column at once?
+colSums(is.na(df))                  # → named vector per column
+
+# Which rows have NO missing values?
+complete.cases(df)                  # → TRUE/FALSE per row
+df[complete.cases(df), ]            # → keep only complete rows
+
+# Which rows HAVE missing values?
+df[!complete.cases(df), ]           # → isolate the bad rows</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">5 Missing Value Strategies</div>
+        <table class="fn-table" style="margin:0;">
+          <thead><tr><th>Strategy</th><th>When to use it</th><th>R approach</th></tr></thead>
+          <tbody>
+            <tr><td>Manual replacement</td><td>Logic is obvious (e.g., season from a date)</td><td>Assign directly: <code>df$col[condition] &lt;- value</code></td></tr>
+            <tr><td>Interpolation</td><td>Time series with forward/backward fill</td><td><code>zoo::na.locf()</code> or <code>tidyr::fill()</code></td></tr>
+            <tr><td>Removal</td><td>Only a few rows missing &amp; data is not critical</td><td><code>na.omit(df)</code> or <code>filter(complete.cases(df))</code></td></tr>
+            <tr><td>Imputation</td><td>Numeric column; missing at random</td><td><code>df$col[is.na(df$col)] &lt;- mean(df$col, na.rm=TRUE)</code></td></tr>
+            <tr><td>Predefined value</td><td>Category column with a known "unknown" code</td><td>Assign a factor level like <code>"Unknown"</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Factor Variable Conversion</div>
+        <p style="margin-bottom:10px;font-size:14px;color:var(--text-body);">
+          Categorical data is often stored as integer codes (1, 2, 3, 4). You need to convert these to <strong>factors</strong> so R treats them as categories, not numbers. This affects charts, models, and summaries.
+        </p>
+        <pre class="code-block">library(readr)
+bikeshare &lt;- read_csv("bikesharedailydata.csv")
+
+# Convert season: 1=Winter, 2=Spring, 3=Summer, 4=Fall
+bikeshare$season &lt;- factor(
+  bikeshare$season,
+  levels = 1:4,
+  labels = c("Winter", "Spring", "Summer", "Fall")
+)
+
+# Convert year: 0="2011", 1="2012"
+bikeshare$yr &lt;- factor(
+  bikeshare$yr,
+  levels = c(0, 1),
+  labels = c("2011", "2012")
+)</pre>
+        <div class="callout callout-amber" style="margin-top:10px;">
+          <strong>Why this matters</strong>
+          Without factor conversion, R will treat season 4 as "twice as much" as season 2 in a model. With factor(), R knows it's a category, not a number. Always check your data dictionary to understand what each code means.
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Manual Season Fix from Date</div>
+          <pre class="code-block" style="margin:0;font-size:12px;"># If season column has NAs, derive it from the date
+bikeshare$season[
+  is.na(bikeshare$season) &amp;
+  as.numeric(format(bikeshare$dteday, "%m")) %in% c(12, 1, 2)
+] &lt;- "Winter"
+
+# Or use dplyr's mutate + case_when
+library(dplyr)
+bikeshare &lt;- bikeshare |&gt;
+  mutate(season = case_when(
+    is.na(season) &amp; month %in% c(12,1,2) ~ "Winter",
+    is.na(season) &amp; month %in% c(3,4,5)  ~ "Spring",
+    is.na(season) &amp; month %in% c(6,7,8)  ~ "Summer",
+    is.na(season) &amp; month %in% c(9,10,11) ~ "Fall",
+    TRUE ~ season
+  ))</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">Data Integrity: Accurate Counts</div>
+          <p style="font-size:14px;color:var(--text-body);margin-bottom:8px;">When you title a chart "208 countries," you need to know the actual count of non-missing rows — not just <code>nrow()</code>.</p>
+          <pre class="code-block" style="margin:0;font-size:12px;"># Total rows (includes NAs)
+nrow(internet_data)          # e.g., 222
+
+# Actual observations (no NAs)
+sum(!is.na(internet_data$`2025`))  # e.g., 208
+
+# Missing count
+sum(is.na(internet_data$`2025`))   # e.g., 14
+
+# So title should say "(208 countries)" not 222</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: ggplot2 ──────────────────────── -->
+    <div class="notes-section" id="s-ggplot">
+      <div class="section-eyebrow">Section 07</div>
       <h2 class="section-title">ggplot2 — Data Visualization</h2>
 
       <div class="callout">
@@ -1105,9 +1213,9 @@ ggplotly(line01)    # hover, zoom, pan — all automatic</pre>
       </div>
     </div>
 
-    <!-- ── SECTION 7: Custom Functions ────────────── -->
+    <!-- ── SECTION 8: Custom Functions ────────────── -->
     <div class="notes-section" id="s-functions">
-      <div class="section-eyebrow">Section 07</div>
+      <div class="section-eyebrow">Section 08</div>
       <h2 class="section-title">Writing Custom Functions</h2>
 
       <div class="callout">
@@ -1183,9 +1291,9 @@ averageTwo(10, 20)   # → [1] 15</pre>
       </div>
     </div>
 
-    <!-- ── SECTION 8: sapply ───────────────────────── -->
+    <!-- ── SECTION 9: sapply ───────────────────────── -->
     <div class="notes-section" id="s-sapply">
-      <div class="section-eyebrow">Section 08</div>
+      <div class="section-eyebrow">Section 09</div>
       <h2 class="section-title">sapply — Apply a Function Over a Vector</h2>
 
       <div class="callout">
@@ -1226,9 +1334,9 @@ sapply(bikeshare$atemp, f)</pre>
       </div>
     </div>
 
-    <!-- ── SECTION 9: Flexdashboards ──────────────── -->
+    <!-- ── SECTION 10: Flexdashboards ──────────────── -->
     <div class="notes-section" id="s-flex">
-      <div class="section-eyebrow">Section 09</div>
+      <div class="section-eyebrow">Section 10</div>
       <h2 class="section-title">Flexdashboards</h2>
 
       <div class="callout">
@@ -1305,9 +1413,9 @@ output:
       </div>
     </div>
 
-    <!-- ── SECTION 10: R Shiny ─────────────────────── -->
+    <!-- ── SECTION 11: R Shiny ─────────────────────── -->
     <div class="notes-section" id="s-shiny">
-      <div class="section-eyebrow">Section 10</div>
+      <div class="section-eyebrow">Section 11</div>
       <h2 class="section-title">R Shiny — Interactive Web Apps</h2>
 
       <div class="callout">
@@ -1413,7 +1521,97 @@ nyuclasses &lt;- nyuclasses |&gt;
     <!-- ── SECTION: Exercises + Homework ──────────── -->
     <div class="notes-section" id="s-hw">
       <div class="section-eyebrow">Post-Module Assignment</div>
-      <h2 class="section-title">Exercises 1–4 &amp; Homework</h2>
+      <h2 class="section-title">In-Class Exercises &amp; Homework</h2>
+
+      <!-- In-class exercise patterns -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">In-Class Exercise A — Histograms for Multiple Years (Loop)</div>
+        <p style="font-size:14px;color:var(--text-body);margin-bottom:10px;">Dataset: <code>internet_usage.csv</code> (wide format, years as columns). Create a histogram for each year using a for loop instead of copying and pasting code for every single year.</p>
+        <pre class="code-block">library(readr)
+internet_data &lt;- read_csv("internet_usage.csv")
+
+# Get just the year column names (exclude country text columns)
+year_cols &lt;- names(internet_data)[sapply(internet_data, is.numeric)]
+
+# Method 1: for loop
+par(mfrow = c(3, 3))   # 3×3 grid of plots (adjust as needed)
+for (yr in year_cols) {
+  col_data &lt;- internet_data[[yr]]
+  n_countries &lt;- sum(!is.na(col_data))   # accurate count
+  hist(col_data,
+       main  = paste("Internet Usage", yr,
+                     paste0("(", n_countries, " countries)")),
+       xlab  = "% Population",
+       col   = "steelblue",
+       border = "white",
+       na.rm = TRUE)
+}
+par(mfrow = c(1, 1))   # reset to single plot</pre>
+        <div class="callout" style="margin-top:10px;">
+          <strong>Key pattern to memorize</strong>
+          <code>names(df)[sapply(df, is.numeric)]</code> gives you only the column names that are numeric — useful for filtering year columns away from text columns like country names.
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">In-Class Exercise B — Box Plots Across All Years (While Loop)</div>
+        <p style="font-size:14px;color:var(--text-body);margin-bottom:10px;">Same dataset, same loop logic — but using a <code>while</code> loop and <code>boxplot()</code> instead of <code>hist()</code>.</p>
+        <pre class="code-block">year_cols &lt;- names(internet_data)[sapply(internet_data, is.numeric)]
+
+# Method 2: while loop (alternative to for)
+i &lt;- 1
+while (i &lt;= length(year_cols)) {
+  yr       &lt;- year_cols[i]
+  col_data &lt;- internet_data[[yr]]
+  n_obs    &lt;- sum(!is.na(col_data))   # real country count
+
+  boxplot(col_data,
+          main       = paste("Internet Usage", yr,
+                             paste0("(", n_obs, " countries)")),
+          ylab       = "% Population Using Internet",
+          col        = "#14b8a6",
+          border     = "#0d9488",
+          horizontal = FALSE)
+  i &lt;- i + 1
+}</pre>
+        <div class="callout callout-amber" style="margin-top:10px;">
+          <strong>for vs while — when to use which</strong>
+          Use a <strong>for loop</strong> when you know exactly how many times to iterate (you have a fixed vector of years). Use a <strong>while loop</strong> when the stopping condition is more dynamic (e.g., user input or a changing counter). Both work here — for loops are usually cleaner for this type of task.
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:28px;">
+        <div class="card-title">In-Class Exercise C — Bikeshare Scatter + ggplotly</div>
+        <pre class="code-block">library(readr)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+bikeshare &lt;- read_csv("bikesharedailydata.csv")
+
+# Convert year to factor so ggplot treats it as a category
+bikeshare$yr &lt;- factor(bikeshare$yr,
+                        levels = c(0, 1),
+                        labels = c("2011", "2012"))
+
+# Scatter: temperature vs total rentals, colored by year
+scatter &lt;- ggplot(bikeshare,
+                  aes(x    = temp,
+                      y    = cnt,
+                      color = yr,
+                      text  = paste("Temp:", round(temp, 2),
+                                    "&lt;br&gt;Rentals:", cnt,
+                                    "&lt;br&gt;Year:", yr))) +
+  geom_point(alpha = 0.6, size = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Temperature vs Total Rentals",
+       x     = "Normalized Temperature",
+       y     = "Total Rentals",
+       color = "Year") +
+  theme_minimal()
+
+ggplotly(scatter, tooltip = "text")   # interactive hover</pre>
+      </div>
 
       <div class="hw-box">
         <div class="hw-box-title">Post-Module Homework</div>
