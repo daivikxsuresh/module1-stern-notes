@@ -699,6 +699,71 @@ pre.code-block {
 }
 
 .notes-section { animation: fadeSlideUp .35s ease-out both; }
+
+/* ─── DAY 6 SPECIFIC ──────────────────────────── */
+.formula-box {
+  background: rgba(13,148,136,.05);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 28px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  color: var(--text);
+  margin: 16px 0;
+  letter-spacing: .02em;
+}
+.formula-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+.rule-thumb { width:100%; border-collapse:collapse; font-size:13px; margin:14px 0; }
+.rule-thumb th {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  padding: 9px 14px; text-align:left; border-bottom: 2px solid var(--border);
+}
+.rule-thumb td { padding:9px 14px; border-bottom:1px solid var(--border-light); color:var(--text-body); font-family:'JetBrains Mono',monospace; }
+.rule-thumb tr:last-child td { border-bottom:none; }
+.strength-bar { display:inline-block; height:8px; border-radius:4px; background:var(--accent); margin-right:8px; vertical-align:middle; }
+
+.d6-header {
+  display:flex; align-items:flex-start; gap:20px;
+  background: linear-gradient(135deg, rgba(13,148,136,.07), rgba(13,148,136,.02));
+  border:1px solid var(--border); border-radius:14px;
+  padding:28px 32px; margin-bottom:40px;
+}
+.d6-header-icon { font-size:40px; flex-shrink:0; }
+.d6-header-text h2 { font-family:'DM Serif Display',serif; font-size:26px; color:var(--text); margin-bottom:4px; }
+.d6-header-text p { font-size:14px; color:var(--muted); font-style:italic; margin-bottom:12px; }
+
+.scatter-visual {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:20px; margin:16px 0; text-align:center;
+}
+.exam-tip {
+  background: linear-gradient(135deg, rgba(234,179,8,.08), rgba(234,179,8,.03));
+  border: 1.5px solid rgba(234,179,8,.4);
+  border-radius:10px; padding:14px 18px;
+  font-size:14px; color:#713f12; line-height:1.65; margin:14px 0;
+}
+.exam-tip strong {
+  font-family:'JetBrains Mono',monospace; font-size:9.5px;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:#92400e; display:block; margin-bottom:5px;
+}
+.coming-soon-banner {
+  background:rgba(13,148,136,.04); border:1.5px dashed var(--border);
+  border-radius:12px; padding:28px; text-align:center; margin-top:36px;
+}
+.coming-soon-banner p { font-size:14px; color:var(--muted); font-style:italic; margin-top:6px; }
 </style>
 </head>
 <body>
@@ -734,11 +799,14 @@ pre.code-block {
   <div id="sidebar-day6" style="display:none">
     <div class="sidebar-section-label" style="margin-top:4px;">Day 6 — May 9</div>
     <nav class="sidebar-nav">
-      <a href="#day6-top"><span class="nav-num">—</span>Prof. Peter Lakner</a>
-      <a href="#day6-top"><span class="nav-num">—</span>Linear &amp; Multiple Regression</a>
-      <a href="#day6-top"><span class="nav-num">—</span>Logistic Regression</a>
-      <a href="#day6-top"><span class="nav-num">—</span>Lasso &amp; Dummy Vars</a>
-      <a href="#day6-top"><span class="nav-num">—</span>Module Review</a>
+      <a href="#d6-framework"><span class="nav-num">01</span>Regression Framework</a>
+      <a href="#d6-correlation"><span class="nav-num">02</span>Correlation</a>
+      <a href="#d6-ols"><span class="nav-num">03</span>Least Squares (OLS)</a>
+      <a href="#d6-output"><span class="nav-num">04</span>Reading R Output</a>
+      <a href="#d6-r2"><span class="nav-num">05</span>R² &amp; Variation</a>
+      <a href="#d6-intervals"><span class="nav-num">06</span>CI vs PI</a>
+      <a href="#d6-multiple"><span class="nav-num">07</span>Multiple Regression</a>
+      <a href="#d6-rcommands"><span class="nav-num">★</span>R Cheat Sheet</a>
     </nav>
   </div>
 </nav>
@@ -1789,24 +1857,577 @@ shinyApp(ui = ui, server = server)</pre>
 
   <!-- ═══════════════════════════════════════════════ DAY 6 TAB -->
   <div class="tab-panel" id="tab-day6">
-    <div id="day6-top" class="blank-panel">
-      <div class="blank-icon">📈</div>
-      <div class="prof-chip">👨‍🏫 Prof. Peter Lakner · KMC 1-70</div>
-      <div class="blank-title">Day 6 Notes</div>
-      <div class="blank-sub">Class is Saturday, May 9. Notes will be added after the session. Module wrap-up at lunch.</div>
+  <div id="day6-top"></div>
 
-      <div class="topics-preview">
-        <div class="topics-preview-label">Topics from Tracker</div>
-        <ul>
-          <li>Linear &amp; multiple regression</li>
-          <li>Logistic regression</li>
-          <li>Lasso regularization</li>
-          <li>Dummy variables</li>
-          <li>Review &amp; Module 1 wrap-up</li>
-        </ul>
+  <!-- Header -->
+  <div class="d6-header">
+    <div class="d6-header-icon">📈</div>
+    <div class="d6-header-text">
+      <h2>Day 6 — Statistics &amp; R · Prof. Peter Lakner</h2>
+      <p>Sat May 9, 2026 · Linear Regression → Multiple Regression → Logistic → LASSO → Dummy Variables</p>
+      <div class="meta-row">
+        <span class="meta-chip">Prof. Peter Lakner</span>
+        <span class="meta-chip">Plug-and-Play R Code</span>
+        <span class="meta-chip">Exam Reference</span>
+        <span class="meta-chip">All Topics Covered</span>
       </div>
     </div>
   </div>
+
+  <!-- ── SECTION 01: Regression Framework ── -->
+  <div class="notes-section" id="d6-framework">
+    <div class="section-eyebrow">Section 01</div>
+    <h2 class="section-title">The Linear Regression Framework</h2>
+
+    <div class="callout">
+      <strong>Lakner's Course Philosophy</strong>
+      Focus on understanding interpretation and application — computers do the calculations. You need to know what to run, what output to look at, and what it means.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">The Players</div>
+        <ul>
+          <li><strong>y</strong> — Response / Dependent variable (what you predict)</li>
+          <li><strong>x</strong> — Predictor / Independent variable (what you use)</li>
+          <li><strong>Simple regression</strong> — one predictor</li>
+          <li><strong>Multiple regression</strong> — multiple predictors</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">The Goal</div>
+        <p>Find the line that best explains y using x — so you can predict future values and understand how much x actually matters.</p>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula-label">The Model</span>
+      yᵢ = β₀ + β₁xᵢ + εᵢ
+    </div>
+
+    <div class="card">
+      <div class="card-title">What Each Term Means</div>
+      <table class="fn-table">
+        <tr><th>Term</th><th>Name</th><th>What It Is</th></tr>
+        <tr><td>β₀</td><td>Intercept</td><td>Predicted y when x = 0 (sometimes nonsensical)</td></tr>
+        <tr><td>β₁</td><td>Slope</td><td>Change in y per 1-unit increase in x</td></tr>
+        <tr><td>εᵢ</td><td>Error term</td><td>Random noise — what the model can't explain</td></tr>
+        <tr><td>β̂₀, β̂₁</td><td>Estimates</td><td>What R calculates from your data</td></tr>
+        <tr><td>ŷ</td><td>Fitted value</td><td>β̂₀ + β̂₁x — your predicted y</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Assumptions About the Error Term ε</div>
+      <ul>
+        <li>Normally distributed with mean zero</li>
+        <li>Constant variance (homoscedasticity) — spread doesn't grow with x</li>
+        <li>Independent observations — one error doesn't affect another</li>
+      </ul>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Exam interpretation template</strong>
+      "For every 1 unit increase in [x], [y] is estimated to increase/decrease by [β̂₁] [units], holding all else constant."
+    </div>
+  </div>
+
+  <!-- ── SECTION 02: Correlation ── -->
+  <div class="notes-section" id="d6-correlation">
+    <div class="section-eyebrow">Section 02</div>
+    <h2 class="section-title">Correlation Coefficient (r)</h2>
+
+    <div class="formula-box">
+      <span class="formula-label">Correlation Formula</span>
+      r = Σ(xᵢ − x̄)(yᵢ − ȳ) / √[Σ(xᵢ − x̄)² · Σ(yᵢ − ȳ)²]
+    </div>
+
+    <div class="callout">
+      <strong>Key property</strong>
+      r is always between −1 and +1. It only measures linear relationships. A scatter plot can reveal non-linear patterns that r misses entirely. Always plot first.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Rules of Thumb</div>
+        <table class="rule-thumb">
+          <tr><th>r range</th><th>Relationship</th></tr>
+          <tr><td>0.8 to 1.0</td><td><span class="strength-bar" style="width:55px"></span>Very strong positive</td></tr>
+          <tr><td>0.5 to 0.8</td><td><span class="strength-bar" style="width:38px"></span>Strong positive</td></tr>
+          <tr><td>0.2 to 0.5</td><td><span class="strength-bar" style="width:18px"></span>Moderate positive</td></tr>
+          <tr><td>−0.2 to 0.2</td><td><span class="strength-bar" style="width:5px;background:#ccc"></span>No linear rel.</td></tr>
+          <tr><td>−0.5 to −0.2</td><td><span class="strength-bar" style="width:18px;background:#f87171"></span>Moderate negative</td></tr>
+          <tr><td>−0.8 to −0.5</td><td><span class="strength-bar" style="width:38px;background:#f87171"></span>Strong negative</td></tr>
+          <tr><td>−1.0 to −0.8</td><td><span class="strength-bar" style="width:55px;background:#f87171"></span>Very strong negative</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Examples from Class</div>
+        <ul>
+          <li>Diamonds: r = 0.94 (very strong positive)</li>
+          <li>FCAT Poverty vs Math: r = −0.82 (strong negative)</li>
+        </ul>
+        <pre class="code-block" style="margin-top:12px">cor(Diamonds$CARAT, Diamonds$PRICE)
+# → 0.94</pre>
+      </div>
+    </div>
+
+    <div class="scatter-visual">
+      <svg viewBox="0 0 400 190" style="max-width:400px;width:100%">
+        <line x1="40" y1="165" x2="370" y2="165" stroke="#99f6e4" stroke-width="1.5"/>
+        <line x1="40" y1="15" x2="40" y2="165" stroke="#99f6e4" stroke-width="1.5"/>
+        <line x1="60" y1="140" x2="350" y2="30" stroke="#0d9488" stroke-width="2" stroke-dasharray="5,3"/>
+        <circle cx="70" cy="135" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="100" cy="120" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="130" cy="112" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="160" cy="100" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="190" cy="88" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="220" cy="78" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="255" cy="65" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="285" cy="55" r="4" fill="#14b8a6" opacity="0.75"/>
+        <circle cx="320" cy="45" r="4" fill="#14b8a6" opacity="0.75"/>
+        <line x1="130" y1="104" x2="130" y2="112" stroke="#f87171" stroke-width="1.5"/>
+        <line x1="220" y1="73" x2="220" y2="78" stroke="#f87171" stroke-width="1.5"/>
+        <line x1="285" y1="48" x2="285" y2="55" stroke="#f87171" stroke-width="1.5"/>
+        <text x="355" y="170" font-family="monospace" font-size="11" fill="#5eafa6">x</text>
+        <text x="20" y="20" font-family="monospace" font-size="11" fill="#5eafa6">y</text>
+        <text x="200" y="25" font-family="monospace" font-size="10" fill="#0d9488">regression line (r≈0.94)</text>
+        <text x="133" y="102" font-family="monospace" font-size="9" fill="#f87171">e</text>
+      </svg>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;font-style:italic">Red lines = residuals (observed − fitted). Regression minimizes the sum of squared residuals.</p>
+    </div>
+  </div>
+
+  <!-- ── SECTION 03: Least Squares ── -->
+  <div class="notes-section" id="d6-ols">
+    <div class="section-eyebrow">Section 03</div>
+    <h2 class="section-title">Least Squares (OLS) Estimation</h2>
+
+    <div class="callout">
+      <strong>The Intuition</strong>
+      Find the line that makes total prediction error as small as possible. We square errors so positives and negatives don't cancel — and because squares are smooth for calculus to optimize.
+    </div>
+
+    <div class="formula-box">
+      <span class="formula-label">Minimize This — SSE</span>
+      SSE = Σ eᵢ² = Σ (yᵢ − ŷᵢ)²
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Key Terms</div>
+        <ul>
+          <li><strong>ŷᵢ = β̂₀ + β̂₁xᵢ</strong> — Fitted (predicted) value</li>
+          <li><strong>eᵢ = yᵢ − ŷᵢ</strong> — Residual (leftover error)</li>
+          <li><strong>β̂₀, β̂₁</strong> — R solves for these automatically via OLS</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Why Squares Not Absolute Value?</div>
+        <p>Absolute value has a sharp "kink" at zero — hard to differentiate. Squaring creates a smooth curve that calculus can minimize cleanly. Mathematical convenience, same concept.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Diamond Example — Running the Model</div>
+      <pre class="code-block">regdiamonds = lm(Diamonds$PRICE ~ Diamonds$CARAT)
+regdiamonds
+
+# Or with data frame syntax (cleaner):
+model = lm(PRICE ~ CARAT, data=Diamonds)
+summary(model)</pre>
+      <div class="output-label">Estimated Coefficients</div>
+      <div class="output-block">β̂₀ (Intercept): −2,298 dollars
+β̂₁ (Slope):    +11,599 dollars per carat</div>
+      <ul style="margin-top:12px">
+        <li><strong>Slope interpretation:</strong> Each 1-carat increase → price up $11,599. More practical: each 0.1-carat increase → price up ~$1,160.</li>
+        <li><strong>Intercept interpretation:</strong> A 0-carat diamond costs −$2,298 — nonsensical. Zero is far outside the data range (min 0.18 carats). Intercept often has no meaningful real-world interpretation.</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>Extrapolation Warning</strong>
+      Never predict y for x values far outside your data range. Run summary(df$x) first to see min/max. The linear relationship is local — it may not hold beyond your data.
+    </div>
+
+    <div class="card">
+      <div class="card-title">Making a Prediction — Plug and Play</div>
+      <div class="formula-box" style="font-size:14px; margin:8px 0">ŷ = β̂₀ + β̂₁ × x = −2298 + 11,599 × 0.4 = $2,341.60</div>
+      <pre class="code-block">summary(Diamonds$CARAT)   # check data range first!
+# Min=0.18, Max=1.1 → predicting at 0.4 is fine</pre>
+    </div>
+  </div>
+
+  <!-- ── SECTION 04: Reading R Output ── -->
+  <div class="notes-section" id="d6-output">
+    <div class="section-eyebrow">Section 04</div>
+    <h2 class="section-title">Reading the R Output — Inference for the Slope</h2>
+
+    <div class="callout">
+      <strong>The Key Question</strong>
+      Is β₁ = 0? If yes, x has NO linear relationship with y and the model is useless. We test this with a t-test that R gives us automatically.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Hypothesis Test Setup</div>
+        <ul>
+          <li><strong>H₀:</strong> β₁ = 0 (no relationship)</li>
+          <li><strong>H₁:</strong> β₁ ≠ 0 (relationship exists)</li>
+          <li>Reject H₀ if |t_stat| &gt; t₀.₀₂₅</li>
+          <li>Or: reject H₀ if p-value &lt; α (usually 0.05)</li>
+          <li>df = n − 2 for simple regression</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">The Formulas</div>
+        <div class="formula-box" style="font-size:13px;margin:6px 0">t_stat = β̂₁ / s_β̂₁</div>
+        <div class="formula-box" style="font-size:13px;margin:6px 0">95% CI: β̂₁ ± t₀.₀₂₅ × s_β̂₁</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:6px">s_β̂₁ = Std. Error column in summary()</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">What summary(reg) Gives You — Every Line Explained</div>
+      <div class="output-block">Coefficients:
+             Estimate  Std. Error  t value  Pr(>|t|)
+(Intercept)  189.816    3.021      62.82    &lt;2e-16 ***
+FCAT$POVERTY  -0.305    0.048      -6.42    2.93e-06 ***
+
+Residual std error: 5.366 on 20 df
+Multiple R-squared: 0.6731, Adjusted R-squared: 0.6568
+F-statistic: 41.19 on 1 and 20 DF, p-value: 2.927e-06</div>
+      <table class="fn-table" style="margin-top:14px">
+        <tr><th>Column</th><th>What to Read</th></tr>
+        <tr><td>Estimate</td><td>Your β̂ values — intercept and slope</td></tr>
+        <tr><td>Std. Error</td><td>Uncertainty of the estimate (s_β̂₁) — used to build CI</td></tr>
+        <tr><td>t value</td><td>Estimate ÷ Std. Error — compare to ±t₀.₀₂₅</td></tr>
+        <tr><td>Pr(&gt;|t|)</td><td>p-value — if &lt; 0.05, slope is statistically significant</td></tr>
+        <tr><td>*** / ** / *</td><td>*** = p&lt;0.001 · ** = p&lt;0.01 · * = p&lt;0.05 · "." = p&lt;0.1</td></tr>
+        <tr><td>Multiple R-squared</td><td>R² — proportion of y variation explained by x</td></tr>
+        <tr><td>Adjusted R-squared</td><td>R² penalized for number of predictors — use in multiple regression</td></tr>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Get t Critical Value</div>
+        <pre class="code-block">qt(0.975, df=20)   # → 2.086</pre>
+        <p style="font-size:13px;color:var(--muted)">df = n−2. Use 0.975 for 95% two-tailed CI.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Get CI for Slope Directly</div>
+        <pre class="code-block">confint(reg, level=0.95)</pre>
+        <p style="font-size:13px;color:var(--muted)">R does the math — gives lower and upper bounds for each coefficient.</p>
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Exam shortcut — read the stars</strong>
+      *** or ** next to a predictor = significant (reject H₀). No stars = p-value &gt; 0.05 = cannot reject H₀ = that predictor may not belong in the model.
+    </div>
+
+    <div class="card">
+      <div class="card-title">FCAT Poverty/Math — Full Interpretation</div>
+      <ul>
+        <li><strong>β̂₀ = 189.8:</strong> Average math score for schools with 0% students below poverty is 189.8</li>
+        <li><strong>β̂₁ = −0.305:</strong> Each 1% increase in poverty → math score decreases by ~0.3 points</li>
+        <li><strong>t = −6.42, p = 2.93×10⁻⁶:</strong> Very strong evidence of a real relationship (p ≪ 0.05)</li>
+        <li><strong>R² = 0.67:</strong> 67% of variation in math scores is explained by poverty level</li>
+        <li><strong>Predicting POVERTY=20:</strong> ŷ = 189.8 − 0.3 × 20 = 183.8</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── SECTION 05: R² and Variation ── -->
+  <div class="notes-section" id="d6-r2">
+    <div class="section-eyebrow">Section 05</div>
+    <h2 class="section-title">R² and the Decomposition of Variation</h2>
+
+    <div class="scatter-visual">
+      <svg viewBox="0 0 430 115" style="max-width:430px;width:100%">
+        <rect x="20" y="18" width="390" height="22" rx="4" fill="rgba(13,148,136,.15)" stroke="#99f6e4" stroke-width="1"/>
+        <text x="30" y="34" font-family="monospace" font-size="11" fill="#0d9488">SST — Total variation in y</text>
+        <rect x="20" y="50" width="262" height="22" rx="4" fill="rgba(13,148,136,.35)" stroke="#0d9488" stroke-width="1.5"/>
+        <text x="30" y="66" font-family="monospace" font-size="11" fill="#0f766e">SSREG — Explained by x</text>
+        <rect x="282" y="50" width="128" height="22" rx="4" fill="rgba(248,113,113,.2)" stroke="#f87171" stroke-width="1.5"/>
+        <text x="288" y="66" font-family="monospace" font-size="11" fill="#b91c1c">SSE — Unexplained</text>
+        <text x="20" y="105" font-family="monospace" font-size="12" fill="#134e4a">SST = SSREG + SSE</text>
+        <text x="230" y="105" font-family="monospace" font-size="12" fill="#134e4a">→ R² = SSREG / SST</text>
+      </svg>
+    </div>
+
+    <div class="card">
+      <div class="card-title">The Three Sums of Squares</div>
+      <table class="fn-table">
+        <tr><th>Name</th><th>Formula</th><th>Interpretation</th></tr>
+        <tr><td>SST (SS_yy)</td><td>Σ(yᵢ − ȳ)²</td><td>Total variation of y around its mean ȳ</td></tr>
+        <tr><td>SSREG</td><td>Σ(ŷᵢ − ȳ)²</td><td>Variation explained by x (regression explains this)</td></tr>
+        <tr><td>SSE</td><td>Σ(yᵢ − ŷᵢ)²</td><td>Variation NOT explained — residuals (random, other factors)</td></tr>
+      </table>
+      <div class="formula-box" style="margin-top:14px;font-size:14px">R² = SSREG / SST = 1 − (SSE / SST)</div>
+    </div>
+
+    <div class="callout">
+      <strong>Simple regression only — bonus fact</strong>
+      In simple regression, R² = r² (square of correlation coefficient). Diamonds: r = 0.94 → R² = 0.89. In multiple regression this shortcut does NOT apply.
+    </div>
+
+    <div class="card">
+      <div class="card-title">R² Rules of Thumb</div>
+      <table class="rule-thumb">
+        <tr><th>R²</th><th>Model Strength</th></tr>
+        <tr><td>0.65 to 1.0</td><td>Strong model — good explaining power</td></tr>
+        <tr><td>0.25 to 0.65</td><td>Moderate — OK, room to improve</td></tr>
+        <tr><td>0 to 0.25</td><td>Weak — barely worth using in current form</td></tr>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Get SSE/SSREG from R</div>
+        <pre class="code-block">reg = lm(MATH ~ POVERTY, data=FCAT)
+anova(reg)   # shows SSE and SSREG</pre>
+      </div>
+      <div class="card">
+        <div class="card-title">Adjusted R² — Multiple Regression</div>
+        <ul>
+          <li>R² always ↑ when you add predictors (even useless ones)</li>
+          <li>Adjusted R² penalizes for extra predictors</li>
+          <li>Use adjusted R² to compare models with different numbers of predictors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Exam interpretation of R²</strong>
+      "R² = 0.67 means 67% of the variation in [math scores] is explained by the linear relationship with [poverty level]." Always name both variables.
+    </div>
+  </div>
+
+  <!-- ── SECTION 06: CI vs PI ── -->
+  <div class="notes-section" id="d6-intervals">
+    <div class="section-eyebrow">Section 06</div>
+    <h2 class="section-title">Confidence Intervals vs Prediction Intervals</h2>
+
+    <div class="two-col">
+      <div class="card" style="border-color:#0d9488">
+        <div class="card-title" style="color:#0d9488">Confidence Interval (CI)</div>
+        <ul>
+          <li>For the <strong>average</strong> y at a given x</li>
+          <li>"What is the average price for all 0.6-carat diamonds?"</li>
+          <li><strong>Narrower</strong> — gets tighter as n increases</li>
+          <li>Diamond 0.6ct: ($4,535, $4,787)</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#22c55e">
+        <div class="card-title" style="color:#15803d">Prediction Interval (PI)</div>
+        <ul>
+          <li>For a <strong>single future</strong> observation</li>
+          <li>"What will this specific 0.6-carat diamond cost?"</li>
+          <li><strong>Much wider</strong> — individual variation always remains</li>
+          <li>Diamond 0.6ct: ($2,458, $6,864)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="scatter-visual">
+      <svg viewBox="0 0 400 175" style="max-width:400px;width:100%">
+        <line x1="40" y1="158" x2="380" y2="158" stroke="#99f6e4" stroke-width="1.5"/>
+        <line x1="40" y1="10" x2="40" y2="158" stroke="#99f6e4" stroke-width="1.5"/>
+        <line x1="60" y1="25" x2="370" y2="65" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="60" y1="105" x2="370" y2="145" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="60" y1="58" x2="370" y2="83" stroke="#f87171" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="60" y1="75" x2="370" y2="100" stroke="#f87171" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="60" y1="66" x2="370" y2="91" stroke="#0d9488" stroke-width="2.5"/>
+        <circle cx="90" cy="62" r="3" fill="#14b8a6" opacity="0.65"/>
+        <circle cx="140" cy="73" r="3" fill="#14b8a6" opacity="0.65"/>
+        <circle cx="190" cy="81" r="3" fill="#14b8a6" opacity="0.65"/>
+        <circle cx="240" cy="88" r="3" fill="#14b8a6" opacity="0.65"/>
+        <circle cx="290" cy="94" r="3" fill="#14b8a6" opacity="0.65"/>
+        <circle cx="340" cy="100" r="3" fill="#14b8a6" opacity="0.65"/>
+        <text x="340" y="89" font-family="monospace" font-size="9.5" fill="#0d9488">line</text>
+        <text x="340" y="101" font-family="monospace" font-size="9.5" fill="#f87171">CI</text>
+        <text x="340" y="143" font-family="monospace" font-size="9.5" fill="#22c55e">PI</text>
+      </svg>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;font-style:italic">Blue = regression line · Red bands = confidence · Green bands = prediction (always wider)</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">R Code — Both Intervals</div>
+      <pre class="code-block">x = Diamonds$CARAT
+y = Diamonds$PRICE
+new = data.frame(x = 0.6)
+
+# Confidence interval (average price at CARAT=0.6)
+conf = predict(lm(y ~ x), new, interval="confidence")
+conf   # → (4534.889, 4787.056)
+
+# Prediction interval (single diamond at CARAT=0.6)
+pred = predict(lm(y ~ x), new, interval="prediction")
+pred   # → (2458, 6864)</pre>
+      <div class="callout callout-amber" style="margin-top:12px">
+        <strong>Common mistake</strong>
+        Must save x and y first, then use data.frame(x = 0.6). Writing data.frame(Diamonds$CARAT = 0.6) does NOT work.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Plot Both Bands</div>
+      <pre class="code-block">pred = predict(model, interval="prediction")
+confid = predict(model, interval="confidence")
+
+plot(x, y)
+lines(x, pred[,1], col="blue", lwd=2)    # regression line
+lines(x, pred[,2], col="green", lwd=2)   # PI lower bound
+lines(x, pred[,3], col="green", lwd=2)   # PI upper bound
+lines(x, confid[,2], col="red", lwd=2)   # CI lower bound
+lines(x, confid[,3], col="red", lwd=2)   # CI upper bound</pre>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Which interval on the exam?</strong>
+      "Average" or "expected" value → confidence interval (CI). "A single specific" observation → prediction interval (PI). PI is always wider than CI for the same x.
+    </div>
+  </div>
+
+  <!-- ── SECTION 07: Multiple Regression ── -->
+  <div class="notes-section" id="d6-multiple">
+    <div class="section-eyebrow">Section 07</div>
+    <h2 class="section-title">Multiple Regression &amp; Multicollinearity</h2>
+
+    <div class="formula-box">
+      <span class="formula-label">Multiple Regression Model</span>
+      y = β₀ + β₁x₁ + β₂x₂ + … + βₖxₖ + ε
+    </div>
+
+    <div class="callout">
+      <strong>Coefficient interpretation in multiple regression</strong>
+      Each β̂ᵢ = "holding all other predictors constant, a 1-unit increase in xᵢ is associated with a β̂ᵢ change in y."
+    </div>
+
+    <div class="card">
+      <div class="card-title">Zagat Restaurant Example</div>
+      <pre class="code-block">datazagat = read.table("zagat.CSV", header=TRUE, sep=",")
+zagatmod = lm(Price ~ Food + Decor + Service, data=datazagat)
+summary(zagatmod)</pre>
+      <div class="output-block">             Estimate  Std. Error  t value  Pr(>|t|)
+(Intercept)  -21.195    2.271      -9.334   &lt;2e-16 ***
+Food          -0.107    0.166      -0.648    0.518
+Decor          1.008    0.127       7.955   &lt;2e-16 ***
+Service        2.603    0.233      11.197   &lt;2e-16 ***
+Multiple R-squared: 0.7765</div>
+      <ul style="margin-top:12px">
+        <li><strong>Food: negative and non-significant (p=0.518)</strong> — strange! Counterintuitive but it's a statistical artifact, not reality.</li>
+        <li><strong>Decor and Service: both *** significant</strong></li>
+        <li>Food p-value &gt; 0.05 → cannot reject H₀ for Food → consider removing it</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Multicollinearity — The Real Problem</div>
+      <pre class="code-block">data = datazagat[, c(2,3,4,5)]
+cor(data)</pre>
+      <div class="output-block">        Food   Decor  Service
+Decor   0.363
+Service 0.710  0.726
+Price   0.538  0.779   0.849</div>
+      <ul style="margin-top:12px">
+        <li><strong>Food–Service correlation = 0.71</strong> — Food is redundant because Service already "captures" it</li>
+        <li>When predictors correlate with each other, their coefficients become unstable and hard to interpret</li>
+        <li>This doesn't mean Food doesn't affect Price — it just can't add unique info given Service is in the model</li>
+        <li><strong>Rule:</strong> Predictors should have LOW correlation with each other, HIGH correlation with y</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Best Subset Selection — LEAPS Package</div>
+      <pre class="code-block">library(leaps)
+leaps = regsubsets(Price ~ Food + Decor + Service, data=datazagat, nbest=3)
+plot(leaps, scale="r2")</pre>
+      <div class="callout" style="margin-top:12px">
+        <strong>Reading the LEAPS plot</strong>
+        Black squares = predictor included. Find row with highest R² using fewest predictors. In Zagat: Decor + Service only gives R²≈0.78, nearly identical to the full model (0.7765). Drop Food.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Voting Fraud Case Study — A Statistical Warning</div>
+      <div class="callout callout-rose">
+        <strong>Statistical Misuse — Know This Concept</strong>
+        You cannot select data because it looks unusual, then use statistics to "prove" it's unusual. That's circular reasoning. Random sampling is required for valid probability statements.
+      </div>
+      <ul>
+        <li><strong>Context:</strong> 1993 Philadelphia election — absentee ballot ratio = 3.76 (suspicious), machine ratio = 0.97</li>
+        <li><strong>Method:</strong> Fit regression on 21 prior elections, built prediction interval for ratioabs given ratiomach = 0.97</li>
+        <li><strong>Result:</strong> 3.76 fell outside even the 99.9% PI → very suspicious</li>
+        <li><strong>The flaw:</strong> This election was selected because it looked unusual — not a random selection</li>
+        <li><strong>Better approach:</strong> Probability of seeing 1 such unusual event in 22 tries = 1 − (1−0.001)²² = 0.022. Still very small. Fraud conclusion still reasonable but reasoning must be sound.</li>
+      </ul>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Multicollinearity exam rule</strong>
+      Predictors should explain y but NOT each other. Use cor(data) to check. If two predictors are highly correlated (&gt;0.7), consider dropping the one with the higher p-value.
+    </div>
+  </div>
+
+  <!-- ── SECTION 08: R Cheat Sheet ── -->
+  <div class="notes-section" id="d6-rcommands">
+    <div class="section-eyebrow">Section 08</div>
+    <h2 class="section-title">R Quick Reference — Exam Cheat Sheet</h2>
+
+    <table class="fn-table">
+      <tr><th>Task</th><th>R Code</th><th>Notes</th></tr>
+      <tr><td>Scatterplot</td><td>plot(x, y)</td><td>Always do this first</td></tr>
+      <tr><td>Correlation</td><td>cor(x, y)</td><td>Returns r (−1 to +1)</td></tr>
+      <tr><td>Simple regression</td><td>lm(y ~ x, data=df)</td><td>Fit the model</td></tr>
+      <tr><td>Multiple regression</td><td>lm(y ~ x1 + x2 + x3, data=df)</td><td>Add predictors with +</td></tr>
+      <tr><td>Full output</td><td>summary(reg)</td><td>Coefficients, t-tests, R²</td></tr>
+      <tr><td>ANOVA table</td><td>anova(reg)</td><td>Shows SSE and SSREG</td></tr>
+      <tr><td>t critical value</td><td>qt(0.975, df=n-2)</td><td>For 95% CI, simple regression</td></tr>
+      <tr><td>CI for coefficients</td><td>confint(reg, level=0.95)</td><td>CI for each β</td></tr>
+      <tr><td>Point prediction</td><td>predict(lm(y~x), data.frame(x=val))</td><td>Get ŷ for new x</td></tr>
+      <tr><td>CI for mean y</td><td>predict(model, new, interval="confidence")</td><td>Narrower band</td></tr>
+      <tr><td>PI for single y</td><td>predict(model, new, interval="prediction")</td><td>Wider band — individual obs</td></tr>
+      <tr><td>Data range check</td><td>summary(df$x)</td><td>Never predict outside this!</td></tr>
+      <tr><td>Correlation matrix</td><td>cor(df[, c(2,3,4,5)])</td><td>Check multicollinearity</td></tr>
+      <tr><td>Best subsets (LEAPS)</td><td>regsubsets(y~., data=df, nbest=3)</td><td>library(leaps) required</td></tr>
+      <tr><td>LEAPS plot</td><td>plot(leaps, scale="r2")</td><td>Visual R² by predictor combo</td></tr>
+      <tr><td>Stepwise backward</td><td>step(lm(y~., data), direction="backward")</td><td>Drops by AIC</td></tr>
+      <tr><td>Stepwise forward</td><td>step(null, scope=list(lower=null,upper=full), direction="forward")</td><td>Adds by AIC</td></tr>
+      <tr><td>Residuals</td><td>resid(reg)</td><td>eᵢ = yᵢ − ŷᵢ</td></tr>
+      <tr><td>Fitted values</td><td>fitted(reg)</td><td>ŷᵢ values</td></tr>
+      <tr><td>Residual plot</td><td>plot(fitted(reg), resid(reg))</td><td>Check heteroscedasticity</td></tr>
+      <tr><td>Shapiro-Wilk test</td><td>shapiro.test(resid(reg))</td><td>Normality check; want p&gt;0.05</td></tr>
+      <tr><td>Log transform</td><td>logprice = log(df$price)</td><td>Fix heteroscedasticity or skew</td></tr>
+      <tr><td>Durbin-Watson</td><td>dwt(reg) · library(car)</td><td>Autocorrelation; ~2.0 = good</td></tr>
+      <tr><td>Logistic regression</td><td>glm(y ~ x1+x2, data, family="binomial")</td><td>Binary response (0/1)</td></tr>
+      <tr><td>Predict probability</td><td>predict(logit, newdata, type="response")</td><td>Returns p̂ between 0 and 1</td></tr>
+      <tr><td>LASSO</td><td>glmnet(x, y) · library(glmnet)</td><td>Shrinks some coefficients to 0</td></tr>
+      <tr><td>LASSO plot</td><td>plot(fit, xvar="lambda", label=TRUE)</td><td>Shows coefficient paths vs λ</td></tr>
+      <tr><td>LASSO coefficients</td><td>coef(fit, s=1.06)</td><td>Pick λ just above target</td></tr>
+      <tr><td>Dummy variable</td><td>factor(df$category)</td><td>R creates dummies automatically; one level = base</td></tr>
+      <tr><td>Contrasts (check coding)</td><td>contrasts(df$factor_var)</td><td>See how R coded your categories</td></tr>
+      <tr><td>Chi-square test</td><td>chisq.test(table)</td><td>Independence for categorical vars</td></tr>
+      <tr><td>Chi-square critical</td><td>qchisq(0.95, df=(r-1)*(c-1))</td><td>Compare to χ²_stat</td></tr>
+      <tr><td>Two-sample t test</td><td>t.test(x1, x2)</td><td>Compare two means</td></tr>
+    </table>
+
+    <div class="callout" style="margin-top:24px">
+      <strong>Complete Workflow — Plug and Play</strong>
+      1. plot(x,y) → 2. cor(x,y) → 3. lm() → 4. summary() → 5. Check residuals (plot + shapiro.test) → 6. predict() with CI or PI
+    </div>
+  </div>
+
+  <!-- Coming Soon Banner -->
+  <div class="coming-soon-banner">
+    <div style="font-size:28px;margin-bottom:10px">📋</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:6px">Afternoon Session — Notes Being Added</div>
+    <p>Residual Analysis · Durbin-Watson · Logistic Regression · LASSO · Dummy Variables · Two-Sample Tests · Chi-Square</p>
+  </div>
+
+  </div><!-- end tab-day6 -->
 
 </main>
 
