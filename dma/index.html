@@ -937,6 +937,42 @@ body::after {
 .quiz-card.open .quiz-a { display: block; }
 .quiz-chevron { margin-left: auto; color: var(--muted); font-size: 11px; flex-shrink: 0; margin-top: 4px; }
 .quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+
+/* ── Password Gate ── */
+#pw-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .4s;
+}
+#pw-card {
+  background: #fff; border-radius: 16px; padding: 2.5rem 2rem;
+  max-width: 360px; width: 90%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+#pw-card h2 { margin: 0 0 .25rem; font-size: 1.35rem; color: #111; }
+#pw-card p  { margin: 0 0 1.25rem; font-size: .9rem; color: #555; }
+#pw-input {
+  width: 100%; padding: .65rem 1rem; border: 2px solid #e2e8f0;
+  border-radius: 8px; font-size: 1rem; text-align: center;
+  letter-spacing: .15em; outline: none; box-sizing: border-box;
+  transition: border-color .2s;
+}
+#pw-input:focus { border-color: #7c3aed; }
+#pw-btn {
+  margin-top: .85rem; width: 100%; padding: .7rem;
+  background: #7c3aed; color: #fff; border: none;
+  border-radius: 8px; font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: opacity .2s;
+}
+#pw-btn:hover { opacity: .88; }
+#pw-error { margin-top: .6rem; font-size: .82rem; color: #e53e3e; min-height: 1.2em; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-6px)}
+  40%,80%{transform:translateX(6px)}
+}
+.shake { animation: shake .35s ease; }
 </style>
 </head>
 <body>
@@ -3667,6 +3703,43 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-30% 0px -60% 0px' });
 
 sections.forEach(s => observer.observe(s));
+
+// ── Password Gate ──────────────────────────────
+(function() {
+  if (sessionStorage.getItem('notes-unlocked') === '1') {
+    document.getElementById('pw-gate').style.display = 'none';
+  }
+})();
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  const inp = document.getElementById('pw-input');
+  const err = document.getElementById('pw-error');
+  if (val === 'huncho') {
+    sessionStorage.setItem('notes-unlocked', '1');
+    const gate = document.getElementById('pw-gate');
+    gate.style.opacity = '0';
+    setTimeout(() => gate.style.display = 'none', 400);
+    err.textContent = '';
+  } else {
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    err.textContent = 'Incorrect password — try again.';
+    inp.value = '';
+  }
+}
 </script>
+
+<div id="pw-gate">
+  <div id="pw-card">
+    <h2>🔒 Private Notes</h2>
+    <p>Enter the password to access Daivik's notes.</p>
+    <input id="pw-input" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <button id="pw-btn" onclick="checkPassword()">Unlock</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
+
 </body>
 </html>
