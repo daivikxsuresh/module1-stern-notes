@@ -700,6 +700,143 @@ pre.code-block {
 
 .notes-section { animation: fadeSlideUp .35s ease-out both; }
 
+/* ─── PASSWORD GATE ───────────────────────────── */
+#pw-gate {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+  transition: opacity .4s ease;
+}
+
+#pw-gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(13,148,136,.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+#pw-gate::after {
+  content: '';
+  position: absolute;
+  top: -160px; left: 50%;
+  transform: translateX(-50%);
+  width: 700px; height: 300px;
+  background: radial-gradient(ellipse, rgba(13,148,136,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.pw-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 52px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 40px rgba(13,148,136,.12);
+}
+
+.pw-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.pw-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.pw-sub {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.pw-input-wrap {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+#pw-input {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  text-align: center;
+  letter-spacing: .08em;
+  transition: border-color .2s;
+}
+
+#pw-input:focus { border-color: var(--accent); }
+#pw-input.shake {
+  animation: shake .35s ease;
+  border-color: #f87171;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+#pw-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+
+#pw-btn:hover { background: var(--teal-dim); }
+#pw-btn:active { transform: scale(.98); }
+
+.pw-error {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #dc2626;
+  margin-top: 10px;
+  min-height: 16px;
+  letter-spacing: .04em;
+}
+
+.pw-footer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 24px;
+}
+
 /* ─── DAY 6 SPECIFIC ──────────────────────────── */
 .formula-box {
   background: rgba(13,148,136,.05);
@@ -767,6 +904,21 @@ pre.code-block {
 </style>
 </head>
 <body>
+
+<!-- ─── PASSWORD GATE ───────────────────────────── -->
+<div id="pw-gate">
+  <div class="pw-card">
+    <div class="pw-icon">🔒</div>
+    <div class="pw-title">Stats Notes · Day 6</div>
+    <div class="pw-sub">NYU Stern MSBAI · Prof. Peter Lakner<br>Enter the password to access these notes.</div>
+    <div class="pw-input-wrap">
+      <input id="pw-input" type="password" placeholder="password" autocomplete="off" />
+    </div>
+    <button id="pw-btn" onclick="checkPassword()">Unlock</button>
+    <div class="pw-error" id="pw-error"></div>
+    <div class="pw-footer">Stats &amp; R · Module 1 · May 2026</div>
+  </div>
+</div>
 
 <!-- ─── SIDEBAR ──────────────────────────────────── -->
 <nav id="sidebar">
@@ -2432,6 +2584,39 @@ plot(leaps, scale="r2")</pre>
 </main>
 
 <script>
+// ── Password Gate ──────────────────────────────
+(function() {
+  if (sessionStorage.getItem('stats-unlocked') === '1') {
+    document.getElementById('pw-gate').style.display = 'none';
+  }
+})();
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  const inp = document.getElementById('pw-input');
+  const err = document.getElementById('pw-error');
+  if (val === 'huncho') {
+    sessionStorage.setItem('stats-unlocked', '1');
+    const gate = document.getElementById('pw-gate');
+    gate.style.opacity = '0';
+    setTimeout(() => gate.style.display = 'none', 400);
+    err.textContent = '';
+  } else {
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    err.textContent = 'Incorrect password — try again.';
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('shake'), 400);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const inp = document.getElementById('pw-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+});
+
+// ── Tab Logic ──────────────────────────────────
 document.getElementById('sidebar-day5').style.display = 'block';
 
 function switchTab(name) {
