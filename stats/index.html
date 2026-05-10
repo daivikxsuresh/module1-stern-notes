@@ -959,6 +959,11 @@ pre.code-block {
       <a href="#d6-intervals"><span class="nav-num">06</span>CI vs PI</a>
       <a href="#d6-multiple"><span class="nav-num">07</span>Multiple Regression</a>
       <a href="#d6-rcommands"><span class="nav-num">★</span>R Cheat Sheet</a>
+      <a href="#d6-diagnostics"><span class="nav-num">09</span>Residual Diagnostics</a>
+      <a href="#d6-lasso"><span class="nav-num">10</span>LASSO</a>
+      <a href="#d6-dummy"><span class="nav-num">11</span>Dummy Variables</a>
+      <a href="#d6-logistic"><span class="nav-num">12</span>Logistic Regression</a>
+      <a href="#d6-tests"><span class="nav-num">13</span>Two-Sample &amp; Chi-Square</a>
     </nav>
   </div>
 </nav>
@@ -2572,11 +2577,399 @@ plot(leaps, scale="r2")</pre>
     </div>
   </div>
 
-  <!-- Coming Soon Banner -->
-  <div class="coming-soon-banner">
-    <div style="font-size:28px;margin-bottom:10px">📋</div>
-    <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:6px">Afternoon Session — Notes Being Added</div>
-    <p>Residual Analysis · Durbin-Watson · Logistic Regression · LASSO · Dummy Variables · Two-Sample Tests · Chi-Square</p>
+  <!-- ── SECTION 09: Residual Diagnostics ── -->
+  <div class="notes-section" id="d6-diagnostics">
+    <div class="section-eyebrow">Section 09</div>
+    <h2 class="section-title">Residual Diagnostics — Checking Your Model</h2>
+
+    <div class="callout">
+      <strong>The 3 things to always check after fitting a model</strong>
+      (1) Residual plot — look for random scatter. (2) Shapiro-Wilk — check normality. (3) Durbin-Watson — if time series, check autocorrelation.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Residual Plot — Detect Heteroskedasticity</div>
+        <pre class="code-block">plot(fitted(reg), resid(reg))
+abline(h = 0, lty = 2)</pre>
+        <ul style="margin-top:10px">
+          <li><strong>Good:</strong> random scatter, roughly equal spread above and below 0 at all fitted values</li>
+          <li><strong>Bad (fan shape):</strong> variance grows with fitted values → heteroskedasticity</li>
+          <li>Diamond example: small diamonds → tight residuals; large diamonds → wide spread</li>
+          <li><strong>Fix:</strong> log-transform the response variable</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Shapiro-Wilk Normality Test</div>
+        <pre class="code-block">shapiro.test(resid(reg))</pre>
+        <div class="output-block">Shapiro-Wilk normality test
+W = 0.9851, p-value = 0.243</div>
+        <ul style="margin-top:10px">
+          <li>H₀: residuals are normally distributed</li>
+          <li><strong>Want p &gt; 0.05</strong> — fail to reject → normality is OK</li>
+          <li>p &lt; 0.05 → evidence residuals are NOT normal → model assumption violated</li>
+        </ul>
+        <div class="rule-thumb">p &gt; 0.05 = you're good. p &lt; 0.05 = problem.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Log Transformation — Fix Heteroskedasticity &amp; Skew</div>
+      <pre class="code-block"># Create log-transformed response
+logprice &lt;- log(diamonds$price)
+
+# Fit model on log scale
+logmod &lt;- lm(logprice ~ carat, data = diamonds)
+summary(logmod)</pre>
+      <div class="callout callout-amber" style="margin-top:12px">
+        <strong>Interpretation changes on the log scale</strong>
+        Coefficients now represent <em>percentage</em> changes, not dollar changes.
+        Diamond log model slope ≈ 1.67 → a 0.1 carat increase ≈ <strong>16.7% price increase</strong>
+        (multiply coefficient × 0.1 × 100%).
+        This is more realistic: large diamonds command a percentage premium, not a fixed dollar amount.
+      </div>
+      <ul style="margin-top:10px">
+        <li>Use log transform when residual plot shows fan shape</li>
+        <li>Also use when distribution of y is heavily right-skewed</li>
+        <li>Never log-transform a variable that can be 0 or negative</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Durbin-Watson — Autocorrelation in Time Series</div>
+      <pre class="code-block">library(car)
+dwt(reg)    # or durbinWatsonTest(reg)</pre>
+      <div class="output-block">lag Autocorrelation D-W Statistic p-value
+  1         0.8212         0.357   0.000</div>
+      <ul style="margin-top:10px">
+        <li><strong>DW ≈ 2.0</strong> → no autocorrelation (good)</li>
+        <li><strong>DW &lt; 1.5</strong> → positive autocorrelation (residuals correlated with previous residuals)</li>
+        <li><strong>DW &gt; 2.5</strong> → negative autocorrelation</li>
+        <li>Autocorrelation common in economic/financial time-series data</li>
+        <li><strong>Fix:</strong> add a lagged variable (last period's value) as a predictor</li>
+      </ul>
+      <div class="rule-thumb">DW ~ 2 = clean. DW near 0 or 4 = autocorrelation problem.</div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Diagnostics order for the exam</strong>
+      Fit model → plot(fitted, resid) → shapiro.test(resid) → if time series: dwt(). If fan shape appears: log-transform y and refit.
+    </div>
+  </div>
+
+  <!-- ── SECTION 10: LASSO ── -->
+  <div class="notes-section" id="d6-lasso">
+    <div class="section-eyebrow">Section 10</div>
+<h2 class="section-title">LASSO — Automatic Variable Selection via Shrinkage</h2>
+
+    <div class="callout">
+      <strong>Why LASSO?</strong>
+      LASSO (Least Absolute Shrinkage and Selection Operator) adds a penalty term λ to the regression that forces small coefficients to shrink toward zero — and can push them exactly to zero, effectively removing those variables from the model automatically.
+    </div>
+
+    <div class="formula-box">
+      <span class="formula-label">LASSO Objective (minimize)</span>
+      SSE + λ · Σ|βⱼ|
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">LASSO vs Stepwise</div>
+        <table class="fn-table" style="margin:0">
+          <tr><th></th><th>Stepwise</th><th>LASSO</th></tr>
+          <tr><td>Selection</td><td>In/out (discrete)</td><td>Continuous shrinkage</td></tr>
+          <tr><td>Criterion</td><td>AIC / p-value</td><td>λ penalty</td></tr>
+          <tr><td>Can zero a coef</td><td>✗ removes whole var</td><td>✓ pushes to exactly 0</td></tr>
+          <tr><td>Tuning</td><td>None needed</td><td>Must choose λ</td></tr>
+          <tr><td>Best for</td><td>Small-medium models</td><td>Many predictors</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">How λ Works</div>
+        <ul>
+          <li><strong>λ = 0:</strong> no penalty → ordinary OLS (all predictors kept)</li>
+          <li><strong>λ large:</strong> heavy penalty → most coefficients shrink to 0 → simpler model</li>
+          <li>Pick λ by looking at the coefficient path plot — choose where unimportant predictors hit zero</li>
+          <li>Rule of thumb: pick λ just above where the target coefficients stabilize</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">LASSO in R — glmnet Package</div>
+      <pre class="code-block">library(glmnet)
+
+# Step 1: set up matrices (glmnet needs matrix format, not data frame)
+x &lt;- as.matrix(df[, c("x1","x2","x3","x4")])   # predictors
+y &lt;- df$response                                  # response
+
+# Step 2: fit LASSO (alpha=1 means LASSO; alpha=0 is Ridge)
+fit &lt;- glmnet(x, y, alpha = 1)
+
+# Step 3: plot coefficient paths vs log(lambda)
+plot(fit, xvar = "lambda", label = TRUE)
+
+# Step 4: extract coefficients at a chosen lambda value
+coef(fit, s = 1.06)    # s = your chosen lambda value</pre>
+      <div class="callout callout-amber" style="margin-top:12px">
+        <strong>Reading the coefficient path plot</strong>
+        Each line = one predictor's coefficient. As λ increases (rightward), lines shrink toward 0.
+        Variables that hit 0 first are the least important. The number at the top = how many non-zero predictors remain.
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>LASSO exam logic</strong>
+      If a question asks how to handle many correlated predictors and you need automatic selection → use LASSO. State: "LASSO adds a λ penalty that shrinks coefficients, some exactly to zero, performing variable selection automatically."
+    </div>
+  </div>
+
+  <!-- ── SECTION 11: Dummy Variables ── -->
+  <div class="notes-section" id="d6-dummy">
+    <div class="section-eyebrow">Section 11</div>
+    <h2 class="section-title">Dummy Variables — Categorical Predictors in Regression</h2>
+
+    <div class="callout">
+      <strong>The problem</strong>
+      Regression needs numeric inputs. A categorical variable like car type (Sedan, SUV, Truck) can't go into lm() directly. Solution: encode each category as a 0/1 binary (dummy) variable.
+    </div>
+
+    <div class="formula-box">
+      <span class="formula-label">Key Rule</span>
+      k categories → k − 1 dummy variables (drop one = reference/base level)
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Car Type Example</div>
+        <p style="margin-bottom:10px">3 car types: Sedan (base), SUV, Truck</p>
+        <table class="fn-table" style="margin:0">
+          <tr><th>Car</th><th>D_SUV</th><th>D_Truck</th></tr>
+          <tr><td>Sedan</td><td>0</td><td>0</td></tr>
+          <tr><td>SUV</td><td>1</td><td>0</td></tr>
+          <tr><td>Truck</td><td>0</td><td>1</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:14px;color:var(--muted)">Sedan is base level — its "effect" is captured in the intercept β₀</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Interpreting Dummy Coefficients</div>
+        <div class="output-block">lm(Price ~ Horsepower + factor(Type))
+
+(Intercept)       18,500   ***
+Horsepower           142   ***
+factor(Type)SUV    3,200   ***
+factor(Type)Truck  1,800   **</div>
+        <ul style="margin-top:10px">
+          <li>Sedan baseline price (at given HP) = $18,500</li>
+          <li>SUVs cost <strong>$3,200 more</strong> than Sedans, holding HP constant</li>
+          <li>Trucks cost <strong>$1,800 more</strong> than Sedans, holding HP constant</li>
+          <li>All comparisons are <em>relative to the base level</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">R — Dummy Variables with factor()</div>
+      <pre class="code-block"># R creates dummies automatically when you wrap a variable in factor()
+model &lt;- lm(Price ~ Horsepower + factor(Type), data = cars)
+summary(model)
+
+# Check how R coded the categories (which is the base level)
+contrasts(factor(cars$Type))
+
+# Change the base level if needed
+cars$Type &lt;- relevel(factor(cars$Type), ref = "Truck")
+model2 &lt;- lm(Price ~ Horsepower + factor(Type), data = cars)</pre>
+      <div class="callout callout-amber" style="margin-top:12px">
+        <strong>R's default base level</strong>
+        R automatically picks the first alphabetical category as the base level. Use <code>relevel()</code> to change it. Use <code>contrasts()</code> to verify which level was dropped.
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Dummy variable exam rules</strong>
+      (1) Always k−1 dummies for k categories. (2) Never include all k — causes perfect multicollinearity ("dummy variable trap"). (3) All interpretations are relative to the base level. (4) factor() in R does the encoding automatically.
+    </div>
+  </div>
+
+  <!-- ── SECTION 12: Logistic Regression ── -->
+  <div class="notes-section" id="d6-logistic">
+    <div class="section-eyebrow">Section 12</div>
+    <h2 class="section-title">Logistic Regression — Binary Outcomes</h2>
+
+    <div class="callout">
+      <strong>When to use</strong>
+      When your response variable y is binary (0/1, yes/no, default/no-default, spam/not-spam). Linear regression can predict values outside [0,1] — logistic regression always outputs a valid probability.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">The Model</div>
+        <div class="formula-box" style="margin:0 0 12px">
+          <span class="formula-label">Log-Odds (Logit)</span>
+          log(p / (1−p)) = β₀ + β₁x₁ + β₂x₂
+        </div>
+        <div class="formula-box" style="margin:0">
+          <span class="formula-label">Probability (back-transformed)</span>
+          p̂ = 1 / (1 + e^−(β₀+β₁x₁+…))
+        </div>
+        <ul style="margin-top:12px">
+          <li>Left side = <strong>log-odds</strong> (logit) — linear in x's</li>
+          <li>p̂ is always between 0 and 1 — the S-curve (sigmoid)</li>
+          <li>β₁ = change in log-odds per unit change in x</li>
+          <li>exp(β₁) = <strong>odds ratio</strong> — more intuitive</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Fitting in R</div>
+        <pre class="code-block"># Fit logistic regression
+logit &lt;- glm(Default ~ Balance + Income,
+             data    = df,
+             family  = "binomial")
+
+summary(logit)
+
+# Predict probability for new observation
+newobs &lt;- data.frame(Balance = 1500, Income = 50000)
+predict(logit, newdata = newobs, type = "response")
+# → 0.342  (34.2% probability of default)
+
+# Odds ratios
+exp(coef(logit))</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reading Logistic Regression Output</div>
+      <div class="output-block">             Estimate Std. Error z value Pr(>|z|)
+(Intercept) -10.651      0.361  -29.5   &lt;2e-16 ***
+Balance       0.005      0.000   24.7   &lt;2e-16 ***
+Income        0.000      0.000    4.2   &lt;2e-16 ***</div>
+      <ul style="margin-top:12px">
+        <li><strong>z value</strong> (not t-value) — logistic uses z-statistics</li>
+        <li>Balance coeff = 0.005 → each $1 increase in balance increases log-odds of default by 0.005</li>
+        <li>exp(0.005) ≈ 1.005 → odds of default multiply by 1.005 per $1 in balance</li>
+        <li>p-value interpretation: same as OLS — reject H₀: β = 0 if p &lt; 0.05</li>
+        <li><strong>No R² in output</strong> — logistic uses deviance / AIC for model quality</li>
+      </ul>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Linear vs Logistic — Side by Side</div>
+        <table class="fn-table" style="margin:0">
+          <tr><th></th><th>Linear</th><th>Logistic</th></tr>
+          <tr><td>Response y</td><td>Continuous</td><td>Binary (0/1)</td></tr>
+          <tr><td>Function</td><td>lm()</td><td>glm(family="binomial")</td></tr>
+          <tr><td>Output</td><td>ŷ (any value)</td><td>p̂ ∈ (0,1)</td></tr>
+          <tr><td>Test stat</td><td>t-value</td><td>z-value</td></tr>
+          <tr><td>Fit metric</td><td>R²</td><td>AIC / deviance</td></tr>
+          <tr><td>Coefficients</td><td>Unit change in y</td><td>Change in log-odds</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Odds Ratio Interpretation</div>
+        <ul>
+          <li>Odds = p / (1−p)</li>
+          <li>If p = 0.75 → odds = 3 (3:1 in favor)</li>
+          <li>exp(β₁) = odds ratio for a 1-unit increase in x</li>
+          <li>exp(β₁) &gt; 1 → x increases odds of event</li>
+          <li>exp(β₁) &lt; 1 → x decreases odds of event</li>
+          <li>exp(β₁) = 1 → no effect</li>
+        </ul>
+        <pre class="code-block">exp(coef(logit))     # odds ratios
+exp(confint(logit))  # CI for odds ratios</pre>
+      </div>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Logistic regression exam essentials</strong>
+      Use glm() not lm(). family="binomial". predict() with type="response" to get probability. Coefficients are log-odds. exp(coef) = odds ratio. Use when y is 0/1.
+    </div>
+  </div>
+
+  <!-- ── SECTION 13: Two-Sample Tests & Chi-Square ── -->
+  <div class="notes-section" id="d6-tests">
+    <div class="section-eyebrow">Section 13</div>
+    <h2 class="section-title">Two-Sample Tests &amp; Chi-Square Independence</h2>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Two-Sample t-Test — Compare Two Means</div>
+        <div class="formula-box" style="margin:0 0 12px">
+          <span class="formula-label">Hypotheses</span>
+          H₀: μ₁ = μ₂ &nbsp;&nbsp; H₁: μ₁ ≠ μ₂
+        </div>
+        <pre class="code-block"># Two-sample t-test
+t.test(group1, group2)
+
+# Or from a data frame with a grouping variable
+t.test(salary ~ gender, data = df)</pre>
+        <div class="output-block">t = 3.214, df = 48.2, p-value = 0.0023
+95% CI: [1240, 5810]</div>
+        <ul style="margin-top:10px">
+          <li>p &lt; 0.05 → reject H₀ → means differ significantly</li>
+          <li>CI does not contain 0 → same conclusion</li>
+          <li>R uses Welch's t-test by default (doesn't assume equal variance — safer)</li>
+          <li>Add <code>var.equal=TRUE</code> only if you've tested and confirmed equal variances</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Chi-Square Test — Independence of Categorical Variables</div>
+        <div class="formula-box" style="margin:0 0 12px">
+          <span class="formula-label">Test Statistic</span>
+          χ² = Σ (Observed − Expected)² / Expected
+        </div>
+        <div class="formula-box" style="margin:0 0 12px">
+          <span class="formula-label">Degrees of Freedom</span>
+          df = (rows − 1) × (cols − 1)
+        </div>
+        <pre class="code-block"># Build contingency table first
+tbl &lt;- table(df$var1, df$var2)
+
+# Run chi-square test
+chisq.test(tbl)
+
+# Critical value (manual check)
+qchisq(0.95, df = (r-1)*(c-1))</pre>
+        <div class="output-block">X-squared = 18.43, df = 4, p-value = 0.001</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Chi-Square — Full Walkthrough</div>
+      <ul>
+        <li><strong>H₀:</strong> the two categorical variables are independent (no association)</li>
+        <li><strong>H₁:</strong> the variables are NOT independent (there is an association)</li>
+        <li><strong>Expected count</strong> for each cell = (row total × col total) / grand total</li>
+        <li>If χ²_stat &gt; χ²_critical → reject H₀ → variables are associated</li>
+        <li>If p &lt; 0.05 → same conclusion — reject independence</li>
+        <li>Works on raw counts — don't use percentages in <code>chisq.test()</code></li>
+        <li>Assumption: expected count ≥ 5 in each cell (if violated, use Fisher's exact test)</li>
+      </ul>
+      <div class="callout callout-amber" style="margin-top:12px">
+        <strong>Example: Are gender and job type independent?</strong>
+        Build table(gender, job_type), run chisq.test(). If p &lt; 0.05: gender and job type are associated (not independent).
+        If p &gt; 0.05: no evidence of association — they're independent.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Which Test to Use — Decision Guide</div>
+      <table class="fn-table" style="margin:0">
+        <tr><th>Situation</th><th>Test</th><th>R Function</th></tr>
+        <tr><td>Compare mean vs known value</td><td>One-sample t-test</td><td>t.test(x, mu=value)</td></tr>
+        <tr><td>Compare two group means</td><td>Two-sample t-test</td><td>t.test(x1, x2)</td></tr>
+        <tr><td>Two categorical vars — independent?</td><td>Chi-square</td><td>chisq.test(table(v1,v2))</td></tr>
+        <tr><td>Continuous y from numeric x's</td><td>Linear regression</td><td>lm(y ~ x)</td></tr>
+        <tr><td>Binary y from numeric x's</td><td>Logistic regression</td><td>glm(y~x, family="binomial")</td></tr>
+      </table>
+    </div>
+
+    <div class="exam-tip">
+      <strong>Chi-square key numbers</strong>
+      df = (r−1)(c−1). Expected = row total × col total / grand total. χ²_stat &gt; qchisq(0.95, df) → reject H₀. Equivalently: p &lt; 0.05 → reject H₀ → variables are NOT independent.
+    </div>
   </div>
 
   </div><!-- end tab-day6 -->
